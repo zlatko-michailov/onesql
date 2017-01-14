@@ -1,0 +1,120 @@
+<!doctype html>
+
+<html>
+  <head>
+    <title>MongoSQL Interactive</title>
+    <meta charset="utf-8"/>
+    
+    <link rel="stylesheet" href="dep/codemirror-5.22.0/lib/codemirror.css" />
+    <script src="dep/codemirror-5.22.0/lib/codemirror.js"></script>
+
+    <script src="dep/codemirror-5.22.0/mode/javascript/javascript.js"></script>
+    <script src="dep/codemirror-5.22.0/mode/sql/sql.js"></script>
+
+    <link rel="stylesheet" href="dep/codemirror-5.22.0/addon/hint/show-hint.css"></script>
+    <script src="dep/codemirror-5.22.0/addon/hint/show-hint.js"></script>
+    <script src="dep/codemirror-5.22.0/addon/hint/sql-hint.js"></script>
+
+    <style>
+      .CodeMirror {
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
+      }
+
+      body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        background-color: #f4f4f4;
+      }
+
+      th {
+        text-align: left;
+        padding-left: 30px;
+        text-decoration: none;
+      }
+
+      .copyright {
+        padding-left: 30px;
+        font-size: small;
+      }
+    </style>
+  </head>
+
+  <body>
+    <table width="100%">
+      <tr>
+        <th width="60%">MongoSQL</th>
+        <th width="40%">MongoDB Aggregation Stages</th>
+      </tr>
+
+      <tr>
+        <td>
+    <form>
+      <textarea id="sqlMarker" name="sqlMarker">-- SQL Mode for CodeMirror
+SELECT SQL_NO_CACHE DISTINCT
+		@var1 AS `val1`, @'val2', @global.'sql_mode',
+		1.1 AS `float_val`, .14 AS `another_float`, 0.09e3 AS `int_with_esp`,
+		0xFA5 AS `hex`, x'fa5' AS `hex2`, 0b101 AS `bin`, b'101' AS `bin2`,
+		DATE '1994-01-01' AS `sql_date`, { T "1994-01-01" } AS `odbc_date`,
+		'my string', _utf8'your string', N'her string',
+        TRUE, FALSE, UNKNOWN
+	FROM DUAL
+	-- space needed after '--'
+	# 1 line comment
+	/* multiline
+	comment! */
+	LIMIT 1 OFFSET 0;</textarea>
+    </form>
+        </td>
+        <td>
+          <textarea id="jsonMarker" name="jsonMarker">{
+  foo: 42,
+  bar: "abc",
+  moo: [ 1, 2, 3]
+}</textarea>
+        </td>
+      </tr>
+    </table>
+
+    <br />
+    <div class="copyright">Copyright (c) by Zlatko Michailov.</div>
+    <div class="copyright">Colorcoding powered by CodeMirror.</div>
+
+    <script>
+window.onload = function() {
+  CodeMirror.fromTextArea(document.getElementById('sqlMarker'), {
+    mode: 'text/x-sql',
+    indentWithTabs: false,
+    smartIndent: true,
+    lineNumbers: true,
+    matchBrackets : true,
+    autofocus: true,
+    extraKeys: {"Ctrl-Space": "autocomplete"},
+    hintOptions: {tables: {
+      users: {name: null, score: null, birthDate: null},
+      countries: {name: null, population: null, size: null}
+    }}
+  });
+
+  CodeMirror.fromTextArea(document.getElementById('jsonMarker'), {
+    mode: 'application/json',
+    indentWithTabs: false,
+    smartIndent: true,
+    lineNumbers: true,
+    matchBrackets : true,
+    autofocus: true,
+    readOnly: "nocursor"
+  });
+
+  var sqlEditor = document.getElementById('sqlMarker').nextSibling;
+  var jsonEditor = document.getElementById('jsonMarker').nextSibling
+
+  var height = (window.innerHeight - 120) + "px";
+  sqlEditor.style.height = height;
+  jsonEditor.style.height = height;
+
+  jsonEditor.style.backgroundColor = "#f4f4f4";
+};
+    </script>
+  </body>
+</html>
+
