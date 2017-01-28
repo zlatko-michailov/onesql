@@ -3,38 +3,18 @@
 * [1. Overview](#1-overview)
     * [1.1. Conventional SQL](#11-conventional-sql)
     * [1.2. `ONESQL`](#12-onesql)
-        * [1.2.1. Sequential](#121-sequential)
-        * [1.2.2. Independent](#122-independent)
 * [2. Reference](#2-reference)
     * [2.1. Batch](#21-batch)
-        * [2.1.1. SQL Syntax](#211-sql-syntax)
-        * [2.1.2. Semantic Tree](#212-semantic-tree)
     * [2.2. Statements](#22-statements)
         * [2.2.1. `USE` Statement](#221-use-statement)
-            * [2.2.1.1. SQL Syntax](#2211-sql-syntax)
-            * [2.2.1.2. Semantic Tree](#2212-semantic-tree)
         * [2.2.2. Query Statement](#222-query-statement)
-            * [2.2.2.1. SQL Syntax](#2221-sql-syntax)
-            * [2.2.2.2. Semantic Tree](#2222-query-semantic)
             * [2.2.2.3. Query Clauses](#2223-query-clauses)
                 * [2.2.2.3.1. `WHERE` Clause](#22231-where-clause)
-                    * [2.2.2.3.1.1. SQL Syntax](#222311-sql-syntax)
-                    * [2.2.2.3.1.2. Semantic Tree](#222312-semantic-tree)
                 * [2.2.2.3.2. `SELECT` clause](#22232-select-clause)
-                    * [2.2.2.3.2.1. SQL Syntax](#222321-sql-syntax)
-                    * [2.2.2.3.2.2. Semantic Tree](#222322-semantic-tree)
-                * [2.2.2.3.3. `GROUP` Clause](#22233-group-clause)
-                    * [2.2.2.3.3.1. SQL Syntax](#222331-sql-syntax)
-                    * [2.2.2.3.3.2. Semantic Tree](#222332-semantic-tree)
-                * [2.2.2.3.4. `ORDER` Clause](#22234-order-clause)
-                    * [2.2.2.3.4.1. SQL Syntax](#222341-sql-syntax)
-                    * [2.2.2.3.4.2. Semantic Tree](#222342-semantic-tree)
+                * [2.2.2.3.3. `GROUP BY` Clause](#22233-group-by-clause)
+                * [2.2.2.3.4. `ORDER BY` Clause](#22234-order-by-clause)
         * [2.2.3. `INSERT` Statement](#223-insert-statement)
-            * [2.2.3.1. SQL Syntax](#2231-sql-syntax)
-            * [2.2.3.2. Semantic Tree](#2232-semantic-tree)
         * [2.2.4. `DELETE` Statement](#224-delete-statement)
-            * [2.2.4.1. SQL Syntax](#2241-sql-syntax)
-            * [2.2.4.2. Semantic Tree](#2242-semantic-tree)
 * [A. Appendix](#a-appendix)
     * [A.1. Sample Data](#a1-sample-data)
 
@@ -48,14 +28,14 @@ Also, in order to apply the same operation at multiple stages, statements must b
 And on, and on.
 
 ### 1.2. `ONESQL`
-#### 1.2.1. Sequential
+#### Sequential
 The purpose of `ONESQL` is to define an SQL-like language that is as expressive as conventional SQL and that is also intuitive to developers.
 A `ONESQL` statement consists of a sequence of stage clauses where a stage clause can be repeated any number of times,
 and where the order of the stages is significant.
 
 The following query lists the top 3 states with the largest populations:
 
-```sql
+```
 FROM Demography
 GROUP BY State
 SELECT State, SUM(Population) AS Population
@@ -65,7 +45,7 @@ TAKE 3;
 
 __Note__: All examples are based on the sample in [Appendix 1: Sample Data](#a1-sample-data).
 
-#### 1.2.2. Independent
+#### Independent
 Since `ONESQL` is not bound to a particular database system, it can be used as a quiery builder to any such database system.
 This specification contains both the input syntax and the output semantic trees.
 
@@ -81,13 +61,25 @@ __Note__: All examples are based on the sample in [Appendix 1: Sample Data](#a1-
 Batch is the single top-level concept in `ONESQL`, i.e. the whole input passed into a `ONESQL` compiler is one batch.
 A batch consists of a sequence of [statements](#22-statements).
 
-#### 2.1.1. SQL Syntax
+##### SQL Syntax
 ```abnf
 batch ::= 
-    | { statement }* 
+    | { statement ; }* 
 ```
 
-#### 2.1.2. Semantic Tree
+##### SQL Example
+```
+USE Demo;
+
+DELETE FROM Demography
+WHERE Population > 2000000;
+
+FROM Demography
+WHERE State == 'TX'
+ORDER BY Population DESC;
+```
+
+##### Semantic Tree
 ```typescript
 interface Batch extends Node {
     readonly statements: Array<Statement>;
@@ -98,7 +90,7 @@ interface Batch extends Node {
 ### 2.2. Statements
 A statement represents a complete operation of a given kind - query, insert, update, delete.
 
-#### 2.1.1. SQL Syntax
+##### SQL Syntax
 ```abnf
 statement ::=
     | use-statement
@@ -108,76 +100,93 @@ statement ::=
     | delete-statement
 ```
 
-#### 2.1.2. Semantic Tree
+##### Semantic Tree
 ```typescript
 ???
 ```
 
 
 #### 2.2.1. `USE` Statement
-Switches the current _database_.
+The `USE` statement switches the current _database_.
 Note that "_database_" may mean different things to different systems.
 
-#### 2.2.1.1. SQL Syntax
+##### SQL Syntax
 ```abnf
 use-statement ::=
-    | USE database-name ;
+    | USE database-name
 
 database-name ::=
     | identifier 
 ```
 
-#### 2.2.1.2. Semantic Tree
+##### SQL Example
+```
+USE Demo;
+```
+
+##### Semantic Tree
 ```typescript
-interface Batch extends Node {
-    readonly statements: Array<Statement>;
-}
+???
 ```
 
 
 #### 2.2.2. Query Statement
-Queries a _source_ of the current database.
+The query statementqueries a _source_ from the current database.
 
-#### 2.2.2.1. SQL Syntax
+##### SQL Syntax
 ```abnf
 query-statement ::= 
-    | FROM source-name { stage-clause }* ;
+    | FROM source-name { query-clause }* ;
 
 source-name ::=
     | identifier 
 ```
 
-#### 2.2.2.2. Semantic Tree
+##### SQL Example
+```
+???
+```
+
+##### Semantic Tree
 ```typescript
 ???
 ```
 
 
 #### 2.2.2.3. Query Clauses
+```abnf
+query-clause ::=
+    | where-clause
+    | select-clause
+    | groupby-clause
+    | orderby-clause
+```
+
+
 #### 2.2.2.3.1. `WHERE` Clause
 Filters whole items.
 
-#### 2.2.2.3.1.1. SQL Syntax
+##### SQL Syntax
 ```abnf
 where-clause ::= 
     | WHERE boolean-expression
 
 boolean-expression ::=
-    | boolean-term [ boolean-binary-operation boolean-expression ]
+    | boolean-term [ binary-boolean-operation boolean-expression ]
 
 boolean-term ::=
-    | boolean-unary-operation boolean-term
+    | unary-boolean-operation boolean-term
     | ( boolean-expression )
     | boolean-literal
     | comparison-expression
 
-boolean-binary-operation ::=
+binary-boolean-operation ::=
     | AND
     | &&
     | OR
     | ||
 
-boolean-unary-operation ::= 
+unary-boolean-operation ::= 
     | NOT
     | !
 
@@ -201,39 +210,41 @@ arithmetic-expression ::=
     | bitwise-expression
 
 bitwise-expression ::=
-    | bitwise-term [ bitwise-binary-operation bitwise-expression ]
+    | bitwise-term [ binary-bitwise-operation bitwise-expression ]
 
 bitwise-term ::=
-    | bitwise-unary-operation bitwise-term
+    | unary-bitwise-operation bitwise-term
     | ( arithmetic-expression )
     | addsub-expression
 
-bitwise-binary-operation ::=
+binary-bitwise-operation ::=
     | &
     | |
     | ^
+    | <<
+    | >>
 
-bitwise-unary-operation ::=
+unary-bitwise-operation ::=
     | ~
 
 addsub-expression ::=
-    | addsub-term [ addsub-binary-operation addsub-expression ]
+    | addsub-term [ binary-addsuboperation addsub-expression ]
 
 addsub-term ::=
-    | addsub-unary-operation addsub-expression
+    | unary-addsub-operation addsub-expression
     | ( arithmetic-expression )
     | muldiv-expression
 
-addsub-binary-operation ::=
+binary-addsub-operation ::=
     | +
     | -
 
-addsub-unary-operation ::=
+unary-addsub-operation ::=
     | +
     | -
     
 muldiv-expression ::=
-    | muldiv-term [ muldiv-binary-operation muldiv-expression ]
+    | muldiv-term [ binary-muldiv-operation muldiv-expression ]
 
 muldiv-term ::=
     | ( arithmetic-expression )
@@ -241,7 +252,7 @@ muldiv-term ::=
     | property-name
     | function-call
 
-muldiv-binary-operation ::=
+binary-muldiv-operation ::=
     | *
     | /
     | %
@@ -261,9 +272,9 @@ expression ::=
     | string-expression
     
 string-expression ::=
-    | string-term [ string-binary-operation string-expression ]
+    | string-term [ binary-string-operation string-expression ]
 
-string-binary-operation ::=
+binary-string-operation ::=
     | +
 
 string-term ::=
@@ -277,7 +288,12 @@ string-literal ::=
     | ' {.}* '
 ```
 
-#### 2.2.2.3.1.2. Semantic Tree
+##### SQL Example
+```
+???
+```
+
+##### Semantic Tree
 ```typescript
 ???
 ```
@@ -286,44 +302,87 @@ string-literal ::=
 #### 2.2.2.3.2. `SELECT` Clause
 Projects/reshapes items by removing/adding/renamig properties.
 
-#### 2.2.2.3.2.1. SQL Syntax
+##### SQL Syntax
 ```abnf
 select-clause ::=
-    | SELECT projection { , projection }*
+    | SELECT projection-list
+
+projection-list ::=
+    | projection { , projection }*
 
 projection ::=
     | property-name [ AS identifier ]
     | expression AS identifier
 ```
 
-#### 2.2.2.3.2.2. Semantic Tree
+##### SQL Example
+```
+???
+```
+
+##### Semantic Tree
 ```typescript
 ???
 ```
 
 
-#### 2.2.2.3.3. `GROUP` Clause
+#### 2.2.2.3.3. `GROUP BY` Clause
 Groups items together which allows aggregate functions to be computed over each group.
 
-#### 2.2.2.3.3.1. SQL Syntax
+##### SQL Syntax
 ```abnf
-group-clause ::=
-    | GROUP BY property-name { , property-name }* select-clause
+groupby-clause ::=
+    | GROUP BY grouping-list aggregation-select-clause
+
+grouping-list ::=
+    | property { , property }*
+
+aggregation-select-clause ::=
+    | SELECT aggregation-list
+
+aggregation-list ::=
+    | aggregation { , aggregation }*
+
+aggregation ::=
+    | aggregation-function-call AS identifier
+
+aggregation-function-call ::=
+    | aggregation-function ( expression )
+
+aggregation-function ::=
+    | COUNT
+    | SUM
+    | AVG
+    | MIN
+    | MAX
+    | FIRST
+    | LAST
 ```
 
-#### 2.2.2.3.3.2. Semantic Tree
+##### SQL Example
+```
+???
+```
+
+##### Semantic Tree
 ```typescript
 ???
 ```
 
 
-#### 2.2.2.3.4. `ORDER` Clause
+#### 2.2.2.3.4. `ORDER BY` Clause
 Orders items by the values of the specified properties.
 
 #### 2.2.2.3.4.1. SQL Syntax
 ```abnf
-order-clause ::=
-    | ORDER BY property-name [ order-direction ] { , property-name [ order-direction ] }*
+orderby-clause ::=
+    | ORDER BY ordering-list
+
+ordering-list ::=
+    | ordering { , ordering }*
+
+ordering ::=
+    | property-name [ order-direction ]
 
 order-direction ::=
     | ASC
