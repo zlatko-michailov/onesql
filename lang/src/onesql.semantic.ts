@@ -40,7 +40,7 @@ namespace onesql.semantic {
 		Where,
 		Select,
 		GroupBy,
-		OrderBy
+		OrderBy,
 	}
 
 	export interface WhereClause extends QueryClause {
@@ -61,13 +61,13 @@ namespace onesql.semantic {
 		readonly aggregations: Array<Aggregation>;
 	}
 
+	export interface Grouping {
+		readonly propertyName: string;
+	}
+
 	export interface Aggregation {
 		readonly aggregationExpression: Expression;
 		readonly asName: string;
-	}
-
-	export interface Grouping {
-		readonly propertyName: string;
 	}
 
 	export interface OrderByClause extends QueryClause {

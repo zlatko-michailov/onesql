@@ -102,7 +102,17 @@ statement ::=
 
 ##### Semantic Tree
 ```typescript
-???
+export interface Statement extends Node {
+    readonly statementKind: StatementKind;
+}
+
+export enum StatementKind {
+    Use,
+    Query,
+    Insert,
+    Update,
+    Delete,
+}
 ```
 
 
@@ -126,7 +136,9 @@ USE Demo;
 
 ##### Semantic Tree
 ```typescript
-???
+export interface UseStatement extends Statement {
+    readonly databaseName: string;
+}
 ```
 
 
@@ -144,16 +156,21 @@ source-name ::=
 
 ##### SQL Example
 ```
-???
+FROM Demography
+WHERE State == 'TX';
 ```
 
 ##### Semantic Tree
 ```typescript
-???
+export interface QueryStatement extends Statement {
+    readonly sourceName: string;
+    readonly clauses: Array<QueryClause>;
+}
 ```
 
 
 #### 2.2.2.3. Query Clauses
+##### SQL Syntax
 ```abnf
 query-clause ::=
     | where-clause
@@ -161,6 +178,21 @@ query-clause ::=
     | groupby-clause
     | orderby-clause
 ```
+
+##### Semantic Tree
+```typescript
+export interface QueryClause extends Node {
+    readonly queryClauseKind: QueryClauseKind;
+}
+
+export enum QueryClauseKind {
+    Where,
+    Select,
+    GroupBy,
+    OrderBy,
+}
+```
+
 
 
 #### 2.2.2.3.1. `WHERE` Clause
@@ -348,12 +380,15 @@ datetime-function ::=
 
 ##### SQL Example
 ```
-???
+FROM Demography
+WHERE State == 'TX';
 ```
 
 ##### Semantic Tree
 ```typescript
-???
+export interface WhereClause extends QueryClause {
+    readonly booleanExpression: Expression;
+}
 ```
 
 
@@ -375,12 +410,20 @@ projection ::=
 
 ##### SQL Example
 ```
-???
+FROM Demography
+SELECT City, State, Population / Area AS Density;
 ```
 
 ##### Semantic Tree
 ```typescript
-???
+export interface SelectClause extends QueryClause {
+    readonly projections: Array<Projection>;
+}
+
+export interface Projection {
+    readonly expression: Expression;
+    readonly asName: string;
+}
 ```
 
 
@@ -419,19 +462,33 @@ aggregation-function ::=
 
 ##### SQL Example
 ```
-???
+FROM Demography
+GROUP BY State
+SELECT COUNT(City) AS BigCitiesPerState;
 ```
 
 ##### Semantic Tree
 ```typescript
-???
+export interface GroupByClause extends QueryClause {
+    readonly groupings: Array<Grouping>;
+    readonly aggregations: Array<Aggregation>;
+}
+
+export interface Grouping {
+    readonly propertyName: string;
+}
+
+export interface Aggregation {
+    readonly aggregationExpression: Expression;
+    readonly asName: string;
+}
 ```
 
 
 #### 2.2.2.3.4. `ORDER BY` Clause
 Orders items by the values of the specified properties.
 
-#### 2.2.2.3.4.1. SQL Syntax
+##### SQL Syntax
 ```abnf
 orderby-clause ::=
     | ORDER BY ordering-list
@@ -447,9 +504,22 @@ order-direction ::=
     | DESC
 ```
 
-#### 2.2.2.3.4.2. Semantic Tree
+##### SQL Example
+```
+FROM Demography
+ORDER BY Population DESC;
+```
+
+##### Semantic Tree
 ```typescript
-???
+export interface OrderByClause extends QueryClause {
+    readonly orderings: Array<Ordering>;
+}
+
+export interface Ordering {
+    readonly propertyName: string;
+    readonly ascending: boolean;
+}
 ```
 
 
