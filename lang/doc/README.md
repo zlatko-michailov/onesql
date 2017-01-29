@@ -195,7 +195,7 @@ boolean-literal ::=
     | FALSE
 
 comparison-expression ::= 
-    | arithmetic-expression comparison-operation arithmetic-expression
+    | expression comparison-operation expression
 
 comparison-operation ::=
     | ==
@@ -205,6 +205,13 @@ comparison-operation ::=
     | <=
     | >
     | >=
+
+expression ::=
+    | boolean-expression
+    | arithmetic-expression
+    | bitwise-expression
+    | string-expression
+    | datetime-expression
 
 arithmetic-expression ::=
     | bitwise-expression
@@ -216,6 +223,7 @@ bitwise-term ::=
     | unary-bitwise-operation bitwise-term
     | ( arithmetic-expression )
     | addsub-expression
+    | datetime-diff-expression
 
 binary-bitwise-operation ::=
     | &
@@ -228,7 +236,7 @@ unary-bitwise-operation ::=
     | ~
 
 addsub-expression ::=
-    | addsub-term [ binary-addsuboperation addsub-expression ]
+    | addsub-term [ binary-addsub-operation addsub-expression ]
 
 addsub-term ::=
     | unary-addsub-operation addsub-expression
@@ -250,7 +258,7 @@ muldiv-term ::=
     | ( arithmetic-expression )
     | number-literal
     | property-name
-    | function-call
+    | arithmetic-function-call
 
 binary-muldiv-operation ::=
     | *
@@ -260,17 +268,30 @@ binary-muldiv-operation ::=
 property-name ::=
     | identifier
 
-function-call ::=
-    | function-name ( [ expression { , expression }* ] )
+arithmetic-function-call ::=
+    | arithmetic-function ( [ expression { , expression }* ] )
 
-function-name ::=
-    | identifier
+arithmetic-function ::=
+    | ABS
+    | POWER
+    | EXP 
+    | FLOOR
+    | CEIL
+    | LN
+    | LOG
+    | LG
+    |
+    | LEN
+    | INDEXOF
+    |
+    | YEAR
+    | MONTH
+    | DAY
+    | HOURS
+    | MINUTES
+    | SECONDS
+    | MILLISECONDS
 
-expression ::=
-    | boolean-expression
-    | arithmetic-expression
-    | string-expression
-    
 string-expression ::=
     | string-term [ binary-string-operation string-expression ]
 
@@ -281,11 +302,48 @@ string-term ::=
     | ( string-expression )
     | string-literal
     | property-name
-    | function-call
+    | string-function-call
 
 string-literal ::=
     | " {.}* "
     | ' {.}* '
+
+string-function-call ::=
+    | string-function ( [ expression { , expression }* ] )
+
+string-function ::=
+    | SUBSTR
+    | TOLOWER
+    | TOUPPER
+    | TOSTRING
+
+datetime-diff-expression ::=
+    | datetime-term [ diff-datetime-operation datetime-expression ]
+
+diff-datetime-operation ::=
+    | -
+
+datetime-expression ::=
+    | datetime-term [ binary-datetime-operation arithmetic-expression ]
+
+binary-datetime-operation ::=
+    | +
+    | -
+
+datetime-term ::=
+    | ( datetime-expression )
+    | datetime-literal
+    | property-name
+    | datetime-function-call
+
+datetime-literal ::=
+    | DATETIME string-literal
+
+datetime-function-call ::=
+    | datetime-function ( [ expression { , expression }* ] )
+
+datetime-function ::=
+    | NOW
 ```
 
 ##### SQL Example
@@ -347,7 +405,7 @@ aggregation ::=
     | aggregation-function-call AS identifier
 
 aggregation-function-call ::=
-    | aggregation-function ( expression )
+    | aggregation-function ( [ expression { , expression }* ] )
 
 aggregation-function ::=
     | COUNT

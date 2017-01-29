@@ -80,12 +80,13 @@ namespace onesql.semantic {
 	}
 
 	export enum ExpressionKind {
-		Boolean = 1000,
-		Comparison = 2000,
-		Bitwise = 3000,
-		Arithmetic = 4000,
-		String = 5000,
-		Aggregation = 6000,
+		Boolean = 0x0100,
+		Comparison = 0x0200,
+		Bitwise = 0x0400,
+		Arithmetic = 0x0800,
+		String = 0x1000,
+		Aggregation = 0x2000,
+		DateTime = 0x4000,
 	}
 
 	export interface Expression {
@@ -152,14 +153,21 @@ namespace onesql.semantic {
 
 		ArithmeticLow = ExpressionKind.Arithmetic,
 		Add,
-		Sub,
-		Mul,
-		Div,
+		Subtract,
+		Multiply,
+		Divide,
+		Modulo,
 		ArithmeticHigh,
 
 		StringLow = ExpressionKind.String,
 		Concat,
 		StringHigh,
+
+		DateTimeLow = ExpressionKind.DateTime,
+		DateTimeAdd,
+		DateTimeSubtract,
+		DateTimeDiff,
+		DateTimeHigh,
 	}
 
 	export enum UnaryOperationSymbol {
@@ -178,12 +186,46 @@ namespace onesql.semantic {
 
 	export enum FunctionSymbol {
 		ArithmeticLow = ExpressionKind.Arithmetic,
+		Abs,
+		Power,
+		Exp,
+		Floor,
+		Ceil,
+		Ln,
+		Log,
+		Lg,
+
+		Len,
+		IndexOf,
+
+		Year,
+		Month,
+		Day,
+		Hours,
+		Minutes,
+		Seconds,
+		Milliseconds,
 		ArithmeticHigh,
 
 		StringLow = ExpressionKind.String,
+		Substr,
+		ToLower,
+		ToUpper,
+		ToString,
 		StringHigh,
 
 		AggregationLow = ExpressionKind.Aggregation,
+		Count,
+		Sum,
+		Avg,
+		Min,
+		Max,
+		First,
+		Last,
 		AggregationHigh,
+
+		DateTimeLow = ExpressionKind.DateTime,
+		Now,
+		DateTimeHigh,
 	}
 }
