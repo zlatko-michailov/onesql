@@ -8,7 +8,7 @@ namespace onesql.semantic {
 	}
 
 	export interface Batch extends Node {
-		readonly statements: Array<Statement>;
+		readonly statements: ReadonlyArray<Statement>;
 	}
 
 	export interface Statement extends Node {
@@ -29,7 +29,7 @@ namespace onesql.semantic {
 
 	export interface QueryStatement extends Statement {
 		readonly sourceName: string;
-		readonly clauses: Array<QueryClause>;
+		readonly clauses: ReadonlyArray<QueryClause>;
 	}
 
 	export interface QueryClause extends Node {
@@ -48,7 +48,7 @@ namespace onesql.semantic {
 	}
 
 	export interface SelectClause extends QueryClause {
-		readonly projections: Array<Projection>;
+		readonly projections: ReadonlyArray<Projection>;
 	}
 
 	export interface Projection {
@@ -57,8 +57,8 @@ namespace onesql.semantic {
 	}
 
 	export interface GroupByClause extends QueryClause {
-		readonly groupings: Array<Grouping>;
-		readonly aggregations: Array<Aggregation>;
+		readonly groupings: ReadonlyArray<Grouping>;
+		readonly aggregations: ReadonlyArray<Aggregation>;
 	}
 
 	export interface Grouping {
@@ -71,7 +71,7 @@ namespace onesql.semantic {
 	}
 
 	export interface OrderByClause extends QueryClause {
-		readonly orderings: Array<Ordering>;
+		readonly orderings: ReadonlyArray<Ordering>;
 	}
 
 	export interface Ordering {
@@ -80,6 +80,7 @@ namespace onesql.semantic {
 	}
 
 	export enum ExpressionKind {
+		Any = 0x0000,
 		Boolean = 0x0100,
 		Comparison = 0x0200,
 		Bitwise = 0x0400,
@@ -121,7 +122,7 @@ namespace onesql.semantic {
 
 	export interface FunctionCallTerm extends Term {
 		readonly functionSymbol: FunctionSymbol;
-		readonly arguments: Array<Expression>;
+		readonly arguments: ReadonlyArray<Expression>;
 	}
 
 	export interface ExpressionTerm extends Term {
@@ -144,9 +145,9 @@ namespace onesql.semantic {
 		ComparisonHigh,
 
 		BitwiseLow = ExpressionKind.Bitwise,
-		BitAnd,
-		BitOr,
-		BitXor,
+		BitwiseAnd,
+		BitwiseOr,
+		BitwiseXor,
 		ShiftLeft,
 		ShiftRight,
 		BitwiseHigh,
@@ -187,45 +188,97 @@ namespace onesql.semantic {
 	export enum FunctionSymbol {
 		ArithmeticLow = ExpressionKind.Arithmetic,
 		Abs,
-		Power,
+		Ceil,
 		Exp,
 		Floor,
-		Ceil,
+		Lg,
 		Ln,
 		Log,
-		Lg,
+		Power,
 
-		Len,
 		IndexOf,
+		Length,
 
-		Year,
-		Month,
 		Day,
 		Hours,
-		Minutes,
-		Seconds,
 		Milliseconds,
+		Minutes,
+		Month,
+		Seconds,
+		Year,
 		ArithmeticHigh,
 
 		StringLow = ExpressionKind.String,
 		Substr,
 		ToLower,
-		ToUpper,
 		ToString,
+		ToUpper,
 		StringHigh,
 
 		AggregationLow = ExpressionKind.Aggregation,
-		Count,
-		Sum,
 		Avg,
-		Min,
-		Max,
+		Count,
 		First,
 		Last,
+		Max,
+		Min,
+		Sum,
 		AggregationHigh,
 
 		DateTimeLow = ExpressionKind.DateTime,
 		Now,
+		Today,
 		DateTimeHigh,
+	}
+
+	export interface FunctionSignature {
+		readonly name: string;
+		readonly argumentKinds: ReadonlyArray<ExpressionKind>;
+		readonly resultKind: ExpressionKind;
+	}
+
+	export class FunctionSignatures {
+		static readonly builtIn : ReadonlyArray<FunctionSignature> = [
+			// Result: Arithmetic
+			{ name: "abs", argumentKinds: [ ExpressionKind.Arithmetic ], resultKind: ExpressionKind.Arithmetic },
+			{ name: "ceil", argumentKinds: [ ExpressionKind.Arithmetic ], resultKind: ExpressionKind.Arithmetic },
+			{ name: "exp", argumentKinds: [ ExpressionKind.Arithmetic ], resultKind: ExpressionKind.Arithmetic },
+			{ name: "floor", argumentKinds: [ ExpressionKind.Arithmetic ], resultKind: ExpressionKind.Arithmetic },
+			{ name: "lg", argumentKinds: [ ExpressionKind.Arithmetic ], resultKind: ExpressionKind.Arithmetic },
+			{ name: "ln", argumentKinds: [ ExpressionKind.Arithmetic ], resultKind: ExpressionKind.Arithmetic },
+			{ name: "log", argumentKinds: [ ExpressionKind.Arithmetic, ExpressionKind.Arithmetic ], resultKind: ExpressionKind.Arithmetic },
+			{ name: "power", argumentKinds: [ ExpressionKind.Arithmetic, ExpressionKind.Arithmetic ], resultKind: ExpressionKind.Arithmetic },
+
+			{ name: "indexOf", argumentKinds: [ ExpressionKind.String ], resultKind: ExpressionKind.Arithmetic },
+			{ name: "length", argumentKinds: [ ExpressionKind.String ], resultKind: ExpressionKind.Arithmetic },
+
+			{ name: "day", argumentKinds: [ ExpressionKind.DateTime ], resultKind: ExpressionKind.Arithmetic },
+			{ name: "hours", argumentKinds: [ ExpressionKind.DateTime ], resultKind: ExpressionKind.Arithmetic },
+			{ name: "milliseconds", argumentKinds: [ ExpressionKind.DateTime ], resultKind: ExpressionKind.Arithmetic },
+			{ name: "minutes", argumentKinds: [ ExpressionKind.DateTime ], resultKind: ExpressionKind.Arithmetic },
+			{ name: "month", argumentKinds: [ ExpressionKind.DateTime ], resultKind: ExpressionKind.Arithmetic },
+			{ name: "seconds", argumentKinds: [ ExpressionKind.DateTime ], resultKind: ExpressionKind.Arithmetic },
+			{ name: "year", argumentKinds: [ ExpressionKind.DateTime ], resultKind: ExpressionKind.Arithmetic },
+
+			// Result: String
+			{ name: "substr", argumentKinds: [ ExpressionKind.String, ExpressionKind.Arithmetic, ExpressionKind.Arithmetic ], resultKind: ExpressionKind.String },
+			{ name: "toLower", argumentKinds: [ ExpressionKind.String ], resultKind: ExpressionKind.String },
+			{ name: "toString", argumentKinds: [ ExpressionKind.Any ], resultKind: ExpressionKind.String },
+			{ name: "toUpper", argumentKinds: [ ExpressionKind.String ], resultKind: ExpressionKind.String },
+
+			// Result: Aggregation
+			{ name: "avg", argumentKinds: [ ExpressionKind.Arithmetic ], resultKind: ExpressionKind.Arithmetic },
+			{ name: "count", argumentKinds: [ ExpressionKind.Any ], resultKind: ExpressionKind.Arithmetic },
+			{ name: "first", argumentKinds: [ ExpressionKind.Any ], resultKind: ExpressionKind.Any },
+			{ name: "last", argumentKinds: [ ExpressionKind.Any ], resultKind: ExpressionKind.Any },
+			{ name: "avg", argumentKinds: [ ExpressionKind.Arithmetic ], resultKind: ExpressionKind.Arithmetic },
+			{ name: "max", argumentKinds: [ ExpressionKind.Any ], resultKind: ExpressionKind.Any },
+			{ name: "min", argumentKinds: [ ExpressionKind.Any ], resultKind: ExpressionKind.Any },
+			{ name: "sum", argumentKinds: [ ExpressionKind.Arithmetic ], resultKind: ExpressionKind.Arithmetic },
+
+			// Result: DateTime
+			{ name: "now", argumentKinds: [], resultKind: ExpressionKind.DateTime },
+			{ name: "today", argumentKinds: [], resultKind: ExpressionKind.DateTime },
+		];
 	}
 }
