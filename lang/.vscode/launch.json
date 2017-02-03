@@ -5,7 +5,7 @@
 			"name": "Launch",
 			"type": "node",
 			"request": "launch",
-			"program": "${workspaceRoot}/../out/test/main.js",
+			"program": "${workspaceRoot}/../out/lang/test/onesql.test.js",
 			"stopOnEntry": false,
 			"args": [],
 			"cwd": "${workspaceRoot}",
@@ -16,9 +16,8 @@
 			"env": {
 				"NODE_ENV": "development"
 			},
-			"externalConsole": false,
-			"sourceMaps": true,
-			"outDir": null
+			"console": "internalConsole",
+			"sourceMaps": true
 		},
 		{
 			"name": "Attach",
@@ -26,7 +25,6 @@
 			"request": "attach",
 			"port": 5858,
 			"sourceMaps": false,
-			"outDir": null,
 			"localRoot": "${workspaceRoot}",
 			"remoteRoot": null
 		}

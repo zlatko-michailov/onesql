@@ -1,120 +1,140 @@
-﻿namespace onesql.lex {
-    export enum TokenKind {
-        BlankSpace,
-        BlockComment,
-        LineComment,
+﻿import * as Semantic from "./onesql.semantic";
 
-        BooleanLiteral,
-        NumberLiteral,
-        StringLiteral,
-        Keyword,
+export enum TokenKind {
+    BlankSpace,
+    BlockComment,
+    LineComment,
 
-        OpeningParenthesis,
-        ClosingParenthesis,
-        ItemSeparator,
-        EndOfStatement,
+    BooleanLiteral,
+    NumberLiteral,
+    StringLiteral,
+    Keyword,
 
-        BinaryMulDivOperation,
-        BinaryAddSubOperation,
-        UnaryBitwiseOperation,
-        BinaryBitwiseOperation,
-        ComparisonOperation,
-        UnaryBooleanOperation,
-        BinaryBooleanOperation,
+    OpeningParenthesis,
+    ClosingParenthesis,
+    ItemSeparator,
+    EndOfStatement,
 
-        FunctionName,
-        Identifier,
+    BinaryMulDivOperation,
+    BinaryAddSubOperation,
+    UnaryBitwiseOperation,
+    BinaryBitwiseOperation,
+    ComparisonOperation,
+    UnaryBooleanOperation,
+    BinaryBooleanOperation,
 
-        Error,
+    FunctionName,
+    Identifier,
+
+    Error,
+}
+
+interface TokenRule {
+    readonly tokenKind: TokenKind;
+    readonly regexp: RegExp;
+}
+
+const tokenRules: ReadonlyArray<TokenRule> = [
+    { tokenKind: TokenKind.BlankSpace, regexp: /\s*/im },
+    { tokenKind: TokenKind.BlockComment, regexp: /\/\*.*?\*\//im },
+    { tokenKind: TokenKind.LineComment, regexp: /\/\/.*?$/im },
+
+    { tokenKind: TokenKind.BooleanLiteral, regexp: /TRUE|FALSE/i },
+    { tokenKind: TokenKind.NumberLiteral, regexp: /(\+|\-)?\d+(\.\d+)?/i },
+    { tokenKind: TokenKind.StringLiteral, regexp: /\".*?\"|\'.*?\'/i },
+    { tokenKind: TokenKind.Keyword, regexp: /AS|BY|FROM|GROUP|ORDER|SELECT|USE|WHERE/i },
+
+    { tokenKind: TokenKind.OpeningParenthesis, regexp: /\(/i },
+    { tokenKind: TokenKind.OpeningParenthesis, regexp: /\)/i },
+    { tokenKind: TokenKind.ItemSeparator, regexp: /,/i },
+    { tokenKind: TokenKind.EndOfStatement, regexp: /;/i },
+
+    { tokenKind: TokenKind.BinaryMulDivOperation, regexp: /\*|\/|\%/i },
+    { tokenKind: TokenKind.BinaryAddSubOperation, regexp: /\+|\-/i },
+    { tokenKind: TokenKind.UnaryBitwiseOperation, regexp: /\~/i },
+    { tokenKind: TokenKind.BinaryBitwiseOperation, regexp: /\&|\||\^/i },
+    { tokenKind: TokenKind.ComparisonOperation, regexp: /==|=|<=|<|>=|>|!=|<>/i },
+    { tokenKind: TokenKind.UnaryBooleanOperation, regexp: /NOT|\!/i },
+    { tokenKind: TokenKind.BinaryBooleanOperation, regexp: /AND|OR|&&|\|\|/i },
+
+    { tokenKind: TokenKind.Identifier, regexp: /\w+/i },
+
+    { tokenKind: TokenKind.Error, regexp: /\S+/i },
+];
+
+export interface Token {
+    readonly tokenKind: TokenKind;
+    readonly lexeme: string;
+    readonly lineNumber: number;
+}
+
+interface LexState {
+    token: Token;
+    input: string;
+    lineNumber: number;
+}
+
+export function tokenize(input: string): ReadonlyArray<Token> {
+    let tokens: Array<Token> = [];
+
+    let state: LexState = readToken({ token: undefined, input: input, lineNumber: 1 });
+    while(state) {
+        tokens.push(state.token);
+        state = readToken(state);
     }
 
-    interface TokenRule {
-        readonly tokenKind: TokenKind;
-        readonly regexp: RegExp;
-    }
+    return tokens;
+}
 
-    class TokenRules {
-        static readonly global: ReadonlyArray<TokenRule> = [
-            { tokenKind: TokenKind.BlankSpace, regexp: /\s*/im },
-            { tokenKind: TokenKind.BlockComment, regexp: /\/\*.*?\*\//im },
-            { tokenKind: TokenKind.LineComment, regexp: /\/\/.*?$/im },
+function readToken(state: LexState): LexState {
+    if (state.input) {
+        for (let i: number = 0; i < tokenRules.length; i++) {
+            if (state.input.search(tokenRules[i].regexp) == 0) {
+                let lexeme: string = state.input.match(tokenRules[i].regexp)[0];
+                let tokenKind = tokenRules[i].tokenKind;
+                let lineNumber = state.lineNumber;
 
-            { tokenKind: TokenKind.BooleanLiteral, regexp: /TRUE|FALSE/i },
-            { tokenKind: TokenKind.NumberLiteral, regexp: /(\+|\-)?\d+(\.\d+)?/i },
-            { tokenKind: TokenKind.StringLiteral, regexp: /\".*?\"|\'.*?\'/i },
-            { tokenKind: TokenKind.Keyword, regexp: /AS|BY|FROM|GROUP|ORDER|SELECT|USE|WHERE/i },
+                switch (tokenKind) {
+                    case TokenKind.BlankSpace:
+                    case TokenKind.BlockComment:
+                        lineNumber += countNewLines(lexeme);
+                        break;
 
-            { tokenKind: TokenKind.OpeningParenthesis, regexp: /\(/i },
-            { tokenKind: TokenKind.OpeningParenthesis, regexp: /\)/i },
-            { tokenKind: TokenKind.ItemSeparator, regexp: /,/i },
-            { tokenKind: TokenKind.EndOfStatement, regexp: /;/i },
+                    case TokenKind.LineComment:
+                        lineNumber++;
+                        break;
 
-            { tokenKind: TokenKind.BinaryMulDivOperation, regexp: /\*|\/|\%/i },
-            { tokenKind: TokenKind.BinaryAddSubOperation, regexp: /\+|\-/i },
-            { tokenKind: TokenKind.UnaryBitwiseOperation, regexp: /\~/i },
-            { tokenKind: TokenKind.BinaryBitwiseOperation, regexp: /\&|\||\^/i },
-            { tokenKind: TokenKind.ComparisonOperation, regexp: /==|=|<=|<|>=|>|!=|<>/i },
-            { tokenKind: TokenKind.UnaryBooleanOperation, regexp: /NOT|\!/i },
-            { tokenKind: TokenKind.BinaryBooleanOperation, regexp: /AND|OR|&&|\|\|/i },
-
-            { tokenKind: TokenKind.Identifier, regexp: /\w+/i },
-
-            { tokenKind: TokenKind.Error, regexp: /\S+/i },
-        ];
-    }
-
-    export interface Token {
-        readonly tokenKind: TokenKind;
-        readonly lexeme: string;
-        readonly lineNumber: number;
-    }
-
-    interface LexState {
-        token: Token;
-        input: string;
-        lineNumber: number;
-    }
-
-    export class Lex {
-        static tokenize(input: string): ReadonlyArray<Token> {
-            let tokens: Array<Token> = [];
-
-            let state: LexState = Lex.readToken({ token: undefined, input: input, lineNumber: 1 });
-            while(state) {
-                tokens.push(state.token);
-                state = Lex.readToken(state);
-            }
-
-            return tokens;
-        }
-
-        static readToken(state: LexState): LexState {
-            if (state.input) {
-                for (let i: number = 0; i < TokenRules.global.length; i++) {
-                    if (state.input.search(TokenRules.global[i].regexp) == 0) {
-                        let lexeme: string = state.input.match(TokenRules.global[i].regexp)[0];
-                        
-                        let lineNumber = state.lineNumber;
-                        if (TokenRules.global[i].tokenKind == TokenKind.BlankSpace
-                            || TokenRules.global[i].tokenKind == TokenKind.BlockComment) {
-                                lineNumber += Lex.countNewLines(lexeme);
+                    case TokenKind.Identifier:
+                        if (isFunctionName(lexeme)) {
+                            tokenKind = TokenKind.FunctionName;
                         }
-
-                        return { 
-                            token: { tokenKind: TokenRules.global[i].tokenKind, lexeme: lexeme, lineNumber: lineNumber }, 
-                            input: state.input.substr(lexeme.length),
-                            lineNumber: lineNumber
-                        };
-                    }
+                        break;
                 }
+
+                return { 
+                    token: { tokenKind: tokenKind, lexeme: lexeme, lineNumber: lineNumber }, 
+                    input: state.input.substr(lexeme.length),
+                    lineNumber: lineNumber
+                };
             }
-
-            return undefined;
         }
-
-        static countNewLines(input: string): number {
-            return input.match(/$/mg).length - 1; // There is always an extra one.
-        }
-
     }
+
+    return undefined;
+}
+
+function countNewLines(input: string): number {
+    return input.match(/$/mg).length - 1; // There is always an extra one.
+}
+
+function isFunctionName(input: string): boolean {
+    let inputLower: string = input.toLowerCase();
+
+    for (let i: number; i < Semantic.functionSignatures.length; i++) {
+        if (Semantic.functionSignatures[i].name.toLowerCase() === inputLower) {
+            return true;
+        }
+    }
+
+    return false;
 }
