@@ -238,7 +238,7 @@ namespace onesql.semantic {
 	}
 
 	export class FunctionSignatures {
-		static readonly builtIn : ReadonlyArray<FunctionSignature> = [
+		static readonly global: ReadonlyArray<FunctionSignature> = [
 			// Result: Arithmetic
 			{ name: "abs", argumentKinds: [ ExpressionKind.Arithmetic ], resultKind: ExpressionKind.Arithmetic },
 			{ name: "ceil", argumentKinds: [ ExpressionKind.Arithmetic ], resultKind: ExpressionKind.Arithmetic },
