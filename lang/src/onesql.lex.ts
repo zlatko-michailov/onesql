@@ -8,6 +8,7 @@ export enum TokenKind {
     BooleanLiteral,
     NumberLiteral,
     StringLiteral,
+    DateTimeLiteral,
     Keyword,
 
     OpeningParenthesis,
@@ -26,7 +27,7 @@ export enum TokenKind {
     FunctionName,
     Identifier,
 
-    Error,
+    Unknown,
 }
 
 interface TokenRule {
@@ -42,6 +43,7 @@ const tokenRules: ReadonlyArray<TokenRule> = [
     { tokenKind: TokenKind.BooleanLiteral, regexp: /TRUE|FALSE/i },
     { tokenKind: TokenKind.NumberLiteral, regexp: /(\+|\-)?\d+(\.\d+)?/i },
     { tokenKind: TokenKind.StringLiteral, regexp: /\".*?\"|\'.*?\'/i },
+    { tokenKind: TokenKind.DateTimeLiteral, regexp: /DATETIME[\'|\"]\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z?)?[\'|\"]/i },
     { tokenKind: TokenKind.Keyword, regexp: /AS|BY|FROM|GROUP|ORDER|SELECT|USE|WHERE/i },
 
     { tokenKind: TokenKind.OpeningParenthesis, regexp: /\(/i },
@@ -59,7 +61,7 @@ const tokenRules: ReadonlyArray<TokenRule> = [
 
     { tokenKind: TokenKind.Identifier, regexp: /\w+/i },
 
-    { tokenKind: TokenKind.Error, regexp: /\S+/i },
+    { tokenKind: TokenKind.Unknown, regexp: /\S+/i },
 ];
 
 export interface Token {

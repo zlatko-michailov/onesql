@@ -369,7 +369,11 @@ datetime-term ::=
     | datetime-function-call
 
 datetime-literal ::=
-    | DATETIME string-literal
+    | DATETIME 'simplified-iso-datetime'
+    | DATETIME "simplified-iso-datetime"
+
+simplified-iso-datetime ::=
+    | yyyy - mm - dd [ T hh : mm : ss [ . nnn ] [ Z ] ]  
 
 datetime-function-call ::=
     | datetime-function ( [ expression { , expression }* ] )

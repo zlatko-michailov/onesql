@@ -16,6 +16,7 @@ export function blankSpace(): boolean {
 		{ tokenKind: Lex.TokenKind.Identifier, lexeme: "a5", lineNumber: 5},
 		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: "\n", lineNumber: 6},
 	];
+
 	let actualTokens: ReadonlyArray<Lex.Token> = Lex.tokenize(input);
 	return Test.areEqualArrays(expectedTokens, actualTokens, Test.LogLevel.Info, "tokens");
 }
@@ -28,13 +29,60 @@ export function comments(): boolean {
 		{ tokenKind: Lex.TokenKind.LineComment, lexeme: "//c3\n", lineNumber: 4},
 		{ tokenKind: Lex.TokenKind.Identifier, lexeme: "a4", lineNumber: 4},
 	];
+
 	let actualTokens: ReadonlyArray<Lex.Token> = Lex.tokenize(input);
 	return Test.areEqualArrays(expectedTokens, actualTokens, Test.LogLevel.Info, "tokens");
 }
 
 export function literals(): boolean {
-	Test.log(Test.LogLevel.Info, "Not yet implemented.");
-	return false;
+	let input: string = "true false TRUE FALSE tRue faLse 123 -123 +123 12.34 +12.34 -12.34 \"abc\" 'def' " +
+						"datetime'1111-11-11' DATETIME\"2222-22-22T22:22:22\" daTetiMe'3333-33-33T33:33:33.333' " +
+						"DateTime'4444-44-44T44:44:44Z' dAtetIme\"5555-55-55T55:55:55.555Z\"";
+	let expectedTokens: ReadonlyArray<Lex.Token> = [
+		{ tokenKind: Lex.TokenKind.BooleanLiteral, lexeme: "true", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.BooleanLiteral, lexeme: "false", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.BooleanLiteral, lexeme: "TRUE", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.BooleanLiteral, lexeme: "FALSE", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.BooleanLiteral, lexeme: "tRue", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.BooleanLiteral, lexeme: "faLse", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},
+
+		{ tokenKind: Lex.TokenKind.NumberLiteral, lexeme: "123", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.NumberLiteral, lexeme: "-123", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.NumberLiteral, lexeme: "+123", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.NumberLiteral, lexeme: "12.34", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.NumberLiteral, lexeme: "+12.34", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.NumberLiteral, lexeme: "-12.34", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},
+
+		{ tokenKind: Lex.TokenKind.StringLiteral, lexeme: "\"abc\"", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.StringLiteral, lexeme: "'def'", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},
+
+		{ tokenKind: Lex.TokenKind.DateTimeLiteral, lexeme: "datetime'1111-11-11'", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.DateTimeLiteral, lexeme: "DATETIME\"2222-22-22T22:22:22\"", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.DateTimeLiteral, lexeme: "daTetiMe'3333-33-33T33:33:33.333'", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.DateTimeLiteral, lexeme: "DateTime'4444-44-44T44:44:44Z'", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.DateTimeLiteral, lexeme: "dAtetIme\"5555-55-55T55:55:55.555Z\"", lineNumber: 1},
+	];
+	
+	let actualTokens: ReadonlyArray<Lex.Token> = Lex.tokenize(input);
+	return Test.areEqualArrays(expectedTokens, actualTokens, Test.LogLevel.Info, "tokens");
 }
 
 export function keywords(): boolean {
