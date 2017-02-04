@@ -43,10 +43,29 @@ export function log(level: string, message?: string, ...args: any[]): void {
 }
 
 export function areEqual<T>(expected: T, actual: T, logLevel: string, message: string) : boolean {
-    let passed = expected === actual;
-    let text = (passed ? "P" : "F") + ": " + message;
+    let passed = true;
     
-    log(logLevel, text, { expected: expected, actual: actual });
+    if (expected instanceof Object) {
+        for (let prop in expected) {
+            passed = areEqual(expected[prop], actual[prop], logLevel, message + "." + prop) && passed;
+        }
+    }
+    else {
+        passed = expected === actual;
+        let text = (passed ? "P" : "F") + ": " + message;
+        log(logLevel, text, { expected: expected, actual: actual });
+    }
+
+    return passed;
+}
+
+export function areEqualArrays<T>(expected: ReadonlyArray<T>, actual: ReadonlyArray<T>, logLevel: string, message: string) : boolean {
+    let passed = areEqual(expected.length, actual.length, logLevel, message + ".length");
+    
+    for (let i: number = 0; i < expected.length; i++) {
+        passed = areEqual(expected[i], actual[i], logLevel, message + "[" + i + "]") && passed;
+    }
+
     return passed;
 }
 

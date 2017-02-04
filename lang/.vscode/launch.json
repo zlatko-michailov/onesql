@@ -5,11 +5,10 @@
 			"name": "Launch",
 			"type": "node",
 			"request": "launch",
-			"program": "${workspaceRoot}/../out/lang/test/onesql.test.js",
-			"stopOnEntry": false,
+			"program": "${workspaceRoot}/test/onesql.test.ts",
+			"outFiles": [ "${workspaceRoot}/../out/lang/**/*.js" ],
 			"args": [],
 			"cwd": "${workspaceRoot}",
-			"runtimeExecutable": null,
 			"runtimeArgs": [
 				"--nolazy"
 			],
@@ -23,8 +22,7 @@
 			"name": "Attach",
 			"type": "node",
 			"request": "attach",
-			"port": 5858,
-			"sourceMaps": false,
+			"sourceMaps": true,
 			"localRoot": "${workspaceRoot}",
 			"remoteRoot": null
 		}

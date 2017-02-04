@@ -35,7 +35,7 @@ interface TokenRule {
 }
 
 const tokenRules: ReadonlyArray<TokenRule> = [
-    { tokenKind: TokenKind.BlankSpace, regexp: /\s*/im },
+    { tokenKind: TokenKind.BlankSpace, regexp: /\s+/im },
     { tokenKind: TokenKind.BlockComment, regexp: /\/\*.*?\*\//im },
     { tokenKind: TokenKind.LineComment, regexp: /\/\/.*?$/im },
 
@@ -91,8 +91,8 @@ function readToken(state: LexState): LexState {
         for (let i: number = 0; i < tokenRules.length; i++) {
             if (state.input.search(tokenRules[i].regexp) == 0) {
                 let lexeme: string = state.input.match(tokenRules[i].regexp)[0];
-                let tokenKind = tokenRules[i].tokenKind;
-                let lineNumber = state.lineNumber;
+                let tokenKind: TokenKind = tokenRules[i].tokenKind;
+                let lineNumber: number = state.lineNumber;
 
                 switch (tokenKind) {
                     case TokenKind.BlankSpace:
