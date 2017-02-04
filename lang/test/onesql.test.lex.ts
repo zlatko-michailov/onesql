@@ -21,8 +21,15 @@ export function blankSpace(): boolean {
 }
 
 export function comments(): boolean {
-	Test.log(Test.LogLevel.Info, "Not yet implemented.");
-	return false;
+	let input: string = "/*a1\na2\na3*/b3//c3\na4";
+	let expectedTokens: ReadonlyArray<Lex.Token> = [
+		{ tokenKind: Lex.TokenKind.BlockComment, lexeme: "/*a1\na2\na3*/", lineNumber: 3},
+		{ tokenKind: Lex.TokenKind.Identifier, lexeme: "b3", lineNumber: 3},
+		{ tokenKind: Lex.TokenKind.LineComment, lexeme: "//c3\n", lineNumber: 4},
+		{ tokenKind: Lex.TokenKind.Identifier, lexeme: "a4", lineNumber: 4},
+	];
+	let actualTokens: ReadonlyArray<Lex.Token> = Lex.tokenize(input);
+	return Test.areEqualArrays(expectedTokens, actualTokens, Test.LogLevel.Info, "tokens");
 }
 
 export function literals(): boolean {

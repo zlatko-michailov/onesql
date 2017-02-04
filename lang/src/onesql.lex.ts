@@ -36,8 +36,8 @@ interface TokenRule {
 
 const tokenRules: ReadonlyArray<TokenRule> = [
     { tokenKind: TokenKind.BlankSpace, regexp: /\s+/im },
-    { tokenKind: TokenKind.BlockComment, regexp: /\/\*.*?\*\//im },
-    { tokenKind: TokenKind.LineComment, regexp: /\/\/.*?$/im },
+    { tokenKind: TokenKind.BlockComment, regexp: /\/\*(?:.|\n)*?\*\//im },
+    { tokenKind: TokenKind.LineComment, regexp: /\/\/.*?\n/im },
 
     { tokenKind: TokenKind.BooleanLiteral, regexp: /TRUE|FALSE/i },
     { tokenKind: TokenKind.NumberLiteral, regexp: /(\+|\-)?\d+(\.\d+)?/i },
