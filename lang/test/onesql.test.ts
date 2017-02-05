@@ -12,6 +12,7 @@ function run(): boolean {
     passed = execute("LexTest.punctuation", LexTest.punctuation) && passed;
     passed = execute("LexTest.operations", LexTest.operations) && passed;
     passed = execute("LexTest.identifiers", LexTest.identifiers) && passed;
+    passed = execute("LexTest.functions", LexTest.functions) && passed;
     passed = execute("LexTest.batch", LexTest.batch) && passed;
     
     log(LogLevel.Important);
@@ -62,7 +63,7 @@ export function areEqual<T>(expected: T, actual: T, logLevel: string, message: s
 export function areEqualArrays<T>(expected: ReadonlyArray<T>, actual: ReadonlyArray<T>, logLevel: string, message: string) : boolean {
     let passed = areEqual(expected.length, actual.length, logLevel, message + ".length");
     
-    for (let i: number = 0; i < expected.length; i++) {
+    for (let i: number = 0; i < Math.min(expected.length, actual.length); i++) {
         passed = areEqual(expected[i], actual[i], logLevel, message + "[" + i + "]") && passed;
     }
 

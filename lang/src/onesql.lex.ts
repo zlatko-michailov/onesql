@@ -47,17 +47,17 @@ const tokenRules: ReadonlyArray<TokenRule> = [
     { tokenKind: TokenKind.Keyword, regexp: /AS|BY|FROM|GROUP|ORDER|SELECT|USE|WHERE/i },
 
     { tokenKind: TokenKind.OpeningParenthesis, regexp: /\(/i },
-    { tokenKind: TokenKind.OpeningParenthesis, regexp: /\)/i },
+    { tokenKind: TokenKind.ClosingParenthesis, regexp: /\)/i },
     { tokenKind: TokenKind.ItemSeparator, regexp: /,/i },
     { tokenKind: TokenKind.EndOfStatement, regexp: /;/i },
 
+    { tokenKind: TokenKind.ComparisonOperation, regexp: /==|!=|<>|<=|>=|=|<|>/i },
+    { tokenKind: TokenKind.BinaryBooleanOperation, regexp: /AND|OR|&&|\|\|/i },
     { tokenKind: TokenKind.BinaryMulDivOperation, regexp: /\*|\/|\%/i },
     { tokenKind: TokenKind.BinaryAddSubOperation, regexp: /\+|\-/i },
     { tokenKind: TokenKind.UnaryBitwiseOperation, regexp: /\~/i },
     { tokenKind: TokenKind.BinaryBitwiseOperation, regexp: /\&|\||\^/i },
-    { tokenKind: TokenKind.ComparisonOperation, regexp: /==|=|<=|<|>=|>|!=|<>/i },
     { tokenKind: TokenKind.UnaryBooleanOperation, regexp: /NOT|\!/i },
-    { tokenKind: TokenKind.BinaryBooleanOperation, regexp: /AND|OR|&&|\|\|/i },
 
     { tokenKind: TokenKind.Identifier, regexp: /\w+/i },
 
@@ -132,7 +132,7 @@ function countNewLines(input: string): number {
 function isFunctionName(input: string): boolean {
     let inputLower: string = input.toLowerCase();
 
-    for (let i: number; i < Semantic.functionSignatures.length; i++) {
+    for (let i: number = 0; i < Semantic.functionSignatures.length; i++) {
         if (Semantic.functionSignatures[i].name.toLowerCase() === inputLower) {
             return true;
         }

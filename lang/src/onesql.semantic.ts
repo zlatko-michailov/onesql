@@ -269,7 +269,6 @@ export const functionSignatures: ReadonlyArray<FunctionSignature> = [
 	{ name: "count", argumentKinds: [ ExpressionKind.Any ], resultKind: ExpressionKind.Arithmetic },
 	{ name: "first", argumentKinds: [ ExpressionKind.Any ], resultKind: ExpressionKind.Any },
 	{ name: "last", argumentKinds: [ ExpressionKind.Any ], resultKind: ExpressionKind.Any },
-	{ name: "avg", argumentKinds: [ ExpressionKind.Arithmetic ], resultKind: ExpressionKind.Arithmetic },
 	{ name: "max", argumentKinds: [ ExpressionKind.Any ], resultKind: ExpressionKind.Any },
 	{ name: "min", argumentKinds: [ ExpressionKind.Any ], resultKind: ExpressionKind.Any },
 	{ name: "sum", argumentKinds: [ ExpressionKind.Arithmetic ], resultKind: ExpressionKind.Arithmetic },
