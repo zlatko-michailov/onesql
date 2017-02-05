@@ -44,7 +44,7 @@ const tokenRules: ReadonlyArray<TokenRule> = [
     { tokenKind: TokenKind.NumberLiteral, regexp: /(\+|\-)?\d+(\.\d+)?/i },
     { tokenKind: TokenKind.StringLiteral, regexp: /\".*?\"|\'.*?\'/i },
     { tokenKind: TokenKind.DateTimeLiteral, regexp: /DATETIME[\'|\"]\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z?)?[\'|\"]/i },
-    { tokenKind: TokenKind.Keyword, regexp: /AS|BY|FROM|GROUP|ORDER|SELECT|USE|WHERE/i },
+    { tokenKind: TokenKind.Keyword, regexp: /ASC|AS|BY|DESC|FROM|GROUP|ORDER|SELECT|USE|WHERE/i },
 
     { tokenKind: TokenKind.OpeningParenthesis, regexp: /\(/i },
     { tokenKind: TokenKind.ClosingParenthesis, regexp: /\)/i },

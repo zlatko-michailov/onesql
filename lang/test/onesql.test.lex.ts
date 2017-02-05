@@ -78,7 +78,7 @@ export function literals(): boolean {
 }
 
 export function keywords(): boolean {
-	let input: string = "uSe frOm WhEre sElECt gROUp bY orDEr";
+	let input: string = "uSe frOm WhEre sElECt gROUp bY orDEr aS aSc dESc";
 	let expectedTokens: ReadonlyArray<Lex.Token> = [
 		{ tokenKind: Lex.TokenKind.Keyword, lexeme: "uSe", lineNumber: 1},
 		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},
@@ -93,6 +93,12 @@ export function keywords(): boolean {
 		{ tokenKind: Lex.TokenKind.Keyword, lexeme: "bY", lineNumber: 1},
 		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},
 		{ tokenKind: Lex.TokenKind.Keyword, lexeme: "orDEr", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.Keyword, lexeme: "aS", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.Keyword, lexeme: "aSc", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.Keyword, lexeme: "dESc", lineNumber: 1},
 	];
 
 	let actualTokens: ReadonlyArray<Lex.Token> = Lex.tokenize(input);
@@ -277,6 +283,82 @@ export function functions(): boolean {
 	return Test.areEqualArrays(expectedTokens, actualTokens, Test.LogLevel.Info, "tokens");
 }
 export function batch(): boolean {
-	Test.log(Test.LogLevel.Info, "Not yet implemented.");
-	return false;
+	let input: string = "// Select database\n" +
+						"USE demo;\n" +
+						"\n" +
+						"/* Query */\n" +
+						"FROM Demography\n" +
+						"WHERE Population > 1000000 AND SomeDate != DATETIME'2017-02-04T22:10:30'\n" +
+						"GROUP BY State\n" +
+						"SELECT State, COUNT(City) AS BigCityCount\n" +
+						"ORDER BY BigCityCount DESC;\n";
+	let expectedTokens: ReadonlyArray<Lex.Token> = [
+		{ tokenKind: Lex.TokenKind.LineComment, lexeme: "// Select database\n", lineNumber: 2},
+
+		{ tokenKind: Lex.TokenKind.Keyword, lexeme: "USE", lineNumber: 2},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 2},
+		{ tokenKind: Lex.TokenKind.Identifier, lexeme: "demo", lineNumber: 2},
+		{ tokenKind: Lex.TokenKind.EndOfStatement, lexeme: ";", lineNumber: 2},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: "\n\n", lineNumber: 4},
+
+		{ tokenKind: Lex.TokenKind.BlockComment, lexeme: "/* Query */", lineNumber: 4},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: "\n", lineNumber: 5},
+
+		{ tokenKind: Lex.TokenKind.Keyword, lexeme: "FROM", lineNumber: 5},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 5},
+		{ tokenKind: Lex.TokenKind.Identifier, lexeme: "Demography", lineNumber: 5},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: "\n", lineNumber: 6},
+
+		{ tokenKind: Lex.TokenKind.Keyword, lexeme: "WHERE", lineNumber: 6},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 6},
+		{ tokenKind: Lex.TokenKind.Identifier, lexeme: "Population", lineNumber: 6},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 6},
+		{ tokenKind: Lex.TokenKind.ComparisonOperation, lexeme: ">", lineNumber: 6},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 6},
+		{ tokenKind: Lex.TokenKind.NumberLiteral, lexeme: "1000000", lineNumber: 6},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 6},
+		{ tokenKind: Lex.TokenKind.BinaryBooleanOperation, lexeme: "AND", lineNumber: 6},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 6},
+		{ tokenKind: Lex.TokenKind.Identifier, lexeme: "SomeDate", lineNumber: 6},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 6},
+		{ tokenKind: Lex.TokenKind.ComparisonOperation, lexeme: "!=", lineNumber: 6},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 6},
+		{ tokenKind: Lex.TokenKind.DateTimeLiteral, lexeme: "DATETIME'2017-02-04T22:10:30'", lineNumber: 6},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: "\n", lineNumber: 7},
+
+		{ tokenKind: Lex.TokenKind.Keyword, lexeme: "GROUP", lineNumber: 7},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 7},
+		{ tokenKind: Lex.TokenKind.Keyword, lexeme: "BY", lineNumber: 7},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 7},
+		{ tokenKind: Lex.TokenKind.Identifier, lexeme: "State", lineNumber: 7},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: "\n", lineNumber: 8},
+
+		{ tokenKind: Lex.TokenKind.Keyword, lexeme: "SELECT", lineNumber: 8},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 8},
+		{ tokenKind: Lex.TokenKind.Identifier, lexeme: "State", lineNumber: 8},
+		{ tokenKind: Lex.TokenKind.ItemSeparator, lexeme: ",", lineNumber: 8},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 8},
+		{ tokenKind: Lex.TokenKind.FunctionName, lexeme: "COUNT", lineNumber: 8},
+		{ tokenKind: Lex.TokenKind.OpeningParenthesis, lexeme: "(", lineNumber: 8},
+		{ tokenKind: Lex.TokenKind.Identifier, lexeme: "City", lineNumber: 8},
+		{ tokenKind: Lex.TokenKind.ClosingParenthesis, lexeme: ")", lineNumber: 8},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 8},
+		{ tokenKind: Lex.TokenKind.Keyword, lexeme: "AS", lineNumber: 8},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 8},
+		{ tokenKind: Lex.TokenKind.Identifier, lexeme: "BigCityCount", lineNumber: 8},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: "\n", lineNumber: 9},
+
+		{ tokenKind: Lex.TokenKind.Keyword, lexeme: "ORDER", lineNumber: 9},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 9},
+		{ tokenKind: Lex.TokenKind.Keyword, lexeme: "BY", lineNumber: 9},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 9},
+		{ tokenKind: Lex.TokenKind.Identifier, lexeme: "BigCityCount", lineNumber: 9},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 9},
+		{ tokenKind: Lex.TokenKind.Keyword, lexeme: "DESC", lineNumber: 9},
+		{ tokenKind: Lex.TokenKind.EndOfStatement, lexeme: ";", lineNumber: 9},
+		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: "\n", lineNumber: 10},
+	];
+
+	let actualTokens: ReadonlyArray<Lex.Token> = Lex.tokenize(input);
+	return Test.areEqualArrays(expectedTokens, actualTokens, Test.LogLevel.Info, "tokens");
 }
