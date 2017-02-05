@@ -62,7 +62,7 @@ Batch is the single top-level concept in `ONESQL`, i.e. the whole input passed i
 A batch consists of a sequence of [statements](#22-statements).
 
 ##### SQL Syntax
-```abnf
+```
 batch ::= 
     | { statement ; }* 
 ```
@@ -91,7 +91,7 @@ interface Batch extends Node {
 A statement represents a complete operation of a given kind - query, insert, update, delete.
 
 ##### SQL Syntax
-```abnf
+```
 statement ::=
     | use-statement
     | query-statement
@@ -121,7 +121,7 @@ The `USE` statement switches the current _database_.
 Note that "_database_" may mean different things to different systems.
 
 ##### SQL Syntax
-```abnf
+```
 use-statement ::=
     | USE database-name
 
@@ -146,7 +146,7 @@ export interface UseStatement extends Statement {
 The query statementqueries a _source_ from the current database.
 
 ##### SQL Syntax
-```abnf
+```
 query-statement ::= 
     | FROM source-name { query-clause }* ;
 
@@ -171,7 +171,7 @@ export interface QueryStatement extends Statement {
 
 #### 2.2.2.3. Query Clauses
 ##### SQL Syntax
-```abnf
+```
 query-clause ::=
     | where-clause
     | select-clause
@@ -199,7 +199,7 @@ export enum QueryClauseKind {
 Filters whole items.
 
 ##### SQL Syntax
-```abnf
+```
 where-clause ::= 
     | WHERE boolean-expression
 
@@ -400,7 +400,7 @@ export interface WhereClause extends QueryClause {
 Projects/reshapes items by removing/adding/renamig properties.
 
 ##### SQL Syntax
-```abnf
+```
 select-clause ::=
     | SELECT projection-list
 
@@ -435,7 +435,7 @@ export interface Projection {
 Groups items together which allows aggregate functions to be computed over each group.
 
 ##### SQL Syntax
-```abnf
+```
 groupby-clause ::=
     | GROUP BY grouping-list aggregation-select-clause
 
@@ -493,7 +493,7 @@ export interface Aggregation {
 Orders items by the values of the specified properties.
 
 ##### SQL Syntax
-```abnf
+```
 orderby-clause ::=
     | ORDER BY ordering-list
 
