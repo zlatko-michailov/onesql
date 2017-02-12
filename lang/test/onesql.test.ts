@@ -1,4 +1,5 @@
 import * as LexTest from "./onesql.test.lex";
+import * as SyntaxTest from "./onesql.test.syntax";
 
 function run(): boolean {
     let passed: boolean = true;
@@ -15,6 +16,9 @@ function run(): boolean {
     passed = execute("LexTest.functions", LexTest.functions) && passed;
     passed = execute("LexTest.batch", LexTest.batch) && passed;
     
+    passed = execute("SyntaxTest.use", SyntaxTest.use) && passed;
+    passed = execute("SyntaxTest.from", SyntaxTest.from) && passed;
+
     log(LogLevel.Important);
     log(LogLevel.Important, "==============");
     log(LogLevel.Important, passed ? "    PASSED" : "+++ FAILED +++" );

@@ -19,12 +19,13 @@ export function parse(input: ReadonlyArray<Lex.Token>): Semantic.Batch {
 }
 
 function parseBatch(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
-	let batch: Batch;
+	let batch: Batch = { statements: [] } as Batch;
 
 	// Parse statements.
 	while (inputIndex < input.length) {
-		if (isTokenIgnorable(input[inputIndex])) {
-			continue;
+		inputIndex = skipIgnorableTokens(input, inputIndex);
+		if (inputIndex >= input.length) {
+			break;
 		}
 
 		if (input[inputIndex].tokenKind == Lex.TokenKind.EndOfStatement) {
@@ -34,7 +35,7 @@ function parseBatch(input: ReadonlyArray<Lex.Token>, inputIndex: number): Syntax
 		let state: SyntaxState = parseStatement(input, inputIndex);
 		
 		batch.statements.push(state.node as Semantic.Statement);
-		inputIndex = state.inputIndex;
+		inputIndex = state.inputIndex + 1;
 	}
 
 	// If there are tokens left, something is wrong.
@@ -59,49 +60,71 @@ function parseStatement(input: ReadonlyArray<Lex.Token>, inputIndex: number): Sy
 }
 
 function parseUseStatement(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
+	// USE
 	if (input[inputIndex].tokenKind != Lex.TokenKind.Keyword
 		|| input[inputIndex].lexeme.toUpperCase() != "USE") {
 		throw { lineNumber: input[inputIndex].lineNumber, expected: "USE", actual: input[inputIndex].lexeme };
 	}
 	
-	if (inputIndex = input.length - 1) {
-		throw { lineNumber: input[inputIndex].lineNumber, expected: "identifier", actual: "" };
+	// databaseName
+	inputIndex = skipIgnorableTokens(input, ++inputIndex);
+	if (inputIndex >= input.length) {
+		throw { lineNumber: input[input.length - 1].lineNumber, expected: "identifier", actual: "" };
 	}
-
-	inputIndex++;
 	if (input[inputIndex].tokenKind != Lex.TokenKind.Identifier) {
 		throw { lineNumber: input[inputIndex].lineNumber, expected: "identifier", actual: input[inputIndex].lexeme };
 	}
+	let databaseName = input[inputIndex].lexeme;
 
-	let useStatement: UseStatement = { statementKind: Semantic.StatementKind.Use, databaseName: input[inputIndex].lexeme } as UseStatement;
+	// ;
+	inputIndex = skipIgnorableTokens(input, ++inputIndex);
+	if (inputIndex >= input.length) {
+		throw { lineNumber: input[input.length - 1].lineNumber, expected: ";", actual: "" };
+	}
+	if (input[inputIndex].tokenKind != Lex.TokenKind.EndOfStatement) {
+		throw { lineNumber: input[inputIndex].lineNumber, expected: ";", actual: input[inputIndex].lexeme };
+	}
+
+	let useStatement: UseStatement = { statementKind: Semantic.StatementKind.Use, databaseName: databaseName } as UseStatement;
 	return { inputIndex: inputIndex, node: useStatement };
 }
 
 function parseQueryStatement(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
+	// FROM
 	if (input[inputIndex].tokenKind != Lex.TokenKind.Keyword
 		|| input[inputIndex].lexeme.toUpperCase() != "FROM") {
 		throw { lineNumber: input[inputIndex].lineNumber, expected: "FROM", actual: input[inputIndex].lexeme };
 	}
 	
-	if (inputIndex = input.length - 1) {
-		throw { lineNumber: input[inputIndex].lineNumber, expected: "identifier", actual: "" };
+	// sourceName
+	inputIndex = skipIgnorableTokens(input, ++inputIndex);
+	if (inputIndex >= input.length) {
+		throw { lineNumber: input[input.length - 1].lineNumber, expected: "identifier", actual: "" };
 	}
-
-	inputIndex++;
 	if (input[inputIndex].tokenKind != Lex.TokenKind.Identifier) {
 		throw { lineNumber: input[inputIndex].lineNumber, expected: "identifier", actual: input[inputIndex].lexeme };
 	}
+	let sourceName = input[inputIndex].lexeme;
 
-	let queryStatement: QueryStatement = { statementKind: Semantic.StatementKind.Query, sourceName: input[inputIndex].lexeme, clauses: [] } as QueryStatement;
+	let queryStatement: QueryStatement = { statementKind: Semantic.StatementKind.Query, sourceName: sourceName, clauses: [] } as QueryStatement;
 
-	inputIndex++;
+	// ; or clauses
+	inputIndex = skipIgnorableTokens(input, ++inputIndex);
+	if (inputIndex >= input.length) {
+		throw { lineNumber: input[input.length - 1].lineNumber, expected: ";", actual: "" };
+	}
+	if (input[inputIndex].tokenKind == Lex.TokenKind.EndOfStatement) {
+		return { inputIndex: inputIndex, node: queryStatement };
+	}
+
+	// Clauses
 	while (inputIndex < input.length) {
-		if (isTokenIgnorable(input[inputIndex])) {
-			continue;
+		inputIndex = skipIgnorableTokens(input, ++inputIndex);
+		if (inputIndex >= input.length) {
+			throw { lineNumber: input[input.length - 1].lineNumber, expected: "identifier", actual: "" };
 		}
-
-		if (input[inputIndex].tokenKind == Lex.TokenKind.EndOfStatement) {
-			break;
+		if (input[inputIndex].tokenKind != Lex.TokenKind.Identifier) {
+			throw { lineNumber: input[inputIndex].lineNumber, expected: "identifier", actual: input[inputIndex].lexeme };
 		}
 
 		let state: SyntaxState = parseQueryClause(input, inputIndex);
@@ -135,19 +158,28 @@ function parseQueryClause(input: ReadonlyArray<Lex.Token>, inputIndex: number): 
 }
 
 function parseWhereClause(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
-	return undefined;
+	return { inputIndex: inputIndex, node: undefined };
 }
 
 function parseSelectClause(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
-	return undefined;
+	return { inputIndex: inputIndex, node: undefined };
 }
 
 function parseGroupByClause(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
-	return undefined;
+	return { inputIndex: inputIndex, node: undefined };
 }
 
 function parseOrderByClause(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
-	return undefined;
+	return { inputIndex: inputIndex, node: undefined };
+}
+
+function skipIgnorableTokens(input: ReadonlyArray<Lex.Token>, inputIndex: number): number {
+	while (inputIndex < input.length
+			&& isTokenIgnorable(input[inputIndex])) {
+		++inputIndex;
+	}
+
+	return inputIndex;
 }
 
 function isTokenIgnorable(token: Lex.Token): boolean {
