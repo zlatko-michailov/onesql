@@ -29,6 +29,7 @@ function parseBatch(input: ReadonlyArray<Lex.Token>, inputIndex: number): Syntax
 		}
 
 		if (input[inputIndex].tokenKind == Lex.TokenKind.EndOfStatement) {
+			++inputIndex;
 			continue;
 		}
 
@@ -60,6 +61,8 @@ function parseStatement(input: ReadonlyArray<Lex.Token>, inputIndex: number): Sy
 }
 
 function parseUseStatement(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
+	let useStatement: UseStatement = new UseStatement();
+
 	// USE
 	if (input[inputIndex].tokenKind != Lex.TokenKind.Keyword
 		|| input[inputIndex].lexeme.toUpperCase() != "USE") {
@@ -74,7 +77,7 @@ function parseUseStatement(input: ReadonlyArray<Lex.Token>, inputIndex: number):
 	if (input[inputIndex].tokenKind != Lex.TokenKind.Identifier) {
 		throw { lineNumber: input[inputIndex].lineNumber, expected: "identifier", actual: input[inputIndex].lexeme };
 	}
-	let databaseName = input[inputIndex].lexeme;
+	useStatement.databaseName = input[inputIndex].lexeme;
 
 	// ;
 	inputIndex = skipIgnorableTokens(input, ++inputIndex);
@@ -85,11 +88,12 @@ function parseUseStatement(input: ReadonlyArray<Lex.Token>, inputIndex: number):
 		throw { lineNumber: input[inputIndex].lineNumber, expected: ";", actual: input[inputIndex].lexeme };
 	}
 
-	let useStatement: UseStatement = { statementKind: Semantic.StatementKind.Use, databaseName: databaseName } as UseStatement;
 	return { inputIndex: inputIndex, node: useStatement };
 }
 
 function parseQueryStatement(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
+	let queryStatement: QueryStatement = new QueryStatement();
+
 	// FROM
 	if (input[inputIndex].tokenKind != Lex.TokenKind.Keyword
 		|| input[inputIndex].lexeme.toUpperCase() != "FROM") {
@@ -104,36 +108,27 @@ function parseQueryStatement(input: ReadonlyArray<Lex.Token>, inputIndex: number
 	if (input[inputIndex].tokenKind != Lex.TokenKind.Identifier) {
 		throw { lineNumber: input[inputIndex].lineNumber, expected: "identifier", actual: input[inputIndex].lexeme };
 	}
-	let sourceName = input[inputIndex].lexeme;
-
-	let queryStatement: QueryStatement = { statementKind: Semantic.StatementKind.Query, sourceName: sourceName, clauses: [] } as QueryStatement;
-
-	// ; or clauses
-	inputIndex = skipIgnorableTokens(input, ++inputIndex);
-	if (inputIndex >= input.length) {
-		throw { lineNumber: input[input.length - 1].lineNumber, expected: ";", actual: "" };
-	}
-	if (input[inputIndex].tokenKind == Lex.TokenKind.EndOfStatement) {
-		return { inputIndex: inputIndex, node: queryStatement };
-	}
+	queryStatement.sourceName = input[inputIndex].lexeme;
 
 	// Clauses
 	while (inputIndex < input.length) {
 		inputIndex = skipIgnorableTokens(input, ++inputIndex);
 		if (inputIndex >= input.length) {
-			throw { lineNumber: input[input.length - 1].lineNumber, expected: "identifier", actual: "" };
+			throw { lineNumber: input[input.length - 1].lineNumber, expected: ";", actual: "" };
 		}
-		if (input[inputIndex].tokenKind != Lex.TokenKind.Identifier) {
-			throw { lineNumber: input[inputIndex].lineNumber, expected: "identifier", actual: input[inputIndex].lexeme };
+		
+		// ;
+		if (input[inputIndex].tokenKind == Lex.TokenKind.EndOfStatement) {
+			return { inputIndex: inputIndex, node: queryStatement };
 		}
 
+		// Clause
 		let state: SyntaxState = parseQueryClause(input, inputIndex);
 		queryStatement.clauses.push(state.node as Semantic.QueryClause);
-
 		inputIndex = state.inputIndex;
 	}
 	
-	return { inputIndex: inputIndex, node: queryStatement };
+	throw { lineNumber: input[input.length - 1].lineNumber, expected: ";", actual: "" };
 }
 
 function parseQueryClause(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
@@ -158,6 +153,57 @@ function parseQueryClause(input: ReadonlyArray<Lex.Token>, inputIndex: number): 
 }
 
 function parseWhereClause(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
+	let whereClause: WhereClause = new WhereClause();
+
+	// WHERE
+	if (input[inputIndex].tokenKind != Lex.TokenKind.Keyword
+		|| input[inputIndex].lexeme.toUpperCase() != "WHERE") {
+		throw { lineNumber: input[inputIndex].lineNumber, expected: "WHERE", actual: input[inputIndex].lexeme };
+	}
+	
+	inputIndex = skipIgnorableTokens(input, ++inputIndex);
+	if (inputIndex >= input.length) {
+		throw { lineNumber: input[input.length - 1].lineNumber, expected: "Boolean expression", actual: "" };
+	}
+
+	// Boolean expression
+	let state: SyntaxState = parseBooleanTerm(input, inputIndex);
+	whereClause.booleanExpression = state.node as Semantic.Expression;
+	inputIndex = state.inputIndex;
+
+	return { inputIndex: inputIndex, node: whereClause };
+}
+
+function parseBooleanExpression(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
+	let binaryOperation: BinaryOperation = new BinaryOperation();
+
+	// Term
+	let state: SyntaxState = parseBooleanTerm(input, inputIndex);
+	binaryOperation.argument0 = state.node as Semantic.Term;
+	inputIndex = state.inputIndex;
+
+	inputIndex = skipIgnorableTokens(input, ++inputIndex);
+	if (inputIndex >= input.length) {
+		throw { lineNumber: input[input.length - 1].lineNumber, expected: ";", actual: "" };
+	}
+
+	if (input[inputIndex].tokenKind == Lex.TokenKind.BinaryBooleanOperation) {
+		//binaryOperation.binaryOperationSymbol = toBinaryOperationSymbol(input[inputIndex]);
+
+		inputIndex = skipIgnorableTokens(input, ++inputIndex);
+		if (inputIndex >= input.length) {
+			throw { lineNumber: input[input.length - 1].lineNumber, expected: "Boolean expression", actual: "" };
+		}
+
+		state = parseBooleanExpression(input, inputIndex);
+		binaryOperation.argument1 = state.node as Semantic.BinaryOperation;
+		inputIndex = state.inputIndex;
+	}
+
+	return { inputIndex: inputIndex, node: binaryOperation };
+}
+
+function parseBooleanTerm(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
 	return { inputIndex: inputIndex, node: undefined };
 }
 
@@ -213,12 +259,23 @@ class Batch extends Node implements Semantic.Batch {
 }
 
 class UseStatement extends Node implements Semantic.UseStatement {
-	statementKind: Semantic.StatementKind;
+	statementKind: Semantic.StatementKind = Semantic.StatementKind.Use;
 	databaseName: string;
 }
 
 class QueryStatement extends Node implements Semantic.QueryStatement {
-	statementKind: Semantic.StatementKind;
+	statementKind: Semantic.StatementKind = Semantic.StatementKind.Query;
 	sourceName: string;
-	clauses: Array<Semantic.QueryClause>;
+	clauses: Array<Semantic.QueryClause> = [];
+}
+
+class BinaryOperation extends Node implements Semantic.BinaryOperation {
+	argument0: Semantic.Term;
+	binaryOperationSymbol?: Semantic.BinaryOperationSymbol;
+	argument1?: Semantic.BinaryOperation;
+}
+
+class WhereClause extends Node implements Semantic.WhereClause {
+	queryClauseKind: Semantic.QueryClauseKind = Semantic.QueryClauseKind.Where;
+	booleanExpression: Semantic.Expression;
 }

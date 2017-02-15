@@ -50,7 +50,7 @@ export interface SelectClause extends QueryClause {
 	readonly projections: ReadonlyArray<Projection>;
 }
 
-export interface Projection {
+export interface Projection extends Node {
 	readonly expression: Expression;
 	readonly asName: string;
 }
@@ -60,11 +60,11 @@ export interface GroupByClause extends QueryClause {
 	readonly aggregations: ReadonlyArray<Aggregation>;
 }
 
-export interface Grouping {
+export interface Grouping extends Node {
 	readonly propertyName: string;
 }
 
-export interface Aggregation {
+export interface Aggregation extends Node {
 	readonly aggregationExpression: Expression;
 	readonly asName: string;
 }
@@ -73,7 +73,7 @@ export interface OrderByClause extends QueryClause {
 	readonly orderings: ReadonlyArray<Ordering>;
 }
 
-export interface Ordering {
+export interface Ordering extends Node {
 	readonly propertyName: string;
 	readonly ascending: boolean;
 }
@@ -89,36 +89,41 @@ export enum ExpressionKind {
 	DateTime = 0x4000,
 }
 
-export interface Expression {
+export interface Expression extends Node {
 	readonly expressionKind: ExpressionKind;
 	readonly binaryOperation: BinaryOperation;
 }
 
-export interface BinaryOperation {
-	readonly argument0: UnaryOperation;
+export interface BinaryOperation extends Node {
+	readonly argument0: Term;
 	readonly binaryOperationSymbol?: BinaryOperationSymbol;
 	readonly argument1?: BinaryOperation;
 }
 
-export interface UnaryOperation {
-	readonly unaryOperationSymbol?: UnaryOperationSymbol;
-	readonly argument: Term;
-}
-
-export interface Term {
+export interface Term extends Node {
 	readonly termKind: TermKind;
 }
 
 export enum TermKind {
+	UnaryOperation,
 	Literal,
+	Property,
 	FunctionCall,
 	Expression,
+}
+
+export interface UnaryOperationTerm extends Term {
+	readonly unaryOperationSymbol: UnaryOperationSymbol;
+	readonly argument: Term;
 }
 
 export interface LiteralTerm extends Term {
 	readonly literal: any;
 }
 
+export interface PropertyTerm extends Term {
+	readonly propertyName: string;
+}
 export interface FunctionCallTerm extends Term {
 	readonly functionSymbol: FunctionSymbol;
 	readonly arguments: ReadonlyArray<Expression>;

@@ -16,8 +16,10 @@ function run(): boolean {
     passed = execute("LexTest.functions", LexTest.functions) && passed;
     passed = execute("LexTest.batch", LexTest.batch) && passed;
     
+    passed = execute("SyntaxTest.empty", SyntaxTest.empty) && passed;
     passed = execute("SyntaxTest.use", SyntaxTest.use) && passed;
     passed = execute("SyntaxTest.from", SyntaxTest.from) && passed;
+    passed = execute("SyntaxTest.where", SyntaxTest.where) && passed;
 
     log(LogLevel.Important);
     log(LogLevel.Important, "==============");
