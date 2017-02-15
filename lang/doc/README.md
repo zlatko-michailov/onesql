@@ -210,6 +210,7 @@ boolean-term ::=
     | unary-boolean-operation boolean-term
     | ( boolean-expression )
     | boolean-literal
+    | property-name
     | comparison-expression
 
 binary-boolean-operation ::=
@@ -271,7 +272,7 @@ addsub-expression ::=
     | addsub-term [ binary-addsub-operation addsub-expression ]
 
 addsub-term ::=
-    | unary-addsub-operation addsub-expression
+    | unary-addsub-operation addsub-term
     | ( arithmetic-expression )
     | muldiv-expression
 
