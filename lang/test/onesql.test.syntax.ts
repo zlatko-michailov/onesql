@@ -48,7 +48,7 @@ export function where(): boolean {
 					  "WHERE TRUE;\n\n" +
 
 					  "FROM a_\n" +
-					  "WHERE NOT FALSE;\n" +
+					  "WHERE NOT p1;\n" +
 
 					  "FROM a\n" +
 					  "WHERE NOT NOT TRUE;\n" //+
@@ -72,7 +72,7 @@ export function where(): boolean {
 		{
 			statementKind: Semantic.StatementKind.Query,
 			sourceName: "_1",
-			clasues: [
+			clauses: [
 			{
 				queryClauseKind: Semantic.QueryClauseKind.Where,
 				booleanExpression: {
@@ -87,7 +87,7 @@ export function where(): boolean {
 		{
 			statementKind: Semantic.StatementKind.Query,
 			sourceName: "a_",
-			clasues: [
+			clauses: [
 			{
 				queryClauseKind: Semantic.QueryClauseKind.Where,
 				booleanExpression: {
@@ -97,15 +97,15 @@ export function where(): boolean {
 							termKind: Semantic.TermKind.UnaryOperation,
 							unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
 							argument: {
-								termKind: Semantic.TermKind.Literal,
-								literal: false
+								termKind: Semantic.TermKind.Property,
+								propertyName: "p1"
 			}}}}}]
 		},
 
 		{
 			statementKind: Semantic.StatementKind.Query,
 			sourceName: "a",
-			clasues: [
+			clauses: [
 			{
 				queryClauseKind: Semantic.QueryClauseKind.Where,
 				booleanExpression: {
