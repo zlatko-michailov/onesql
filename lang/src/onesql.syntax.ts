@@ -168,19 +168,24 @@ function parseBooleanExpression(input: ReadonlyArray<Lex.Token>, inputIndex: num
 
 	// Term
 	let state: SyntaxState = parseBooleanTerm(input, inputIndex);
-	expression.binaryOperation.argument0 = state.node as Semantic.Term;
+	expression.binaryOperand = state.node as Semantic.Term;
 	inputIndex = state.inputIndex;
 
-	// Binary operation
+	// Binary operations
 	inputIndex = skipToNextToken(input, ++inputIndex, ";");
-	if (input[inputIndex].tokenKind == Lex.TokenKind.BinaryBooleanOperation) {
-		//binaryOperation.binaryOperationSymbol = toBinaryOperationSymbol(input[inputIndex]);
+	while (input[inputIndex].tokenKind == Lex.TokenKind.BinaryBooleanOperation) {
+		let binaryOperation: BinaryOperation = new BinaryOperation();
+		binaryOperation.binaryOperationSymbol = toBinaryOperationSymbol(input[inputIndex]);
+		binaryOperation.argument0 = expression.binaryOperand;
 
-		// Expression
-		inputIndex = skipToNextToken(input, ++inputIndex, "Boolean expression");
-		state = parseBooleanExpression(input, inputIndex);
-		expression.binaryOperation.argument1 = state.node as Semantic.BinaryOperation;
+		// Term
+		inputIndex = skipToNextToken(input, ++inputIndex, "Boolean term");
+		state = parseBooleanTerm(input, inputIndex);
+		binaryOperation.argument1 = state.node as Semantic.Term;
+		expression.binaryOperand = binaryOperation;
+
 		inputIndex = state.inputIndex;
+		inputIndex = skipToNextToken(input, ++inputIndex, ";");
 	}
 
 	return { inputIndex: inputIndex, node: expression };
@@ -267,6 +272,23 @@ function isTokenIgnorable(token: Lex.Token): boolean {
 		|| token.tokenKind == Lex.TokenKind.LineComment;
 }
 
+function toBinaryOperationSymbol(token: Lex.Token): Semantic.BinaryOperationSymbol {
+	switch (token.tokenKind) {
+		case Lex.TokenKind.BinaryBooleanOperation:
+			switch (token.lexeme.toUpperCase()) {
+				case "AND":
+					return Semantic.BinaryOperationSymbol.And;
+				case "OR":
+					return Semantic.BinaryOperationSymbol.Or;
+				default:
+					throw { lineNumber: token.lineNumber, expected: "binary Boolean operation", actual: token.lexeme };
+			}
+
+		default:
+			throw { lineNumber: token.lineNumber, expected: "binary operation", actual: token.lexeme };
+	}
+}
+
 // -----------------------------------------------------------------------------
 // Semantic contract implementations.
 
@@ -304,27 +326,31 @@ class QueryStatement extends Node implements Semantic.QueryStatement {
 
 class Expression extends Node implements Semantic.Expression {
 	expressionKind: Semantic.ExpressionKind;
-	binaryOperation: BinaryOperation = new BinaryOperation();
+	binaryOperand: Semantic.BinaryOperand;
 }
 
 class BinaryOperation extends Node implements Semantic.BinaryOperation {
-	argument0: Semantic.Term;
-	binaryOperationSymbol?: Semantic.BinaryOperationSymbol;
-	argument1?: Semantic.BinaryOperation;
+	binaryOperandKind = Semantic.BinaryOperandKind.BinaryOperation;
+	argument0: Semantic.BinaryOperand;
+	binaryOperationSymbol: Semantic.BinaryOperationSymbol;
+	argument1: Semantic.BinaryOperand;
 }
 
 class UnaryOperationTerm extends Node implements Semantic.UnaryOperationTerm {
+	binaryOperandKind = Semantic.BinaryOperandKind.Term;
 	termKind: Semantic.TermKind = Semantic.TermKind.UnaryOperation;
 	unaryOperationSymbol: Semantic.UnaryOperationSymbol;
 	argument: Semantic.Term;
 }
 
 class LiteralTerm extends Node implements Semantic.LiteralTerm {
+	binaryOperandKind = Semantic.BinaryOperandKind.Term;
 	termKind: Semantic.TermKind = Semantic.TermKind.Literal;
 	literal: any;
 }
 
 class PropertyTerm extends Node implements Semantic.PropertyTerm {
+	binaryOperandKind = Semantic.BinaryOperandKind.Term;
 	termKind: Semantic.TermKind = Semantic.TermKind.Property;
 	propertyName: string;
 }

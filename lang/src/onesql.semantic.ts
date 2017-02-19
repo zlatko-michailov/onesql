@@ -91,16 +91,25 @@ export enum ExpressionKind {
 
 export interface Expression extends Node {
 	readonly expressionKind: ExpressionKind;
-	readonly binaryOperation: BinaryOperation;
+	readonly binaryOperand: BinaryOperand;
 }
 
-export interface BinaryOperation extends Node {
-	readonly argument0: Term;
-	readonly binaryOperationSymbol?: BinaryOperationSymbol;
-	readonly argument1?: BinaryOperation;
+export enum BinaryOperandKind {
+	Term,
+	BinaryOperation,
 }
 
-export interface Term extends Node {
+export interface BinaryOperand extends Node {
+	readonly binaryOperandKind: BinaryOperandKind;
+}
+
+export interface BinaryOperation extends BinaryOperand {
+	readonly binaryOperationSymbol: BinaryOperationSymbol;
+	readonly argument0: BinaryOperand;
+	readonly argument1: BinaryOperand;
+}
+
+export interface Term extends BinaryOperand {
 	readonly termKind: TermKind;
 }
 
