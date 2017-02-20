@@ -166,9 +166,17 @@ function parseBooleanExpression(input: ReadonlyArray<Lex.Token>, inputIndex: num
 	let expression: Expression = new Expression();
 	expression.expressionKind = Semantic.ExpressionKind.Boolean;
 
+	let state: SyntaxState = parseBooleanOperand(input, inputIndex);
+	expression.binaryOperand = state.node as Semantic.BinaryOperand;
+	inputIndex = state.inputIndex;
+
+	return { inputIndex: inputIndex, node: expression };
+}
+
+function parseBooleanOperand(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
 	// Term
 	let state: SyntaxState = parseBooleanTerm(input, inputIndex);
-	expression.binaryOperand = state.node as Semantic.Term;
+	let binaryOperand: Semantic.BinaryOperand = state.node as Semantic.Term;
 	inputIndex = state.inputIndex;
 
 	// Binary operations
@@ -176,19 +184,19 @@ function parseBooleanExpression(input: ReadonlyArray<Lex.Token>, inputIndex: num
 	while (input[inputIndex].tokenKind == Lex.TokenKind.BinaryBooleanOperation) {
 		let binaryOperation: BinaryOperation = new BinaryOperation();
 		binaryOperation.binaryOperationSymbol = toBinaryOperationSymbol(input[inputIndex]);
-		binaryOperation.argument0 = expression.binaryOperand;
+		binaryOperation.argument0 = binaryOperand;
 
 		// Term
 		inputIndex = skipToNextToken(input, ++inputIndex, "Boolean term");
 		state = parseBooleanTerm(input, inputIndex);
 		binaryOperation.argument1 = state.node as Semantic.Term;
-		expression.binaryOperand = binaryOperation;
+		binaryOperand = binaryOperation;
 
 		inputIndex = state.inputIndex;
 		inputIndex = skipToNextToken(input, ++inputIndex, ";");
 	}
 
-	return { inputIndex: inputIndex, node: expression };
+	return { inputIndex: inputIndex, node: binaryOperand };
 }
 
 function parseBooleanTerm(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
@@ -200,6 +208,18 @@ function parseBooleanTerm(input: ReadonlyArray<Lex.Token>, inputIndex: number): 
 	}
 	else if (input[inputIndex].tokenKind == Lex.TokenKind.Identifier) {
 		return parseProperty(input, inputIndex);
+	}
+	else if (input[inputIndex].tokenKind == Lex.TokenKind.OpeningParenthesis) {
+		inputIndex = skipToNextToken(input, ++inputIndex, ")");
+		let state: SyntaxState = parseBooleanOperand(input, inputIndex);
+
+		inputIndex = state.inputIndex;
+		if (input[inputIndex].tokenKind == Lex.TokenKind.ClosingParenthesis) {
+			inputIndex = state.inputIndex;
+			return { inputIndex: inputIndex, node: state.node };
+		}
+
+		throw { lineNumber: input[inputIndex].lineNumber, expected: ")", actual: input[inputIndex].lexeme };
 	}
 
 	throw { lineNumber: input[inputIndex].lineNumber, expected: "Boolean term", actual: input[inputIndex].lexeme };
@@ -277,8 +297,10 @@ function toBinaryOperationSymbol(token: Lex.Token): Semantic.BinaryOperationSymb
 		case Lex.TokenKind.BinaryBooleanOperation:
 			switch (token.lexeme.toUpperCase()) {
 				case "AND":
+				case "&&":
 					return Semantic.BinaryOperationSymbol.And;
 				case "OR":
+				case "||":
 					return Semantic.BinaryOperationSymbol.Or;
 				default:
 					throw { lineNumber: token.lineNumber, expected: "binary Boolean operation", actual: token.lexeme };

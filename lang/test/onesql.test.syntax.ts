@@ -59,20 +59,9 @@ export function whereBoolean(): boolean {
 					  "FROM _\n" +
 					  "WHERE p1 OR NOT p2 AND NOT p3;\n" +
 
-//					  "FROM _\n" +
-//					  "WHERE (p1 || !p2) && !p3;\n" +
+					  "FROM _\n" +
+					  "WHERE (p1 || !p2) && (!p3 || p4);\n" +
 
-//					  "FROM b\n" +
-//					  "WHERE prop1 == 5;\n" +
-
-//					  "FROM cc\n" +
-//					  "WHERE NOT prop1 = prop2;\n" +
-					  
-//					  "FROM Ddd\n" +
-//					  "WHERE p1 != p2\n" +
-//					  "    AND p3 <> p4\n" +
-//					  "    OR NOT p4 < p5\n" +
-//					  "    AND (p6 > p7 OR p8 <= p9 AND NOT p10 >= p11);"
 					  "";
 
 
@@ -220,6 +209,58 @@ export function whereBoolean(): boolean {
 							argument: {
 								termKind: Semantic.TermKind.Property,
 								propertyName: "p3"
+							}
+						}
+					}
+				}
+			}]
+		},
+
+		{
+			statementKind: Semantic.StatementKind.Query,
+			sourceName: "_",
+			clauses: [
+			{
+				queryClauseKind: Semantic.QueryClauseKind.Where,
+				booleanExpression: {
+					expressionKind: Semantic.ExpressionKind.Boolean,
+					binaryOperand: {
+						binaryOperandKind: Semantic.BinaryOperandKind.BinaryOperation,
+						binaryOperationSymbol: Semantic.BinaryOperationSymbol.And,
+						argument0: {
+							binaryOperandKind: Semantic.BinaryOperandKind.BinaryOperation,
+							binaryOperationSymbol: Semantic.BinaryOperationSymbol.Or,
+							argument0: {
+								binaryOperandKind: Semantic.BinaryOperandKind.Term,
+								termKind: Semantic.TermKind.Property,
+								propertyName: "p1"
+							},
+							argument1: {
+								binaryOperandKind: Semantic.BinaryOperandKind.Term,
+								termKind: Semantic.TermKind.UnaryOperation,
+								unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
+								argument: {
+									termKind: Semantic.TermKind.Property,
+									propertyName: "p2"
+								}
+							}
+						},
+						argument1: {
+							binaryOperandKind: Semantic.BinaryOperandKind.BinaryOperation,
+							binaryOperationSymbol: Semantic.BinaryOperationSymbol.Or,
+							argument0: {
+								binaryOperandKind: Semantic.BinaryOperandKind.Term,
+								termKind: Semantic.TermKind.UnaryOperation,
+								unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
+								argument: {
+									termKind: Semantic.TermKind.Property,
+									propertyName: "p3"
+								}
+							},
+							argument1: {
+								binaryOperandKind: Semantic.BinaryOperandKind.Term,
+								termKind: Semantic.TermKind.Property,
+								propertyName: "p4"
 							}
 						}
 					}
