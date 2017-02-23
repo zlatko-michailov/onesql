@@ -1,6 +1,4 @@
-﻿import * as Semantic from "./onesql.semantic";
-
-export enum TokenKind {
+﻿export enum TokenKind {
     BlankSpace,
     BlockComment,
     LineComment,
@@ -16,15 +14,8 @@ export enum TokenKind {
     ItemSeparator,
     EndOfStatement,
 
-    BinaryMulDivOperation,
-    BinaryAddSubOperation,
-    UnaryBitwiseOperation,
-    BinaryBitwiseOperation,
-    ComparisonOperation,
-    UnaryBooleanOperation,
-    BinaryBooleanOperation,
-
-    FunctionName,
+    BinaryOperation,
+    UnaryOperation,
     Identifier,
 
     Unknown,
@@ -51,13 +42,13 @@ const tokenRules: ReadonlyArray<TokenRule> = [
     { tokenKind: TokenKind.ItemSeparator, regexp: /,/i },
     { tokenKind: TokenKind.EndOfStatement, regexp: /;/i },
 
-    { tokenKind: TokenKind.ComparisonOperation, regexp: /==|!=|<>|<=|>=|=|<|>/i },
-    { tokenKind: TokenKind.BinaryBooleanOperation, regexp: /AND|OR|&&|\|\|/i },
-    { tokenKind: TokenKind.BinaryMulDivOperation, regexp: /\*|\/|\%/i },
-    { tokenKind: TokenKind.BinaryAddSubOperation, regexp: /\+|\-/i },
-    { tokenKind: TokenKind.UnaryBitwiseOperation, regexp: /\~/i },
-    { tokenKind: TokenKind.BinaryBitwiseOperation, regexp: /\&|\||\^/i },
-    { tokenKind: TokenKind.UnaryBooleanOperation, regexp: /NOT|\!/i },
+    { tokenKind: TokenKind.BinaryOperation, regexp: /==|!=|<>|<=|>=|=|<|>/i },
+    { tokenKind: TokenKind.BinaryOperation, regexp: /AND|OR|&&|\|\|/i },
+    { tokenKind: TokenKind.BinaryOperation, regexp: /\*|\/|\%/i },
+    { tokenKind: TokenKind.BinaryOperation, regexp: /\+|\-/i },
+    { tokenKind: TokenKind.UnaryOperation, regexp: /\~/i },
+    { tokenKind: TokenKind.BinaryOperation, regexp: /\&|\||\^/i },
+    { tokenKind: TokenKind.UnaryOperation, regexp: /NOT|\!/i },
 
     { tokenKind: TokenKind.Identifier, regexp: /\w+/i },
 
@@ -105,12 +96,6 @@ function readToken(state: LexState): LexState {
                     case TokenKind.LineComment:
                         lineNumber++;
                         break;
-
-                    case TokenKind.Identifier:
-                        if (isFunctionName(lexeme)) {
-                            tokenKind = TokenKind.FunctionName;
-                        }
-                        break;
                 }
 
                 return { 
@@ -127,16 +112,4 @@ function readToken(state: LexState): LexState {
 
 function countNewLines(input: string): number {
     return input.match(/$/mg).length - 1; // There is always an extra one.
-}
-
-function isFunctionName(input: string): boolean {
-    let inputLower: string = input.toLowerCase();
-
-    for (let i: number = 0; i < Semantic.functionSignatures.length; i++) {
-        if (Semantic.functionSignatures[i].name.toLowerCase() === inputLower) {
-            return true;
-        }
-    }
-
-    return false;
 }

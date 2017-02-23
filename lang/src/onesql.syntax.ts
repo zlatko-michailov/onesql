@@ -181,7 +181,7 @@ function parseBooleanOperand(input: ReadonlyArray<Lex.Token>, inputIndex: number
 
 	// Binary operations
 	inputIndex = skipToNextToken(input, ++inputIndex, ";");
-	while (input[inputIndex].tokenKind == Lex.TokenKind.BinaryBooleanOperation) {
+	while (input[inputIndex].tokenKind == Lex.TokenKind.BinaryOperation) {
 		let binaryOperation: BinaryOperation = new BinaryOperation();
 		binaryOperation.binaryOperationSymbol = toBinaryOperationSymbol(input[inputIndex]);
 		binaryOperation.argument0 = binaryOperand;
@@ -200,7 +200,7 @@ function parseBooleanOperand(input: ReadonlyArray<Lex.Token>, inputIndex: number
 }
 
 function parseBooleanTerm(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
-	if (input[inputIndex].tokenKind == Lex.TokenKind.UnaryBooleanOperation) {
+	if (input[inputIndex].tokenKind == Lex.TokenKind.UnaryOperation) {
 		return parseUnaryBooleanOperation(input, inputIndex);
 	}
 	else if (input[inputIndex].tokenKind == Lex.TokenKind.BooleanLiteral) {
@@ -294,7 +294,7 @@ function isTokenIgnorable(token: Lex.Token): boolean {
 
 function toBinaryOperationSymbol(token: Lex.Token): Semantic.BinaryOperationSymbol {
 	switch (token.tokenKind) {
-		case Lex.TokenKind.BinaryBooleanOperation:
+		case Lex.TokenKind.BinaryOperation:
 			switch (token.lexeme.toUpperCase()) {
 				case "AND":
 				case "&&":
