@@ -73,7 +73,7 @@ export function whereBoolean(): boolean {
 			clauses: [
 			{
 				queryClauseKind: Semantic.QueryClauseKind.Where,
-				booleanExpression: {
+				condition: {
 					expressionKind: Semantic.ExpressionKind.Boolean,
 					binaryOperand: {
 						binaryOperandKind: Semantic.BinaryOperandKind.Term,
@@ -90,7 +90,7 @@ export function whereBoolean(): boolean {
 			clauses: [
 			{
 				queryClauseKind: Semantic.QueryClauseKind.Where,
-				booleanExpression: {
+				condition: {
 					expressionKind: Semantic.ExpressionKind.Boolean,
 					binaryOperand: {
 						binaryOperandKind: Semantic.BinaryOperandKind.Term,
@@ -111,7 +111,7 @@ export function whereBoolean(): boolean {
 			clauses: [
 			{
 				queryClauseKind: Semantic.QueryClauseKind.Where,
-				booleanExpression: {
+				condition: {
 					expressionKind: Semantic.ExpressionKind.Boolean,
 					binaryOperand: {
 						binaryOperandKind: Semantic.BinaryOperandKind.Term,
@@ -136,7 +136,7 @@ export function whereBoolean(): boolean {
 			clauses: [
 			{
 				queryClauseKind: Semantic.QueryClauseKind.Where,
-				booleanExpression: {
+				condition: {
 					expressionKind: Semantic.ExpressionKind.Boolean,
 					binaryOperand: {
 						binaryOperandKind: Semantic.BinaryOperandKind.BinaryOperation,
@@ -179,7 +179,7 @@ export function whereBoolean(): boolean {
 			clauses: [
 			{
 				queryClauseKind: Semantic.QueryClauseKind.Where,
-				booleanExpression: {
+				condition: {
 					expressionKind: Semantic.ExpressionKind.Boolean,
 					binaryOperand: {
 						binaryOperandKind: Semantic.BinaryOperandKind.BinaryOperation,
@@ -222,7 +222,7 @@ export function whereBoolean(): boolean {
 			clauses: [
 			{
 				queryClauseKind: Semantic.QueryClauseKind.Where,
-				booleanExpression: {
+				condition: {
 					expressionKind: Semantic.ExpressionKind.Boolean,
 					binaryOperand: {
 						binaryOperandKind: Semantic.BinaryOperandKind.BinaryOperation,

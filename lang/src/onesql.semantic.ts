@@ -43,7 +43,7 @@ export enum QueryClauseKind {
 }
 
 export interface WhereClause extends QueryClause {
-	readonly booleanExpression: Expression;
+	readonly condition: Expression;
 }
 
 export interface SelectClause extends QueryClause {
@@ -76,6 +76,15 @@ export interface OrderByClause extends QueryClause {
 export interface Ordering extends Node {
 	readonly propertyName: string;
 	readonly ascending: boolean;
+}
+
+export enum ValueType {
+	Any,
+	Boolean,
+	Number,
+	String,
+	DateTime,
+	Array = 0x100,
 }
 
 export enum ExpressionKind {

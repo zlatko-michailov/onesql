@@ -155,7 +155,7 @@ function parseWhereClause(input: ReadonlyArray<Lex.Token>, inputIndex: number): 
 	// Boolean expression
 	inputIndex = moveInputIndex(input, inputIndex, "Boolean expression");
 	let state: SyntaxState = parseBooleanExpression(input, inputIndex);
-	whereClause.booleanExpression = state.node as Semantic.Expression;
+	whereClause.condition = state.node as Semantic.Expression;
 	inputIndex = state.inputIndex;
 
 	return { inputIndex: inputIndex, node: whereClause };
@@ -361,5 +361,5 @@ class PropertyTerm extends Node implements Semantic.PropertyTerm {
 
 class WhereClause extends Node implements Semantic.WhereClause {
 	queryClauseKind: Semantic.QueryClauseKind = Semantic.QueryClauseKind.Where;
-	booleanExpression: Semantic.Expression;
+	condition: Semantic.Expression;
 }
