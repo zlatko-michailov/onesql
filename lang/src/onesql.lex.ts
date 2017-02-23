@@ -67,12 +67,18 @@ interface LexState {
     lineNumber: number;
 }
 
-export function tokenize(input: string): ReadonlyArray<Token> {
+export function tokenize(input: string, skipIgnorable: boolean): ReadonlyArray<Token> {
     let tokens: Array<Token> = [];
 
     let state: LexState = readToken({ token: undefined, input: input, lineNumber: 1 });
     while(state) {
-        tokens.push(state.token);
+        if (!skipIgnorable
+            || (state.token.tokenKind != TokenKind.BlankSpace
+                && state.token.tokenKind != TokenKind.BlockComment
+                && state.token.tokenKind != TokenKind.LineComment)) {
+                    tokens.push(state.token);
+        }
+
         state = readToken(state);
     }
 

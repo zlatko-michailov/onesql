@@ -17,7 +17,7 @@ export function blankSpace(): boolean {
 		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: "\n", lineNumber: 6},
 	];
 
-	let actualTokens: ReadonlyArray<Lex.Token> = Lex.tokenize(input);
+	let actualTokens: ReadonlyArray<Lex.Token> = Lex.tokenize(input, false);
 	return Test.areEqualArrays(expectedTokens, actualTokens, Test.LogLevel.Info, "tokens");
 }
 
@@ -30,7 +30,7 @@ export function comments(): boolean {
 		{ tokenKind: Lex.TokenKind.Identifier, lexeme: "a4", lineNumber: 4},
 	];
 
-	let actualTokens: ReadonlyArray<Lex.Token> = Lex.tokenize(input);
+	let actualTokens: ReadonlyArray<Lex.Token> = Lex.tokenize(input, false);
 	return Test.areEqualArrays(expectedTokens, actualTokens, Test.LogLevel.Info, "tokens");
 }
 
@@ -73,7 +73,7 @@ export function literals(): boolean {
 		{ tokenKind: Lex.TokenKind.DateTimeLiteral, lexeme: "dAtetIme\"5555-55-55T55:55:55.555Z\"", lineNumber: 1},
 	];
 	
-	let actualTokens: ReadonlyArray<Lex.Token> = Lex.tokenize(input);
+	let actualTokens: ReadonlyArray<Lex.Token> = Lex.tokenize(input, false);
 	return Test.areEqualArrays(expectedTokens, actualTokens, Test.LogLevel.Info, "tokens");
 }
 
@@ -101,7 +101,7 @@ export function keywords(): boolean {
 		{ tokenKind: Lex.TokenKind.Keyword, lexeme: "dESc", lineNumber: 1},
 	];
 
-	let actualTokens: ReadonlyArray<Lex.Token> = Lex.tokenize(input);
+	let actualTokens: ReadonlyArray<Lex.Token> = Lex.tokenize(input, false);
 	return Test.areEqualArrays(expectedTokens, actualTokens, Test.LogLevel.Info, "tokens");
 }
 
@@ -121,7 +121,7 @@ export function punctuation(): boolean {
 		{ tokenKind: Lex.TokenKind.EndOfStatement, lexeme: ";", lineNumber: 1},
 	];
 
-	let actualTokens: ReadonlyArray<Lex.Token> = Lex.tokenize(input);
+	let actualTokens: ReadonlyArray<Lex.Token> = Lex.tokenize(input, false);
 	return Test.areEqualArrays(expectedTokens, actualTokens, Test.LogLevel.Info, "tokens");
 }
 
@@ -177,7 +177,7 @@ export function operations(): boolean {
 		{ tokenKind: Lex.TokenKind.BinaryOperation, lexeme: "||", lineNumber: 1},
 	];
 
-	let actualTokens: ReadonlyArray<Lex.Token> = Lex.tokenize(input);
+	let actualTokens: ReadonlyArray<Lex.Token> = Lex.tokenize(input, false);
 	return Test.areEqualArrays(expectedTokens, actualTokens, Test.LogLevel.Info, "tokens");
 }
 
@@ -201,7 +201,7 @@ export function identifiers(): boolean {
 		{ tokenKind: Lex.TokenKind.Identifier, lexeme: "c_23D_e_", lineNumber: 1},
 	];
 
-	let actualTokens: ReadonlyArray<Lex.Token> = Lex.tokenize(input);
+	let actualTokens: ReadonlyArray<Lex.Token> = Lex.tokenize(input, false);
 	return Test.areEqualArrays(expectedTokens, actualTokens, Test.LogLevel.Info, "tokens");
 }
 
@@ -279,7 +279,7 @@ export function functions(): boolean {
 		{ tokenKind: Lex.TokenKind.Identifier, lexeme: "toDay", lineNumber: 1},
 	];
 
-	let actualTokens: ReadonlyArray<Lex.Token> = Lex.tokenize(input);
+	let actualTokens: ReadonlyArray<Lex.Token> = Lex.tokenize(input, false);
 	return Test.areEqualArrays(expectedTokens, actualTokens, Test.LogLevel.Info, "tokens");
 }
 export function batch(): boolean {
@@ -359,6 +359,6 @@ export function batch(): boolean {
 		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: "\n", lineNumber: 10},
 	];
 
-	let actualTokens: ReadonlyArray<Lex.Token> = Lex.tokenize(input);
+	let actualTokens: ReadonlyArray<Lex.Token> = Lex.tokenize(input, false);
 	return Test.areEqualArrays(expectedTokens, actualTokens, Test.LogLevel.Info, "tokens");
 }
