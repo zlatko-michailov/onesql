@@ -156,20 +156,9 @@ function parseWhereClause(input: ReadonlyArray<Lex.Token>, inputIndex: number): 
 }
 
 function parseExpression(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
-	let expression: Expression = new Expression();
-	expression.expressionKind = Semantic.ExpressionKind.Boolean;
-
-	let state: SyntaxState = parseOperand(input, inputIndex);
-	expression.binaryOperand = state.node as Semantic.BinaryOperand;
-	inputIndex = state.inputIndex;
-
-	return { inputIndex: inputIndex, node: expression };
-}
-
-function parseOperand(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
 	// Term
 	let state: SyntaxState = parseTerm(input, inputIndex);
-	let binaryOperand: Semantic.BinaryOperand = state.node as Semantic.Term;
+	let binaryOperand: Semantic.Expression = state.node as Semantic.Term;
 	inputIndex = state.inputIndex;
 
 	// Binary operations
@@ -204,7 +193,7 @@ function parseTerm(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxS
 	}
 	else if (input[inputIndex].tokenKind == Lex.TokenKind.OpeningParenthesis) {
 		inputIndex = moveInputIndex(input, inputIndex, ")");
-		let state: SyntaxState = parseOperand(input, inputIndex);
+		let state: SyntaxState = parseExpression(input, inputIndex);
 
 		inputIndex = state.inputIndex;
 		if (input[inputIndex].tokenKind == Lex.TokenKind.ClosingParenthesis) {
@@ -322,40 +311,40 @@ class QueryStatement extends Node implements Semantic.QueryStatement {
 	clauses: Array<Semantic.QueryClause> = [];
 }
 
+class WhereClause extends Node implements Semantic.WhereClause {
+	queryClauseKind: Semantic.QueryClauseKind = Semantic.QueryClauseKind.Where;
+	condition: Semantic.Expression;
+}
+
 class Expression extends Node implements Semantic.Expression {
+	resultType: Semantic.ValueType;
 	expressionKind: Semantic.ExpressionKind;
-	binaryOperand: Semantic.BinaryOperand;
 }
 
-class BinaryOperation extends Node implements Semantic.BinaryOperation {
-	binaryOperandKind = Semantic.BinaryOperandKind.BinaryOperation;
-	argument0: Semantic.BinaryOperand;
+class BinaryOperation extends Expression implements Semantic.BinaryOperation {
+	expressionKind = Semantic.ExpressionKind.BinaryOperation;
 	binaryOperationSymbol: Semantic.BinaryOperationSymbol;
-	argument1: Semantic.BinaryOperand;
+	argument0: Semantic.Expression;
+	argument1: Semantic.Expression;
 }
 
-class UnaryOperationTerm extends Node implements Semantic.UnaryOperationTerm {
-	binaryOperandKind = Semantic.BinaryOperandKind.Term;
+class UnaryOperationTerm extends Expression implements Semantic.UnaryOperationTerm {
+	expressionKind = Semantic.ExpressionKind.Term;
 	termKind: Semantic.TermKind = Semantic.TermKind.UnaryOperation;
 	unaryOperationSymbol: Semantic.UnaryOperationSymbol;
 	argument: Semantic.Term;
 }
 
-class LiteralTerm extends Node implements Semantic.LiteralTerm {
-	binaryOperandKind = Semantic.BinaryOperandKind.Term;
+class LiteralTerm extends Expression implements Semantic.LiteralTerm {
+	expressionKind = Semantic.ExpressionKind.Term;
 	termKind: Semantic.TermKind = Semantic.TermKind.Literal;
 	literal: any;
 }
 
-class PropertyTerm extends Node implements Semantic.PropertyTerm {
-	binaryOperandKind = Semantic.BinaryOperandKind.Term;
+class PropertyTerm extends Expression implements Semantic.PropertyTerm {
+	expressionKind = Semantic.ExpressionKind.Term;
 	termKind: Semantic.TermKind = Semantic.TermKind.Property;
 	propertyName: string;
-}
-
-class WhereClause extends Node implements Semantic.WhereClause {
-	queryClauseKind: Semantic.QueryClauseKind = Semantic.QueryClauseKind.Where;
-	condition: Semantic.Expression;
 }
 
 // -----------------------------------------------------------------------------

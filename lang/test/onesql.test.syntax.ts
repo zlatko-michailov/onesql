@@ -74,12 +74,9 @@ export function whereBoolean(): boolean {
 			{
 				queryClauseKind: Semantic.QueryClauseKind.Where,
 				condition: {
-					expressionKind: Semantic.ExpressionKind.Boolean,
-					binaryOperand: {
-						binaryOperandKind: Semantic.BinaryOperandKind.Term,
-						termKind: Semantic.TermKind.Literal,
-						literal: true
-					}
+					expressionKind: Semantic.ExpressionKind.Term,
+					termKind: Semantic.TermKind.Literal,
+					literal: true
 				}
 			}]
 		},
@@ -91,15 +88,12 @@ export function whereBoolean(): boolean {
 			{
 				queryClauseKind: Semantic.QueryClauseKind.Where,
 				condition: {
-					expressionKind: Semantic.ExpressionKind.Boolean,
-					binaryOperand: {
-						binaryOperandKind: Semantic.BinaryOperandKind.Term,
-						termKind: Semantic.TermKind.UnaryOperation,
-						unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
-						argument: {
-							termKind: Semantic.TermKind.Property,
-							propertyName: "p1"
-						}
+					expressionKind: Semantic.ExpressionKind.Term,
+					termKind: Semantic.TermKind.UnaryOperation,
+					unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
+					argument: {
+						termKind: Semantic.TermKind.Property,
+						propertyName: "p1"
 					}
 				}
 			}]
@@ -112,18 +106,15 @@ export function whereBoolean(): boolean {
 			{
 				queryClauseKind: Semantic.QueryClauseKind.Where,
 				condition: {
-					expressionKind: Semantic.ExpressionKind.Boolean,
-					binaryOperand: {
-						binaryOperandKind: Semantic.BinaryOperandKind.Term,
+					expressionKind: Semantic.ExpressionKind.Term,
+					termKind: Semantic.TermKind.UnaryOperation,
+					unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
+					argument: {
 						termKind: Semantic.TermKind.UnaryOperation,
 						unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
 						argument: {
-							termKind: Semantic.TermKind.UnaryOperation,
-							unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
-							argument: {
-								termKind: Semantic.TermKind.Literal,
-								literal: true
-							}
+							termKind: Semantic.TermKind.Literal,
+							literal: true
 						}
 					}
 				}
@@ -137,36 +128,77 @@ export function whereBoolean(): boolean {
 			{
 				queryClauseKind: Semantic.QueryClauseKind.Where,
 				condition: {
-					expressionKind: Semantic.ExpressionKind.Boolean,
-					binaryOperand: {
-						binaryOperandKind: Semantic.BinaryOperandKind.BinaryOperation,
+					expressionKind: Semantic.ExpressionKind.BinaryOperation,
+					binaryOperationSymbol: Semantic.BinaryOperationSymbol.Or,
+					argument0: {
+						expressionKind: Semantic.ExpressionKind.BinaryOperation,
+						binaryOperationSymbol: Semantic.BinaryOperationSymbol.And,
+						argument0: {
+							expressionKind: Semantic.ExpressionKind.Term,
+							termKind: Semantic.TermKind.Property,
+							propertyName: "p1"
+						},
+						argument1: {
+							expressionKind: Semantic.ExpressionKind.Term,
+							termKind: Semantic.TermKind.UnaryOperation,
+							unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
+							argument: {
+								expressionKind: Semantic.ExpressionKind.Term,
+								termKind: Semantic.TermKind.Property,
+								propertyName: "p2"
+							}
+						}
+					},
+					argument1: {
+						expressionKind: Semantic.ExpressionKind.Term,
+						termKind: Semantic.TermKind.UnaryOperation,
+						unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
+						argument: {
+							expressionKind: Semantic.ExpressionKind.Term,
+							termKind: Semantic.TermKind.Property,
+							propertyName: "p3"
+						}
+					}
+				}
+			}]
+		},
+
+		{
+			statementKind: Semantic.StatementKind.Query,
+			sourceName: "_",
+			clauses: [
+			{
+				queryClauseKind: Semantic.QueryClauseKind.Where,
+				condition: {
+					expressionKind: Semantic.ExpressionKind.BinaryOperation,
+					binaryOperationSymbol: Semantic.BinaryOperationSymbol.And,
+					argument0: {
+						expressionKind: Semantic.ExpressionKind.BinaryOperation,
 						binaryOperationSymbol: Semantic.BinaryOperationSymbol.Or,
 						argument0: {
-							binaryOperandKind: Semantic.BinaryOperandKind.BinaryOperation,
-							binaryOperationSymbol: Semantic.BinaryOperationSymbol.And,
-							argument0: {
-								binaryOperandKind: Semantic.BinaryOperandKind.Term,
-								termKind: Semantic.TermKind.Property,
-								propertyName: "p1"
-							},
-							argument1: {
-								binaryOperandKind: Semantic.BinaryOperandKind.Term,
-								termKind: Semantic.TermKind.UnaryOperation,
-								unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
-								argument: {
-									termKind: Semantic.TermKind.Property,
-									propertyName: "p2"
-								}
-							}
+							expressionKind: Semantic.ExpressionKind.Term,
+							termKind: Semantic.TermKind.Property,
+							propertyName: "p1"
 						},
 						argument1: {
-							binaryOperandKind: Semantic.BinaryOperandKind.Term,
+							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.UnaryOperation,
 							unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
 							argument: {
+								expressionKind: Semantic.ExpressionKind.Term,
 								termKind: Semantic.TermKind.Property,
-								propertyName: "p3"
+								propertyName: "p2"
 							}
+						}
+					},
+					argument1: {
+						expressionKind: Semantic.ExpressionKind.Term,
+						termKind: Semantic.TermKind.UnaryOperation,
+						unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
+						argument: {
+							expressionKind: Semantic.ExpressionKind.Term,
+							termKind: Semantic.TermKind.Property,
+							propertyName: "p3"
 						}
 					}
 				}
@@ -180,88 +212,44 @@ export function whereBoolean(): boolean {
 			{
 				queryClauseKind: Semantic.QueryClauseKind.Where,
 				condition: {
-					expressionKind: Semantic.ExpressionKind.Boolean,
-					binaryOperand: {
-						binaryOperandKind: Semantic.BinaryOperandKind.BinaryOperation,
-						binaryOperationSymbol: Semantic.BinaryOperationSymbol.And,
+					expressionKind: Semantic.ExpressionKind.BinaryOperation,
+					binaryOperationSymbol: Semantic.BinaryOperationSymbol.And,
+					argument0: {
+						expressionKind: Semantic.ExpressionKind.BinaryOperation,
+						binaryOperationSymbol: Semantic.BinaryOperationSymbol.Or,
 						argument0: {
-							binaryOperandKind: Semantic.BinaryOperandKind.BinaryOperation,
-							binaryOperationSymbol: Semantic.BinaryOperationSymbol.Or,
-							argument0: {
-								binaryOperandKind: Semantic.BinaryOperandKind.Term,
-								termKind: Semantic.TermKind.Property,
-								propertyName: "p1"
-							},
-							argument1: {
-								binaryOperandKind: Semantic.BinaryOperandKind.Term,
-								termKind: Semantic.TermKind.UnaryOperation,
-								unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
-								argument: {
-									termKind: Semantic.TermKind.Property,
-									propertyName: "p2"
-								}
-							}
+							expressionKind: Semantic.ExpressionKind.Term,
+							termKind: Semantic.TermKind.Property,
+							propertyName: "p1"
 						},
 						argument1: {
-							binaryOperandKind: Semantic.BinaryOperandKind.Term,
+							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.UnaryOperation,
 							unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
 							argument: {
+								expressionKind: Semantic.ExpressionKind.Term,
+								termKind: Semantic.TermKind.Property,
+								propertyName: "p2"
+							}
+						}
+					},
+					argument1: {
+						expressionKind: Semantic.ExpressionKind.BinaryOperation,
+						binaryOperationSymbol: Semantic.BinaryOperationSymbol.Or,
+						argument0: {
+							expressionKind: Semantic.ExpressionKind.Term,
+							termKind: Semantic.TermKind.UnaryOperation,
+							unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
+							argument: {
+								expressionKind: Semantic.ExpressionKind.Term,
 								termKind: Semantic.TermKind.Property,
 								propertyName: "p3"
 							}
-						}
-					}
-				}
-			}]
-		},
-
-		{
-			statementKind: Semantic.StatementKind.Query,
-			sourceName: "_",
-			clauses: [
-			{
-				queryClauseKind: Semantic.QueryClauseKind.Where,
-				condition: {
-					expressionKind: Semantic.ExpressionKind.Boolean,
-					binaryOperand: {
-						binaryOperandKind: Semantic.BinaryOperandKind.BinaryOperation,
-						binaryOperationSymbol: Semantic.BinaryOperationSymbol.And,
-						argument0: {
-							binaryOperandKind: Semantic.BinaryOperandKind.BinaryOperation,
-							binaryOperationSymbol: Semantic.BinaryOperationSymbol.Or,
-							argument0: {
-								binaryOperandKind: Semantic.BinaryOperandKind.Term,
-								termKind: Semantic.TermKind.Property,
-								propertyName: "p1"
-							},
-							argument1: {
-								binaryOperandKind: Semantic.BinaryOperandKind.Term,
-								termKind: Semantic.TermKind.UnaryOperation,
-								unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
-								argument: {
-									termKind: Semantic.TermKind.Property,
-									propertyName: "p2"
-								}
-							}
 						},
 						argument1: {
-							binaryOperandKind: Semantic.BinaryOperandKind.BinaryOperation,
-							binaryOperationSymbol: Semantic.BinaryOperationSymbol.Or,
-							argument0: {
-								binaryOperandKind: Semantic.BinaryOperandKind.Term,
-								termKind: Semantic.TermKind.UnaryOperation,
-								unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
-								argument: {
-									termKind: Semantic.TermKind.Property,
-									propertyName: "p3"
-								}
-							},
-							argument1: {
-								binaryOperandKind: Semantic.BinaryOperandKind.Term,
-								termKind: Semantic.TermKind.Property,
-								propertyName: "p4"
-							}
+							expressionKind: Semantic.ExpressionKind.Term,
+							termKind: Semantic.TermKind.Property,
+							propertyName: "p4"
 						}
 					}
 				}

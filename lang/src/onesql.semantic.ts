@@ -87,7 +87,7 @@ export enum ValueType {
 	Array = 0x100,
 }
 
-export enum ExpressionKind {
+export enum ToRefactorCategory {
 	Any = 0x0000,
 	Boolean = 0x0100,
 	Comparison = 0x0200,
@@ -98,27 +98,23 @@ export enum ExpressionKind {
 	DateTime = 0x4000,
 }
 
-export interface Expression extends Node {
-	readonly expressionKind: ExpressionKind;
-	readonly binaryOperand: BinaryOperand;
-}
-
-export enum BinaryOperandKind {
+export enum ExpressionKind {
 	Term,
 	BinaryOperation,
 }
 
-export interface BinaryOperand extends Node {
-	readonly binaryOperandKind: BinaryOperandKind;
+export interface Expression extends Node {
+	readonly resultType: ValueType;
+	readonly expressionKind: ExpressionKind;
 }
 
-export interface BinaryOperation extends BinaryOperand {
+export interface BinaryOperation extends Expression {
 	readonly binaryOperationSymbol: BinaryOperationSymbol;
-	readonly argument0: BinaryOperand;
-	readonly argument1: BinaryOperand;
+	readonly argument0: Expression;
+	readonly argument1: Expression;
 }
 
-export interface Term extends BinaryOperand {
+export interface Term extends Expression {
 	readonly termKind: TermKind;
 }
 
@@ -152,12 +148,12 @@ export interface ExpressionTerm extends Term {
 }
 
 export enum BinaryOperationSymbol {
-	BooleanLow = ExpressionKind.Boolean,
+	BooleanLow = ToRefactorCategory.Boolean,
 	And,
 	Or,
 	BooleanHigh,
 
-	ComparisonLow = ExpressionKind.Comparison,
+	ComparisonLow = ToRefactorCategory.Comparison,
 	Equal,
 	NotEqual,
 	Less,
@@ -166,13 +162,13 @@ export enum BinaryOperationSymbol {
 	GreaterOrEqual,
 	ComparisonHigh,
 
-	BitwiseLow = ExpressionKind.Bitwise,
+	BitwiseLow = ToRefactorCategory.Bitwise,
 	BitwiseAnd,
 	BitwiseOr,
 	BitwiseXor,
 	BitwiseHigh,
 
-	ArithmeticLow = ExpressionKind.Arithmetic,
+	ArithmeticLow = ToRefactorCategory.Arithmetic,
 	Add,
 	Subtract,
 	Multiply,
@@ -180,11 +176,11 @@ export enum BinaryOperationSymbol {
 	Modulo,
 	ArithmeticHigh,
 
-	StringLow = ExpressionKind.String,
+	StringLow = ToRefactorCategory.String,
 	Concat,
 	StringHigh,
 
-	DateTimeLow = ExpressionKind.DateTime,
+	DateTimeLow = ToRefactorCategory.DateTime,
 	DateTimeAdd,
 	DateTimeSubtract,
 	DateTimeDiff,
@@ -192,21 +188,21 @@ export enum BinaryOperationSymbol {
 }
 
 export enum UnaryOperationSymbol {
-	BooleanLow = ExpressionKind.Boolean,
+	BooleanLow = ToRefactorCategory.Boolean,
 	Not,
 	BooleanHigh,
 
-	BitwiseLow = ExpressionKind.Bitwise,
+	BitwiseLow = ToRefactorCategory.Bitwise,
 	BitNot,
 	BitwiseHigh,
 
-	ArithmeticLow = ExpressionKind.Arithmetic,
+	ArithmeticLow = ToRefactorCategory.Arithmetic,
 	Neg,
 	ArithmeticHigh,
 }
 
 export enum FunctionSymbol {
-	ArithmeticLow = ExpressionKind.Arithmetic,
+	ArithmeticLow = ToRefactorCategory.Arithmetic,
 	Abs,
 	Ceil,
 	Exp,
@@ -228,14 +224,14 @@ export enum FunctionSymbol {
 	Year,
 	ArithmeticHigh,
 
-	StringLow = ExpressionKind.String,
+	StringLow = ToRefactorCategory.String,
 	Substr,
 	ToLower,
 	ToString,
 	ToUpper,
 	StringHigh,
 
-	AggregationLow = ExpressionKind.Aggregation,
+	AggregationLow = ToRefactorCategory.Aggregation,
 	Avg,
 	Count,
 	First,
@@ -245,7 +241,7 @@ export enum FunctionSymbol {
 	Sum,
 	AggregationHigh,
 
-	DateTimeLow = ExpressionKind.DateTime,
+	DateTimeLow = ToRefactorCategory.DateTime,
 	Now,
 	Today,
 	DateTimeHigh,
