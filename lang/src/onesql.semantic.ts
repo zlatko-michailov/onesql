@@ -170,8 +170,6 @@ export enum BinaryOperationSymbol {
 	BitwiseAnd,
 	BitwiseOr,
 	BitwiseXor,
-	ShiftLeft,
-	ShiftRight,
 	BitwiseHigh,
 
 	ArithmeticLow = ExpressionKind.Arithmetic,
@@ -252,51 +250,3 @@ export enum FunctionSymbol {
 	Today,
 	DateTimeHigh,
 }
-
-export interface FunctionSignature {
-	readonly name: string;
-	readonly argumentKinds: ReadonlyArray<ExpressionKind>;
-	readonly resultKind: ExpressionKind;
-}
-
-export const functionSignatures: ReadonlyArray<FunctionSignature> = [
-	// Result: Arithmetic
-	{ name: "abs", argumentKinds: [ ExpressionKind.Arithmetic ], resultKind: ExpressionKind.Arithmetic },
-	{ name: "ceil", argumentKinds: [ ExpressionKind.Arithmetic ], resultKind: ExpressionKind.Arithmetic },
-	{ name: "exp", argumentKinds: [ ExpressionKind.Arithmetic ], resultKind: ExpressionKind.Arithmetic },
-	{ name: "floor", argumentKinds: [ ExpressionKind.Arithmetic ], resultKind: ExpressionKind.Arithmetic },
-	{ name: "lg", argumentKinds: [ ExpressionKind.Arithmetic ], resultKind: ExpressionKind.Arithmetic },
-	{ name: "ln", argumentKinds: [ ExpressionKind.Arithmetic ], resultKind: ExpressionKind.Arithmetic },
-	{ name: "log", argumentKinds: [ ExpressionKind.Arithmetic, ExpressionKind.Arithmetic ], resultKind: ExpressionKind.Arithmetic },
-	{ name: "power", argumentKinds: [ ExpressionKind.Arithmetic, ExpressionKind.Arithmetic ], resultKind: ExpressionKind.Arithmetic },
-
-	{ name: "indexOf", argumentKinds: [ ExpressionKind.String ], resultKind: ExpressionKind.Arithmetic },
-	{ name: "length", argumentKinds: [ ExpressionKind.String ], resultKind: ExpressionKind.Arithmetic },
-
-	{ name: "day", argumentKinds: [ ExpressionKind.DateTime ], resultKind: ExpressionKind.Arithmetic },
-	{ name: "hours", argumentKinds: [ ExpressionKind.DateTime ], resultKind: ExpressionKind.Arithmetic },
-	{ name: "milliseconds", argumentKinds: [ ExpressionKind.DateTime ], resultKind: ExpressionKind.Arithmetic },
-	{ name: "minutes", argumentKinds: [ ExpressionKind.DateTime ], resultKind: ExpressionKind.Arithmetic },
-	{ name: "month", argumentKinds: [ ExpressionKind.DateTime ], resultKind: ExpressionKind.Arithmetic },
-	{ name: "seconds", argumentKinds: [ ExpressionKind.DateTime ], resultKind: ExpressionKind.Arithmetic },
-	{ name: "year", argumentKinds: [ ExpressionKind.DateTime ], resultKind: ExpressionKind.Arithmetic },
-
-	// Result: String
-	{ name: "substr", argumentKinds: [ ExpressionKind.String, ExpressionKind.Arithmetic, ExpressionKind.Arithmetic ], resultKind: ExpressionKind.String },
-	{ name: "toLower", argumentKinds: [ ExpressionKind.String ], resultKind: ExpressionKind.String },
-	{ name: "toString", argumentKinds: [ ExpressionKind.Any ], resultKind: ExpressionKind.String },
-	{ name: "toUpper", argumentKinds: [ ExpressionKind.String ], resultKind: ExpressionKind.String },
-
-	// Result: Aggregation
-	{ name: "avg", argumentKinds: [ ExpressionKind.Arithmetic ], resultKind: ExpressionKind.Arithmetic },
-	{ name: "count", argumentKinds: [ ExpressionKind.Any ], resultKind: ExpressionKind.Arithmetic },
-	{ name: "first", argumentKinds: [ ExpressionKind.Any ], resultKind: ExpressionKind.Any },
-	{ name: "last", argumentKinds: [ ExpressionKind.Any ], resultKind: ExpressionKind.Any },
-	{ name: "max", argumentKinds: [ ExpressionKind.Any ], resultKind: ExpressionKind.Any },
-	{ name: "min", argumentKinds: [ ExpressionKind.Any ], resultKind: ExpressionKind.Any },
-	{ name: "sum", argumentKinds: [ ExpressionKind.Arithmetic ], resultKind: ExpressionKind.Arithmetic },
-
-	// Result: DateTime
-	{ name: "now", argumentKinds: [], resultKind: ExpressionKind.DateTime },
-	{ name: "today", argumentKinds: [], resultKind: ExpressionKind.DateTime },
-];
