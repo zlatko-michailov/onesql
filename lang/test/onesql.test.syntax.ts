@@ -35,7 +35,8 @@ export function from(): boolean {
 	let expectedBatch: Object = {
 		statements: [{
 			statementKind: Semantic.StatementKind.Query,
-			sourceName: "a_b_c_"
+			sourceName: "a_b_c_",
+			clauses: []
 		}]
 	};
 
@@ -92,6 +93,7 @@ export function whereBoolean(): boolean {
 					termKind: Semantic.TermKind.UnaryOperation,
 					unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
 					argument: {
+						expressionKind: Semantic.ExpressionKind.Term,
 						termKind: Semantic.TermKind.Property,
 						propertyName: "p1"
 					}
@@ -110,9 +112,11 @@ export function whereBoolean(): boolean {
 					termKind: Semantic.TermKind.UnaryOperation,
 					unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
 					argument: {
+						expressionKind: Semantic.ExpressionKind.Term,
 						termKind: Semantic.TermKind.UnaryOperation,
 						unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
 						argument: {
+							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.Literal,
 							literal: true
 						}

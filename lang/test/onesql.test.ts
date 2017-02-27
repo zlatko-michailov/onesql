@@ -50,24 +50,40 @@ export function log(level: string, message?: string, ...args: any[]): void {
 }
 
 export function areEqual<T>(expected: T, actual: T, logLevel: string, message: string) : boolean {
-    let passed = true;
-    
-    if (expected instanceof Object) {
-        for (let prop in expected) {
-            passed = areEqual(expected[prop], actual[prop], logLevel, message + "." + prop) && passed;
+    let passed: boolean = areEqualValues(expected !== undefined, actual !== undefined, logLevel, message + " !== undefined");
+
+    if (passed) {    
+        if (expected instanceof Object) {
+            for (let prop in expected) {
+                passed = areEqual(expected[prop], actual[prop], logLevel, message + "." + prop) && passed;
+            }
+
+            for (let prop in actual) {
+                if (!(actual[prop] instanceof Function) && !expected[prop]) {
+                    passed = areEqualValues(expected[prop], actual[prop], logLevel, message + "." + prop) && passed;
+                }
+            }
         }
-    }
-    else {
-        passed = expected === actual;
-        let text = (passed ? "P" : "F") + ": " + message;
-        log(logLevel, text, { expected: expected, actual: actual });
+        else {
+            passed = areEqualValues(expected, actual, logLevel, message);
+        }
     }
 
     return passed;
 }
 
+export function areEqualValues<T>(expected: T, actual: T, logLevel: string, message: string) : boolean {
+    let passed: boolean = expected === actual;
+    let text: string = (passed ? "P" : "F") + ": " + message;
+    log(logLevel, text, { expected: expected, actual: actual });
+
+    return passed;
+}
+
 export function areEqualArrays<T>(expected: ReadonlyArray<T>, actual: ReadonlyArray<T>, logLevel: string, message: string) : boolean {
-    let passed = areEqual(expected.length, actual.length, logLevel, message + ".length");
+    let passed: boolean = areEqual(expected !== undefined, actual !== undefined, logLevel, message + " !== undefined");
+
+    passed = areEqual(expected.length, actual.length, logLevel, message + ".length") && passed;
     
     for (let i: number = 0; i < Math.min(expected.length, actual.length); i++) {
         passed = areEqual(expected[i], actual[i], logLevel, message + "[" + i + "]") && passed;
@@ -77,8 +93,8 @@ export function areEqualArrays<T>(expected: ReadonlyArray<T>, actual: ReadonlyAr
 }
 
 export function isUndefined(actual: any, logLevel: string, message: string) : boolean {
-    let passed = undefined === actual;
-    let text = (passed ? "P" : "F") + ": " + message;
+    let passed: boolean = undefined === actual;
+    let text: string = (passed ? "P" : "F") + ": " + message;
     
     log(logLevel, text, { actual: actual });
     return passed;
