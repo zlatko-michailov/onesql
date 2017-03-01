@@ -13,12 +13,14 @@ interface SyntaxState {
 }
 
 export function parse(input: ReadonlyArray<Lex.Token>): Semantic.Batch {
-	let state: SyntaxState = parseBatch(input, 0);
+	let state: SyntaxState = parseBatch(input,
+		0);
 
 	return state.node as Semantic.Batch;
 }
 
-function parseBatch(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
+function parseBatch(input: ReadonlyArray<Lex.Token>,
+		inputIndex: number): SyntaxState {
 	let batch: Batch = { statements: [] } as Batch;
 
 	// Parse statements.
@@ -32,7 +34,8 @@ function parseBatch(input: ReadonlyArray<Lex.Token>, inputIndex: number): Syntax
 			continue;
 		}
 
-		let state: SyntaxState = parseStatement(input, inputIndex);
+		let state: SyntaxState = parseStatement(input,
+		inputIndex);
 		
 		batch.statements.push(state.node as Semantic.Statement);
 		inputIndex = state.inputIndex + 1;
@@ -69,14 +72,14 @@ function parseUseStatement(input: ReadonlyArray<Lex.Token>, inputIndex: number):
 	}
 	
 	// databaseName
-	inputIndex = moveInputIndex(input, inputIndex, "identifier");
+	inputIndex = moveInputIndex(input, inputIndex, undefined, "identifier");
 	if (input[inputIndex].tokenKind != Lex.TokenKind.Identifier) {
 		throw { lineNumber: input[inputIndex].lineNumber, expected: "identifier", actual: input[inputIndex].lexeme };
 	}
 	useStatement.databaseName = input[inputIndex].lexeme;
 
 	// ;
-	inputIndex = moveInputIndex(input, inputIndex, ";");
+	inputIndex = moveInputIndex(input, inputIndex, undefined, ";");
 	if (input[inputIndex].tokenKind != Lex.TokenKind.EndOfStatement) {
 		throw { lineNumber: input[inputIndex].lineNumber, expected: ";", actual: input[inputIndex].lexeme };
 	}
@@ -94,7 +97,7 @@ function parseQueryStatement(input: ReadonlyArray<Lex.Token>, inputIndex: number
 	}
 	
 	// sourceName
-	inputIndex = moveInputIndex(input, inputIndex, "identifier");
+	inputIndex = moveInputIndex(input, inputIndex, undefined, "identifier");
 	if (input[inputIndex].tokenKind != Lex.TokenKind.Identifier) {
 		throw { lineNumber: input[inputIndex].lineNumber, expected: "identifier", actual: input[inputIndex].lexeme };
 	}
@@ -103,7 +106,7 @@ function parseQueryStatement(input: ReadonlyArray<Lex.Token>, inputIndex: number
 	// Clauses
 	while (inputIndex < input.length) {
 		// ;
-		inputIndex = moveInputIndex(input, inputIndex, ";");
+		inputIndex = moveInputIndex(input, inputIndex, undefined, ";");
 		if (input[inputIndex].tokenKind == Lex.TokenKind.EndOfStatement) {
 			return { inputIndex: inputIndex, node: queryStatement };
 		}
@@ -147,53 +150,53 @@ function parseWhereClause(input: ReadonlyArray<Lex.Token>, inputIndex: number): 
 	let whereClause: WhereClause = new WhereClause();
 
 	// Condition
-	inputIndex = moveInputIndex(input, inputIndex, "condition");
-	let state: SyntaxState = parseExpression(input, inputIndex);
+	inputIndex = moveInputIndex(input, inputIndex, undefined, "condition");
+	let state: SyntaxState = parseExpression(input, inputIndex, undefined, Semantic.ValueType.Boolean);
 	whereClause.condition = state.node as Semantic.Expression;
 	inputIndex = state.inputIndex;
 
 	return { inputIndex: inputIndex, node: whereClause };
 }
 
-function parseExpression(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
+function parseExpression(input: ReadonlyArray<Lex.Token>, inputIndex: number, inputIndexLimit: number, resultType: Semantic.ValueType): SyntaxState {
 	// Term
-	let state: SyntaxState = parseTerm(input, inputIndex);
-	let binaryOperand: Semantic.Expression = state.node as Semantic.Term;
+	let state: SyntaxState = parseTerm(input, inputIndex, inputIndexLimit, resultType);
+	let expression: Semantic.Expression = state.node as Semantic.Term;
 	inputIndex = state.inputIndex;
 
 	// Binary operations
-	inputIndex = moveInputIndex(input, inputIndex, ";");
+	inputIndex = moveInputIndex(input, inputIndex, inputIndexLimit, ";");
 	while (input[inputIndex].tokenKind == Lex.TokenKind.BinaryOperation) {
 		let binaryOperation: BinaryOperation = new BinaryOperation();
 		binaryOperation.binaryOperationSymbol = toBinaryOperationSymbol(input[inputIndex]);
-		binaryOperation.argument0 = binaryOperand;
+		binaryOperation.argument0 = expression;
 
 		// Term
-		inputIndex = moveInputIndex(input, inputIndex, "Boolean term");
-		state = parseTerm(input, inputIndex);
+		inputIndex = moveInputIndex(input, inputIndex, inputIndexLimit, "Boolean term");
+		state = parseTerm(input, inputIndex, inputIndexLimit, resultType);
 		binaryOperation.argument1 = state.node as Semantic.Term;
-		binaryOperand = binaryOperation;
+		expression = binaryOperation;
 
 		inputIndex = state.inputIndex;
-		inputIndex = moveInputIndex(input, inputIndex, ";");
+		inputIndex = moveInputIndex(input, inputIndex, inputIndexLimit, ";");
 	}
 
-	return { inputIndex: inputIndex, node: binaryOperand };
+	return { inputIndex: inputIndex, node: expression };
 }
 
-function parseTerm(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
+function parseTerm(input: ReadonlyArray<Lex.Token>, inputIndex: number, inputIndexLimit: number, resultType: Semantic.ValueType): SyntaxState {
 	if (input[inputIndex].tokenKind == Lex.TokenKind.UnaryOperation) {
-		return parseUnaryOperation(input, inputIndex);
+		return parseUnaryOperation(input, inputIndex, inputIndexLimit, resultType);
 	}
 	else if (input[inputIndex].tokenKind == Lex.TokenKind.BooleanLiteral) {
-		return parseLiteral(input, inputIndex);
+		return parseLiteral(input, inputIndex, inputIndexLimit, resultType);
 	}
 	else if (input[inputIndex].tokenKind == Lex.TokenKind.Identifier) {
-		return parseProperty(input, inputIndex);
+		return parseProperty(input, inputIndex, inputIndexLimit, resultType);
 	}
 	else if (input[inputIndex].tokenKind == Lex.TokenKind.OpeningParenthesis) {
-		inputIndex = moveInputIndex(input, inputIndex, ")");
-		let state: SyntaxState = parseExpression(input, inputIndex);
+		inputIndex = moveInputIndex(input, inputIndex, inputIndexLimit, ")");
+		let state: SyntaxState = parseExpression(input, inputIndex, inputIndexLimit, resultType);
 
 		inputIndex = state.inputIndex;
 		if (input[inputIndex].tokenKind == Lex.TokenKind.ClosingParenthesis) {
@@ -207,21 +210,21 @@ function parseTerm(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxS
 	throw { lineNumber: input[inputIndex].lineNumber, expected: "Boolean term", actual: input[inputIndex].lexeme };
 }
 
-function parseUnaryOperation(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
+function parseUnaryOperation(input: ReadonlyArray<Lex.Token>, inputIndex: number, inputIndexLimit: number, resultType: Semantic.ValueType): SyntaxState {
 	// Unary operation
 	let unaryOperation: UnaryOperationTerm = new UnaryOperationTerm();
-	unaryOperation.unaryOperationSymbol = Semantic.UnaryOperationSymbol.Not;
+	unaryOperation.unaryOperationSymbol = Semantic.UnaryOperationSymbol.LogicalNot;
 
 	// Term
-	inputIndex = moveInputIndex(input, inputIndex, "Boolean term");
-	let state: SyntaxState = parseTerm(input, inputIndex);
+	inputIndex = moveInputIndex(input, inputIndex, inputIndexLimit, "Boolean term");
+	let state: SyntaxState = parseTerm(input, inputIndex, inputIndexLimit, resultType);
 	unaryOperation.argument = state.node as Semantic.Term;
 	inputIndex = state.inputIndex;
 
 	return { inputIndex: inputIndex, node: unaryOperation };
 }
 
-function parseLiteral(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
+function parseLiteral(input: ReadonlyArray<Lex.Token>, inputIndex: number, inputIndexLimit: number, resultType: Semantic.ValueType): SyntaxState {
 	// Literal
 	let literal: LiteralTerm = new LiteralTerm();
 	literal.literal = input[inputIndex].lexeme.toUpperCase() == "TRUE";
@@ -229,7 +232,7 @@ function parseLiteral(input: ReadonlyArray<Lex.Token>, inputIndex: number): Synt
 	return { inputIndex: inputIndex, node: literal };
 }
 
-function parseProperty(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
+function parseProperty(input: ReadonlyArray<Lex.Token>, inputIndex: number, inputIndexLimit: number, resultType: Semantic.ValueType): SyntaxState {
 	// Property
 	let property: PropertyTerm = new PropertyTerm();
 	property.propertyName = input[inputIndex].lexeme;
@@ -249,9 +252,10 @@ function parseOrderByClause(input: ReadonlyArray<Lex.Token>, inputIndex: number)
 	return { inputIndex: inputIndex, node: undefined };
 }
 
-function moveInputIndex(input: ReadonlyArray<Lex.Token>, inputIndex: number, expected: string): number {
-	if (++inputIndex >= input.length) {
-		throw { lineNumber: input[input.length - 1].lineNumber, expected: expected, actual: "" };
+function moveInputIndex(input: ReadonlyArray<Lex.Token>, inputIndex: number, inputIndexLimit: number, expected: string): number {
+	inputIndexLimit = inputIndexLimit ? inputIndexLimit : input.length;
+	if (++inputIndex >= inputIndexLimit) {
+		throw { lineNumber: input[inputIndexLimit - 1].lineNumber, expected: expected, actual: inputIndexLimit < input.length ? input[inputIndexLimit] : "" };
 	}
 	
 	return inputIndex;
@@ -263,10 +267,10 @@ function toBinaryOperationSymbol(token: Lex.Token): Semantic.BinaryOperationSymb
 			switch (token.lexeme.toUpperCase()) {
 				case "AND":
 				case "&&":
-					return Semantic.BinaryOperationSymbol.And;
+					return Semantic.BinaryOperationSymbol.LogicalAnd;
 				case "OR":
 				case "||":
-					return Semantic.BinaryOperationSymbol.Or;
+					return Semantic.BinaryOperationSymbol.LogicalOr;
 				default:
 					throw { lineNumber: token.lineNumber, expected: "binary Boolean operation", actual: token.lexeme };
 			}
@@ -350,7 +354,7 @@ class PropertyTerm extends Expression implements Semantic.PropertyTerm {
 // -----------------------------------------------------------------------------
 // Symbol tables.
 
-enum OperationPriority {
+const enum OperationPriority {
 	Logical,
 	Comparison,
 	String,
@@ -362,85 +366,377 @@ enum OperationPriority {
 
 interface OperationSignature {
 	readonly names: ReadonlyArray<string>;
+	readonly symbol: number;
 	readonly priority?: OperationPriority;
 	readonly argumentTypes: ReadonlyArray<Semantic.ValueType>;
 	readonly resultType: Semantic.ValueType;
 }
 
 const unaryOperationSignatures: ReadonlyArray<OperationSignature> = [
-	{ names: ["NOT", "!"], argumentTypes: [ Semantic.ValueType.Boolean ], resultType: Semantic.ValueType.Boolean },
+	{
+		names: ["NOT", "!"],
+		symbol: Semantic.UnaryOperationSymbol.LogicalNot,
+		argumentTypes: [ Semantic.ValueType.Boolean ],
+		resultType: Semantic.ValueType.Boolean
+	},
 
-	{ names: ["~"], argumentTypes: [ Semantic.ValueType.Number ], resultType: Semantic.ValueType.Number },
-	{ names: ["+"], argumentTypes: [ Semantic.ValueType.Number ], resultType: Semantic.ValueType.Number },
-	{ names: ["-"], argumentTypes: [ Semantic.ValueType.Number ], resultType: Semantic.ValueType.Number },
+	{
+		names: ["~"],
+		symbol: Semantic.UnaryOperationSymbol.BitwiseNot,
+		argumentTypes: [ Semantic.ValueType.Number ],
+		resultType: Semantic.ValueType.Number
+	},
+
+	{
+		names: ["+"],
+		symbol: Semantic.UnaryOperationSymbol.NoOp,
+		argumentTypes: [ Semantic.ValueType.Number ],
+		resultType: Semantic.ValueType.Number
+	},
+	{
+		names: ["-"],
+		symbol: Semantic.UnaryOperationSymbol.Negate,
+		argumentTypes: [ Semantic.ValueType.Number ],
+		resultType: Semantic.ValueType.Number
+	},
 ];
 
 const binaryOperationSignatures: ReadonlyArray<OperationSignature> = [
-	{ names: ["AND", "&&"], priority: OperationPriority.Logical, argumentTypes: [ Semantic.ValueType.Boolean, Semantic.ValueType.Boolean ], resultType: Semantic.ValueType.Boolean },
-	{ names: ["OR", "||"], priority: OperationPriority.Logical, argumentTypes: [ Semantic.ValueType.Boolean, Semantic.ValueType.Boolean ], resultType: Semantic.ValueType.Boolean },
+	{
+		names: ["OR", "||"],
+		symbol: Semantic.BinaryOperationSymbol.LogicalOr,
+		priority: OperationPriority.Logical,
+		argumentTypes: [ Semantic.ValueType.Boolean, Semantic.ValueType.Boolean ],
+		resultType: Semantic.ValueType.Boolean
+	},
+	{
+		names: ["AND", "&&"],
+		symbol: Semantic.BinaryOperationSymbol.LogicalAnd,
+		priority: OperationPriority.Logical,
+		argumentTypes: [ Semantic.ValueType.Boolean, Semantic.ValueType.Boolean ],
+		resultType: Semantic.ValueType.Boolean
+	},
 
-	{ names: ["=="], priority: OperationPriority.Comparison, argumentTypes: [ Semantic.ValueType.Any, Semantic.ValueType.Any ], resultType: Semantic.ValueType.Any },
-	{ names: ["!=", "<>"], priority: OperationPriority.Comparison, argumentTypes: [ Semantic.ValueType.Any, Semantic.ValueType.Any ], resultType: Semantic.ValueType.Any },
-	{ names: ["<"], priority: OperationPriority.Comparison, argumentTypes: [ Semantic.ValueType.Any, Semantic.ValueType.Any ], resultType: Semantic.ValueType.Any },
-	{ names: ["<="], priority: OperationPriority.Comparison, argumentTypes: [ Semantic.ValueType.Any, Semantic.ValueType.Any ], resultType: Semantic.ValueType.Any },
-	{ names: [">"], priority: OperationPriority.Comparison, argumentTypes: [ Semantic.ValueType.Any, Semantic.ValueType.Any ], resultType: Semantic.ValueType.Any },
-	{ names: [">="], priority: OperationPriority.Comparison, argumentTypes: [ Semantic.ValueType.Any, Semantic.ValueType.Any ], resultType: Semantic.ValueType.Any },
+	{
+		names: ["=="],
+		symbol: Semantic.BinaryOperationSymbol.Equal,
+		priority: OperationPriority.Comparison,
+		argumentTypes: [ Semantic.ValueType.Any, Semantic.ValueType.Any ],
+		resultType: Semantic.ValueType.Any
+	},
+	{
+		names: ["!=", "<>"],
+		symbol: Semantic.BinaryOperationSymbol.NotEqual,
+		priority: OperationPriority.Comparison,
+		argumentTypes: [ Semantic.ValueType.Any, Semantic.ValueType.Any ],
+		resultType: Semantic.ValueType.Any
+	},
+	{
+		names: ["<"],
+		symbol: Semantic.BinaryOperationSymbol.Less,
+		priority: OperationPriority.Comparison,
+		argumentTypes: [ Semantic.ValueType.Any, Semantic.ValueType.Any ],
+		resultType: Semantic.ValueType.Any
+	},
+	{
+		names: ["<="],
+		symbol: Semantic.BinaryOperationSymbol.LessOrEqual,
+		priority: OperationPriority.Comparison,
+		argumentTypes: [ Semantic.ValueType.Any, Semantic.ValueType.Any ],
+		resultType: Semantic.ValueType.Any
+	},
+	{
+		names: [">"],
+		symbol: Semantic.BinaryOperationSymbol.Greater,
+		priority: OperationPriority.Comparison,
+		argumentTypes: [ Semantic.ValueType.Any, Semantic.ValueType.Any ],
+		resultType: Semantic.ValueType.Any
+	},
+	{
+		names: [">="],
+		symbol: Semantic.BinaryOperationSymbol.GreaterOrEqual,
+		priority: OperationPriority.Comparison,
+		argumentTypes: [ Semantic.ValueType.Any, Semantic.ValueType.Any ],
+		resultType: Semantic.ValueType.Any
+	},
 
-	{ names: ["&"], priority: OperationPriority.Bitwise, argumentTypes: [ Semantic.ValueType.Number, Semantic.ValueType.Number ], resultType: Semantic.ValueType.Number },
-	{ names: ["|"], priority: OperationPriority.Bitwise, argumentTypes: [ Semantic.ValueType.Number, Semantic.ValueType.Number ], resultType: Semantic.ValueType.Number },
-	{ names: ["^"], priority: OperationPriority.Bitwise, argumentTypes: [ Semantic.ValueType.Number, Semantic.ValueType.Number ], resultType: Semantic.ValueType.Number },
+	{
+		names: ["|"],
+		symbol: Semantic.BinaryOperationSymbol.BitwiseOr,
+		priority: OperationPriority.Bitwise,
+		argumentTypes: [ Semantic.ValueType.Number, Semantic.ValueType.Number ],
+		resultType: Semantic.ValueType.Number
+	},
+	{
+		names: ["&"],
+		symbol: Semantic.BinaryOperationSymbol.BitwiseAnd,
+		priority: OperationPriority.Bitwise,
+		argumentTypes: [ Semantic.ValueType.Number, Semantic.ValueType.Number ],
+		resultType: Semantic.ValueType.Number
+	},
+	{
+		names: ["^"],
+		symbol: Semantic.BinaryOperationSymbol.BitwiseXor,
+		priority: OperationPriority.Bitwise,
+		argumentTypes: [ Semantic.ValueType.Number, Semantic.ValueType.Number ],
+		resultType: Semantic.ValueType.Number
+	},
 
-	{ names: ["+"], priority: OperationPriority.Addition, argumentTypes: [ Semantic.ValueType.Number, Semantic.ValueType.Number ], resultType: Semantic.ValueType.Number },
-	{ names: ["-"], priority: OperationPriority.Addition, argumentTypes: [ Semantic.ValueType.Number, Semantic.ValueType.Number ], resultType: Semantic.ValueType.Number },
-	{ names: ["*"], priority: OperationPriority.Multiplication, argumentTypes: [ Semantic.ValueType.Number, Semantic.ValueType.Number ], resultType: Semantic.ValueType.Number },
-	{ names: ["/"], priority: OperationPriority.Multiplication, argumentTypes: [ Semantic.ValueType.Number, Semantic.ValueType.Number ], resultType: Semantic.ValueType.Number },
-	{ names: ["%"], priority: OperationPriority.Multiplication, argumentTypes: [ Semantic.ValueType.Number, Semantic.ValueType.Number ], resultType: Semantic.ValueType.Number },
+	{
+		names: ["+"],
+		symbol: Semantic.BinaryOperationSymbol.Add,
+		priority: OperationPriority.Addition,
+		argumentTypes: [ Semantic.ValueType.Number, Semantic.ValueType.Number ],
+		resultType: Semantic.ValueType.Number
+	},
+	{
+		names: ["-"],
+		symbol: Semantic.BinaryOperationSymbol.Subtract,
+		priority: OperationPriority.Addition,
+		argumentTypes: [ Semantic.ValueType.Number, Semantic.ValueType.Number ],
+		resultType: Semantic.ValueType.Number
+	},
+	{
+		names: ["*"],
+		symbol: Semantic.BinaryOperationSymbol.Multiply,
+		priority: OperationPriority.Multiplication,
+		argumentTypes: [ Semantic.ValueType.Number, Semantic.ValueType.Number ],
+		resultType: Semantic.ValueType.Number
+	},
+	{
+		names: ["/"],
+		symbol: Semantic.BinaryOperationSymbol.Divide,
+		priority: OperationPriority.Multiplication,
+		argumentTypes: [ Semantic.ValueType.Number, Semantic.ValueType.Number ],
+		resultType: Semantic.ValueType.Number
+	},
+	{
+		names: ["%"],
+		symbol: Semantic.BinaryOperationSymbol.Modulo,
+		priority: OperationPriority.Multiplication,
+		argumentTypes: [ Semantic.ValueType.Number, Semantic.ValueType.Number ],
+		resultType: Semantic.ValueType.Number
+	},
 
-	{ names: ["+"], priority: OperationPriority.String, argumentTypes: [ Semantic.ValueType.String, Semantic.ValueType.String ], resultType: Semantic.ValueType.String },
+	{
+		names: ["+"],
+		symbol: Semantic.BinaryOperationSymbol.Concat,
+		priority: OperationPriority.String,
+		argumentTypes: [ Semantic.ValueType.String, Semantic.ValueType.String ],
+		resultType: Semantic.ValueType.String
+	},
 
-	{ names: ["+"], priority: OperationPriority.DateTime, argumentTypes: [ Semantic.ValueType.DateTime, Semantic.ValueType.Number ], resultType: Semantic.ValueType.DateTime },
-	{ names: ["-"], priority: OperationPriority.DateTime, argumentTypes: [ Semantic.ValueType.DateTime, Semantic.ValueType.Number ], resultType: Semantic.ValueType.DateTime },
-	{ names: ["-"], priority: OperationPriority.DateTime, argumentTypes: [ Semantic.ValueType.DateTime, Semantic.ValueType.DateTime ], resultType: Semantic.ValueType.Number },
+	{
+		names: ["+"],
+		symbol: Semantic.BinaryOperationSymbol.DateTimeAdd,
+		priority: OperationPriority.DateTime,
+		argumentTypes: [ Semantic.ValueType.DateTime, Semantic.ValueType.Number ],
+		resultType: Semantic.ValueType.DateTime
+	},
+	{
+		names: ["-"],
+		symbol: Semantic.BinaryOperationSymbol.DateTimeSubtract,
+		priority: OperationPriority.DateTime,
+		argumentTypes: [ Semantic.ValueType.DateTime, Semantic.ValueType.Number ],
+		resultType: Semantic.ValueType.DateTime
+	},
+	{
+		names: ["-"],
+		symbol: Semantic.BinaryOperationSymbol.DateTimeDiff,
+		priority: OperationPriority.DateTime,
+		argumentTypes: [ Semantic.ValueType.DateTime, Semantic.ValueType.DateTime ],
+		resultType: Semantic.ValueType.Number
+	},
 ];
 
 const functionSignatures: ReadonlyArray<OperationSignature> = [
 	// Result: Number
-	{ names: ["abs"], argumentTypes: [ Semantic.ValueType.Number ], resultType: Semantic.ValueType.Number },
-	{ names: ["ceil"], argumentTypes: [ Semantic.ValueType.Number ], resultType: Semantic.ValueType.Number },
-	{ names: ["exp"], argumentTypes: [ Semantic.ValueType.Number ], resultType: Semantic.ValueType.Number },
-	{ names: ["floor"], argumentTypes: [ Semantic.ValueType.Number ], resultType: Semantic.ValueType.Number },
-	{ names: ["lg"], argumentTypes: [ Semantic.ValueType.Number ], resultType: Semantic.ValueType.Number },
-	{ names: ["ln"], argumentTypes: [ Semantic.ValueType.Number ], resultType: Semantic.ValueType.Number },
-	{ names: ["log"], argumentTypes: [ Semantic.ValueType.Number ], resultType: Semantic.ValueType.Number },
-	{ names: ["power"], argumentTypes: [ Semantic.ValueType.Number, Semantic.ValueType.Number ], resultType: Semantic.ValueType.Number },
+	{
+		names: ["abs"],
+		symbol: Semantic.FunctionSymbol.Abs,
+		argumentTypes: [ Semantic.ValueType.Number ],
+		resultType: Semantic.ValueType.Number
+	},
+	{
+		names: ["ceil"],
+		symbol: Semantic.FunctionSymbol.Ceil,
+		argumentTypes: [ Semantic.ValueType.Number ],
+		resultType: Semantic.ValueType.Number
+	},
+	{
+		names: ["exp"],
+		symbol: Semantic.FunctionSymbol.Exp,
+		argumentTypes: [ Semantic.ValueType.Number ],
+		resultType: Semantic.ValueType.Number
+	},
+	{
+		names: ["floor"],
+		symbol: Semantic.FunctionSymbol.Floor,
+		argumentTypes: [ Semantic.ValueType.Number ],
+		resultType: Semantic.ValueType.Number
+	},
+	{
+		names: ["lg"],
+		symbol: Semantic.FunctionSymbol.Lg,
+		argumentTypes: [ Semantic.ValueType.Number ],
+		resultType: Semantic.ValueType.Number
+	},
+	{
+		names: ["ln"],
+		symbol: Semantic.FunctionSymbol.Ln,
+		argumentTypes: [ Semantic.ValueType.Number ],
+		resultType: Semantic.ValueType.Number
+	},
+	{
+		names: ["log"],
+		symbol: Semantic.FunctionSymbol.Log,
+		argumentTypes: [ Semantic.ValueType.Number ],
+		resultType: Semantic.ValueType.Number
+	},
+	{
+		names: ["power"],
+		symbol: Semantic.FunctionSymbol.Power,
+		argumentTypes: [ Semantic.ValueType.Number, Semantic.ValueType.Number ],
+		resultType: Semantic.ValueType.Number
+	},
 
-	{ names: ["indexOf"], argumentTypes: [ Semantic.ValueType.String, Semantic.ValueType.String ], resultType: Semantic.ValueType.Number },
-	{ names: ["length"], argumentTypes: [ Semantic.ValueType.String ], resultType: Semantic.ValueType.Number },
+	{
+		names: ["indexOf"],
+		symbol: Semantic.FunctionSymbol.IndexOf,
+		argumentTypes: [ Semantic.ValueType.String, Semantic.ValueType.String ],
+		resultType: Semantic.ValueType.Number
+	},
+	{
+		names: ["length"],
+		symbol: Semantic.FunctionSymbol.Length,
+		argumentTypes: [ Semantic.ValueType.String ],
+		resultType: Semantic.ValueType.Number
+	},
 
-	{ names: ["day"], argumentTypes: [ Semantic.ValueType.DateTime ], resultType: Semantic.ValueType.Number },
-	{ names: ["hours"], argumentTypes: [ Semantic.ValueType.DateTime ], resultType: Semantic.ValueType.Number },
-	{ names: ["milliseconds"], argumentTypes: [ Semantic.ValueType.DateTime ], resultType: Semantic.ValueType.Number },
-	{ names: ["minutes"], argumentTypes: [ Semantic.ValueType.DateTime ], resultType: Semantic.ValueType.Number },
-	{ names: ["month"], argumentTypes: [ Semantic.ValueType.DateTime ], resultType: Semantic.ValueType.Number },
-	{ names: ["seconds"], argumentTypes: [ Semantic.ValueType.DateTime ], resultType: Semantic.ValueType.Number },
-	{ names: ["year"], argumentTypes: [ Semantic.ValueType.DateTime ], resultType: Semantic.ValueType.Number },
+	{
+		names: ["day"],
+		symbol: Semantic.FunctionSymbol.Day,
+		argumentTypes: [ Semantic.ValueType.DateTime ],
+		resultType: Semantic.ValueType.Number
+	},
+	{
+		names: ["hours"],
+		symbol: Semantic.FunctionSymbol.Hours,
+		argumentTypes: [ Semantic.ValueType.DateTime ],
+		resultType: Semantic.ValueType.Number
+	},
+	{
+		names: ["milliseconds"],
+		symbol: Semantic.FunctionSymbol.Milliseconds,
+		argumentTypes: [ Semantic.ValueType.DateTime ],
+		resultType: Semantic.ValueType.Number
+	},
+	{
+		names: ["minutes"],
+		symbol: Semantic.FunctionSymbol.Minutes,
+		argumentTypes: [ Semantic.ValueType.DateTime ],
+		resultType: Semantic.ValueType.Number
+	},
+	{
+		names: ["month"],
+		symbol: Semantic.FunctionSymbol.Month,
+		argumentTypes: [ Semantic.ValueType.DateTime ],
+		resultType: Semantic.ValueType.Number
+	},
+	{
+		names: ["seconds"],
+		symbol: Semantic.FunctionSymbol.Seconds,
+		argumentTypes: [ Semantic.ValueType.DateTime ],
+		resultType: Semantic.ValueType.Number
+	},
+	{
+		names: ["year"],
+		symbol: Semantic.FunctionSymbol.Year,
+		argumentTypes: [ Semantic.ValueType.DateTime ],
+		resultType: Semantic.ValueType.Number
+	},
 
 	// Result: String
-	{ names: ["substr"], argumentTypes: [ Semantic.ValueType.String, Semantic.ValueType.Number, Semantic.ValueType.Number ], resultType: Semantic.ValueType.String },
-	{ names: ["toLower"], argumentTypes: [ Semantic.ValueType.String ], resultType: Semantic.ValueType.String },
-	{ names: ["toString"], argumentTypes: [ Semantic.ValueType.Any ], resultType: Semantic.ValueType.String },
-	{ names: ["toUpper"], argumentTypes: [ Semantic.ValueType.String ], resultType: Semantic.ValueType.String },
+	{
+		names: ["substr"],
+		symbol: Semantic.FunctionSymbol.Substr,
+		argumentTypes: [ Semantic.ValueType.String, Semantic.ValueType.Number, Semantic.ValueType.Number ],
+		resultType: Semantic.ValueType.String
+	},
+	{
+		names: ["toLower"],
+		symbol: Semantic.FunctionSymbol.ToLower,
+		argumentTypes: [ Semantic.ValueType.String ],
+		resultType: Semantic.ValueType.String
+	},
+	{
+		names: ["toString"],
+		symbol: Semantic.FunctionSymbol.ToString,
+		argumentTypes: [ Semantic.ValueType.Any ],
+		resultType: Semantic.ValueType.String
+	},
+	{
+		names: ["toUpper"],
+		symbol: Semantic.FunctionSymbol.ToUpper,
+		argumentTypes: [ Semantic.ValueType.String ],
+		resultType: Semantic.ValueType.String
+	},
 
 	// Result: Aggregation
-	{ names: ["avg"], argumentTypes: [ Semantic.ValueType.Array | Semantic.ValueType.Number ], resultType: Semantic.ValueType.Number },
-	{ names: ["count"], argumentTypes: [ Semantic.ValueType.Array | Semantic.ValueType.Any ], resultType: Semantic.ValueType.Number },
-	{ names: ["first"], argumentTypes: [ Semantic.ValueType.Array | Semantic.ValueType.Any ], resultType: Semantic.ValueType.Any },
-	{ names: ["last"], argumentTypes: [ Semantic.ValueType.Array | Semantic.ValueType.Any ], resultType: Semantic.ValueType.Any },
-	{ names: ["max"], argumentTypes: [ Semantic.ValueType.Array | Semantic.ValueType.Any ], resultType: Semantic.ValueType.Any },
-	{ names: ["min"], argumentTypes: [ Semantic.ValueType.Array | Semantic.ValueType.Any ], resultType: Semantic.ValueType.Any },
-	{ names: ["sum"], argumentTypes: [ Semantic.ValueType.Array | Semantic.ValueType.Number ], resultType: Semantic.ValueType.Number },
+	{
+		names: ["avg"],
+		symbol: Semantic.FunctionSymbol.Avg,
+		argumentTypes: [ Semantic.ValueType.Number ],
+		resultType: Semantic.ValueType.Number
+	},
+	{
+		names: ["count"],
+		symbol: Semantic.FunctionSymbol.Count,
+		argumentTypes: [ Semantic.ValueType.Any ],
+		resultType: Semantic.ValueType.Number
+	},
+	{
+		names: ["first"],
+		symbol: Semantic.FunctionSymbol.First,
+		argumentTypes: [ Semantic.ValueType.Any ],
+		resultType: Semantic.ValueType.Any
+	},
+	{
+		names: ["last"],
+		symbol: Semantic.FunctionSymbol.Last,
+		argumentTypes: [ Semantic.ValueType.Any ],
+		resultType: Semantic.ValueType.Any
+	},
+	{
+		names: ["max"],
+		symbol: Semantic.FunctionSymbol.Max,
+		argumentTypes: [ Semantic.ValueType.Any ],
+		resultType: Semantic.ValueType.Any
+	},
+	{
+		names: ["min"],
+		symbol: Semantic.FunctionSymbol.Min,
+		argumentTypes: [ Semantic.ValueType.Any ],
+		resultType: Semantic.ValueType.Any
+	},
+	{
+		names: ["sum"],
+		symbol: Semantic.FunctionSymbol.Sum,
+		argumentTypes: [ Semantic.ValueType.Number ],
+		resultType: Semantic.ValueType.Number
+	},
 
 	// Result: DateTime
-	{ names: ["now"], argumentTypes: [], resultType: Semantic.ValueType.DateTime },
-	{ names: ["today"], argumentTypes: [], resultType: Semantic.ValueType.DateTime },
+	{
+		names: ["now"],
+		symbol: Semantic.FunctionSymbol.Now,
+		argumentTypes: [],
+		resultType: Semantic.ValueType.DateTime
+	},
+	{
+		names: ["today"],
+		symbol: Semantic.FunctionSymbol.Today,
+		argumentTypes: [],
+		resultType: Semantic.ValueType.DateTime
+	},
 ];

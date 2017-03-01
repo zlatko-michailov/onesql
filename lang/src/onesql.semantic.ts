@@ -14,12 +14,12 @@ export interface Statement extends Node {
 	readonly statementKind: StatementKind;
 }
 
-export enum StatementKind {
-	Use,
-	Query,
-	Insert,
-	Update,
-	Delete,
+export const enum StatementKind {
+	Use = 1,
+	Query = 2,
+	Insert = 3,
+	Update = 4,
+	Delete = 5,
 }
 
 export interface UseStatement extends Statement {
@@ -35,11 +35,11 @@ export interface QueryClause extends Node {
 	readonly queryClauseKind: QueryClauseKind;
 }
 
-export enum QueryClauseKind {
-	Where,
-	Select,
-	GroupBy,
-	OrderBy,
+export const enum QueryClauseKind {
+	Where = 1,
+	Select = 2,
+	GroupBy = 3,
+	OrderBy = 4,
 }
 
 export interface WhereClause extends QueryClause {
@@ -78,29 +78,17 @@ export interface Ordering extends Node {
 	readonly ascending: boolean;
 }
 
-export enum ValueType {
-	Any,
-	Boolean,
-	Number,
-	String,
-	DateTime,
-	Array = 0x100,
+export const enum ValueType {
+	Any = 0,
+	Boolean = 1,
+	Number = 2,
+	String = 3,
+	DateTime = 4,
 }
 
-export enum ToRefactorCategory {
-	Any = 0x0000,
-	Boolean = 0x0100,
-	Comparison = 0x0200,
-	Bitwise = 0x0400,
-	Arithmetic = 0x0800,
-	String = 0x1000,
-	Aggregation = 0x2000,
-	DateTime = 0x4000,
-}
-
-export enum ExpressionKind {
-	Term,
-	BinaryOperation,
+export const enum ExpressionKind {
+	Term = 1,
+	BinaryOperation = 2,
 }
 
 export interface Expression extends Node {
@@ -118,12 +106,12 @@ export interface Term extends Expression {
 	readonly termKind: TermKind;
 }
 
-export enum TermKind {
-	UnaryOperation,
-	Literal,
-	Property,
-	FunctionCall,
-	Expression,
+export const enum TermKind {
+	UnaryOperation = 1,
+	Literal = 2,
+	Property = 3,
+	FunctionCall = 4,
+	Expression = 5,
 }
 
 export interface UnaryOperationTerm extends Term {
@@ -147,102 +135,77 @@ export interface ExpressionTerm extends Term {
 	readonly expression: Expression;
 }
 
-export enum BinaryOperationSymbol {
-	BooleanLow = ToRefactorCategory.Boolean,
-	And,
-	Or,
-	BooleanHigh,
+export const enum UnaryOperationSymbol {
+	LogicalNot = 1,
 
-	ComparisonLow = ToRefactorCategory.Comparison,
-	Equal,
-	NotEqual,
-	Less,
-	LessOrEqual,
-	Greater,
-	GreaterOrEqual,
-	ComparisonHigh,
+	BitwiseNot = 2,
 
-	BitwiseLow = ToRefactorCategory.Bitwise,
-	BitwiseAnd,
-	BitwiseOr,
-	BitwiseXor,
-	BitwiseHigh,
-
-	ArithmeticLow = ToRefactorCategory.Arithmetic,
-	Add,
-	Subtract,
-	Multiply,
-	Divide,
-	Modulo,
-	ArithmeticHigh,
-
-	StringLow = ToRefactorCategory.String,
-	Concat,
-	StringHigh,
-
-	DateTimeLow = ToRefactorCategory.DateTime,
-	DateTimeAdd,
-	DateTimeSubtract,
-	DateTimeDiff,
-	DateTimeHigh,
+	NoOp = 3,
+	Negate = 4,
 }
 
-export enum UnaryOperationSymbol {
-	BooleanLow = ToRefactorCategory.Boolean,
-	Not,
-	BooleanHigh,
+export const enum BinaryOperationSymbol {
+	LogicalOr = 1,
+	LogicalAnd = 2,
 
-	BitwiseLow = ToRefactorCategory.Bitwise,
-	BitNot,
-	BitwiseHigh,
+	Equal = 3,
+	NotEqual = 4,
+	Less = 5,
+	LessOrEqual = 6,
+	Greater = 7,
+	GreaterOrEqual = 8,
 
-	ArithmeticLow = ToRefactorCategory.Arithmetic,
-	Neg,
-	ArithmeticHigh,
+	BitwiseOr = 9,
+	BitwiseAnd = 10,
+	BitwiseXor = 11,
+
+	Add = 12,
+	Subtract = 13,
+	Multiply = 14,
+	Divide = 15,
+	Modulo = 16,
+
+	Concat = 17,
+
+	DateTimeAdd = 18,
+	DateTimeSubtract = 19,
+	DateTimeDiff = 20,
 }
 
-export enum FunctionSymbol {
-	ArithmeticLow = ToRefactorCategory.Arithmetic,
-	Abs,
-	Ceil,
-	Exp,
-	Floor,
-	Lg,
-	Ln,
-	Log,
-	Power,
+export const enum FunctionSymbol {
+	Abs = 1,
+	Ceil = 2,
+	Exp = 3,
+	Floor = 4,
+	Lg = 5,
+	Ln = 6,
+	Log = 7,
+	Power = 8,
 
-	IndexOf,
-	Length,
+	IndexOf = 9,
+	Length = 10,
 
-	Day,
-	Hours,
-	Milliseconds,
-	Minutes,
-	Month,
-	Seconds,
-	Year,
-	ArithmeticHigh,
+	Day = 11,
+	Hours = 12,
+	Milliseconds = 13,
+	Minutes = 14,
+	Month = 15,
+	Seconds = 16,
+	Year = 17,
 
-	StringLow = ToRefactorCategory.String,
-	Substr,
-	ToLower,
-	ToString,
-	ToUpper,
-	StringHigh,
+	Substr = 18,
+	ToLower = 19,
+	ToString = 20,
+	ToUpper = 21,
 
-	AggregationLow = ToRefactorCategory.Aggregation,
-	Avg,
-	Count,
-	First,
-	Last,
-	Max,
-	Min,
-	Sum,
-	AggregationHigh,
+	Avg = 22,
+	Count = 23,
+	First = 24,
+	Last = 25,
+	Max = 26,
+	Min = 27,
+	Sum = 28,
 
-	DateTimeLow = ToRefactorCategory.DateTime,
-	Now,
-	Today,
-	DateTimeHigh,
+	Now = 29,
+	Today = 30,
 }

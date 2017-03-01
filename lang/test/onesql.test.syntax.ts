@@ -91,7 +91,7 @@ export function whereBoolean(): boolean {
 				condition: {
 					expressionKind: Semantic.ExpressionKind.Term,
 					termKind: Semantic.TermKind.UnaryOperation,
-					unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
+					unaryOperationSymbol: Semantic.UnaryOperationSymbol.LogicalNot,
 					argument: {
 						expressionKind: Semantic.ExpressionKind.Term,
 						termKind: Semantic.TermKind.Property,
@@ -110,11 +110,11 @@ export function whereBoolean(): boolean {
 				condition: {
 					expressionKind: Semantic.ExpressionKind.Term,
 					termKind: Semantic.TermKind.UnaryOperation,
-					unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
+					unaryOperationSymbol: Semantic.UnaryOperationSymbol.LogicalNot,
 					argument: {
 						expressionKind: Semantic.ExpressionKind.Term,
 						termKind: Semantic.TermKind.UnaryOperation,
-						unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
+						unaryOperationSymbol: Semantic.UnaryOperationSymbol.LogicalNot,
 						argument: {
 							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.Literal,
@@ -133,10 +133,10 @@ export function whereBoolean(): boolean {
 				queryClauseKind: Semantic.QueryClauseKind.Where,
 				condition: {
 					expressionKind: Semantic.ExpressionKind.BinaryOperation,
-					binaryOperationSymbol: Semantic.BinaryOperationSymbol.Or,
+					binaryOperationSymbol: Semantic.BinaryOperationSymbol.LogicalOr,
 					argument0: {
 						expressionKind: Semantic.ExpressionKind.BinaryOperation,
-						binaryOperationSymbol: Semantic.BinaryOperationSymbol.And,
+						binaryOperationSymbol: Semantic.BinaryOperationSymbol.LogicalAnd,
 						argument0: {
 							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.Property,
@@ -145,7 +145,7 @@ export function whereBoolean(): boolean {
 						argument1: {
 							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.UnaryOperation,
-							unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
+							unaryOperationSymbol: Semantic.UnaryOperationSymbol.LogicalNot,
 							argument: {
 								expressionKind: Semantic.ExpressionKind.Term,
 								termKind: Semantic.TermKind.Property,
@@ -156,7 +156,7 @@ export function whereBoolean(): boolean {
 					argument1: {
 						expressionKind: Semantic.ExpressionKind.Term,
 						termKind: Semantic.TermKind.UnaryOperation,
-						unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
+						unaryOperationSymbol: Semantic.UnaryOperationSymbol.LogicalNot,
 						argument: {
 							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.Property,
@@ -175,10 +175,10 @@ export function whereBoolean(): boolean {
 				queryClauseKind: Semantic.QueryClauseKind.Where,
 				condition: {
 					expressionKind: Semantic.ExpressionKind.BinaryOperation,
-					binaryOperationSymbol: Semantic.BinaryOperationSymbol.And,
+					binaryOperationSymbol: Semantic.BinaryOperationSymbol.LogicalAnd,
 					argument0: {
 						expressionKind: Semantic.ExpressionKind.BinaryOperation,
-						binaryOperationSymbol: Semantic.BinaryOperationSymbol.Or,
+						binaryOperationSymbol: Semantic.BinaryOperationSymbol.LogicalOr,
 						argument0: {
 							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.Property,
@@ -187,7 +187,7 @@ export function whereBoolean(): boolean {
 						argument1: {
 							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.UnaryOperation,
-							unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
+							unaryOperationSymbol: Semantic.UnaryOperationSymbol.LogicalNot,
 							argument: {
 								expressionKind: Semantic.ExpressionKind.Term,
 								termKind: Semantic.TermKind.Property,
@@ -198,7 +198,7 @@ export function whereBoolean(): boolean {
 					argument1: {
 						expressionKind: Semantic.ExpressionKind.Term,
 						termKind: Semantic.TermKind.UnaryOperation,
-						unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
+						unaryOperationSymbol: Semantic.UnaryOperationSymbol.LogicalNot,
 						argument: {
 							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.Property,
@@ -217,10 +217,10 @@ export function whereBoolean(): boolean {
 				queryClauseKind: Semantic.QueryClauseKind.Where,
 				condition: {
 					expressionKind: Semantic.ExpressionKind.BinaryOperation,
-					binaryOperationSymbol: Semantic.BinaryOperationSymbol.And,
+					binaryOperationSymbol: Semantic.BinaryOperationSymbol.LogicalAnd,
 					argument0: {
 						expressionKind: Semantic.ExpressionKind.BinaryOperation,
-						binaryOperationSymbol: Semantic.BinaryOperationSymbol.Or,
+						binaryOperationSymbol: Semantic.BinaryOperationSymbol.LogicalOr,
 						argument0: {
 							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.Property,
@@ -229,7 +229,7 @@ export function whereBoolean(): boolean {
 						argument1: {
 							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.UnaryOperation,
-							unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
+							unaryOperationSymbol: Semantic.UnaryOperationSymbol.LogicalNot,
 							argument: {
 								expressionKind: Semantic.ExpressionKind.Term,
 								termKind: Semantic.TermKind.Property,
@@ -239,11 +239,11 @@ export function whereBoolean(): boolean {
 					},
 					argument1: {
 						expressionKind: Semantic.ExpressionKind.BinaryOperation,
-						binaryOperationSymbol: Semantic.BinaryOperationSymbol.Or,
+						binaryOperationSymbol: Semantic.BinaryOperationSymbol.LogicalOr,
 						argument0: {
 							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.UnaryOperation,
-							unaryOperationSymbol: Semantic.UnaryOperationSymbol.Not,
+							unaryOperationSymbol: Semantic.UnaryOperationSymbol.LogicalNot,
 							argument: {
 								expressionKind: Semantic.ExpressionKind.Term,
 								termKind: Semantic.TermKind.Property,
