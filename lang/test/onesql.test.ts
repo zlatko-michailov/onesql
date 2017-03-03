@@ -20,6 +20,7 @@ function run(): boolean {
     passed = execute("SyntaxTest.use", SyntaxTest.use) && passed;
     passed = execute("SyntaxTest.from", SyntaxTest.from) && passed;
     passed = execute("SyntaxTest.whereBoolean", SyntaxTest.whereBoolean) && passed;
+    passed = execute("SyntaxTest.whereTypeMismatch", SyntaxTest.whereTypeMismatch) && passed;
 
     log(LogLevel.Important);
     log(LogLevel.Important, "==============");
@@ -55,12 +56,12 @@ export function areEqual<T>(expected: T, actual: T, logLevel: string, message: s
     if (passed) {    
         if (expected instanceof Object) {
             for (let prop in expected) {
-                passed = areEqual(expected[prop], actual[prop], logLevel, message + "." + prop) && passed;
+                passed = areEqual(expected[prop], actual[prop], LogLevel.Indent + logLevel, message + "." + prop) && passed;
             }
 
             for (let prop in actual) {
                 if (!(actual[prop] instanceof Function) && !expected[prop]) {
-                    passed = areEqualValues(expected[prop], actual[prop], logLevel, message + "." + prop) && passed;
+                    passed = areEqualValues(expected[prop], actual[prop], LogLevel.Indent + logLevel, message + "." + prop) && passed;
                 }
             }
         }
@@ -86,7 +87,7 @@ export function areEqualArrays<T>(expected: ReadonlyArray<T>, actual: ReadonlyAr
     passed = areEqual(expected.length, actual.length, logLevel, message + ".length") && passed;
     
     for (let i: number = 0; i < Math.min(expected.length, actual.length); i++) {
-        passed = areEqual(expected[i], actual[i], logLevel, message + "[" + i + "]") && passed;
+        passed = areEqual(expected[i], actual[i], LogLevel.Indent + logLevel, message + "[" + i + "]") && passed;
     }
 
     return passed;
@@ -100,24 +101,25 @@ export function isUndefined(actual: any, logLevel: string, message: string) : bo
     return passed;
 }
 
-/*export function throws(expectedCode: Util_Errors.ErrorCode, action: () => any, logLevel: string, message: string) : boolean {
+export function throws(expectedException: any, action: () => any, logLevel: string, message: string) : boolean {
     let passed = false;
     
     try {
         action();
         
-        log(logLevel, "F: " + message, { expected: expectedCode });
+        log(logLevel, "F: " + message, { expected: "Exception" });
     }
     catch (ex) {
-        passed = areEqual(expectedCode, ex.code, logLevel, message);
+        passed = areEqual(expectedException, ex, logLevel, message);
     }
     
     return passed;
-}*/
+}
     
     
 export class LogLevel {
     static readonly Important: string = "";
+    static readonly Indent: string = "|   ";
     static readonly Info: string = "|   ";
     static readonly Detail: string = "|   |   ";
     static readonly Verbose: string = "|   |   |   ";

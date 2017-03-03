@@ -294,3 +294,45 @@ export function whereBoolean(): boolean {
 	let actualBatch: Semantic.Batch = OneSql.toSemantic(sql);
 	return Test.areEqual(expectedBatch, actualBatch, Test.LogLevel.Info, "batch");
 }
+
+export function whereTypeMismatch(): boolean {
+	let pass: boolean = true;
+	
+	pass = Test.throws(
+		{ lineNumber: 2, expected: "Boolean term", actual: "42" },
+		() => {
+			let sql: string = 
+				"FROM s1\n" +
+				"WHERE 42;";
+			OneSql.toSemantic(sql);
+		},
+		Test.LogLevel.Info,
+		"Literal")
+		&& pass;
+
+	pass = Test.throws(
+		{ lineNumber: 2, expected: "Boolean term", actual: "42" },
+		() => {
+			let sql: string = 
+				"FROM s1\n" +
+				"WHERE NOT 42;";
+			OneSql.toSemantic(sql);
+		},
+		Test.LogLevel.Info,
+		"Unary operation")
+		&& pass;
+
+	pass = Test.throws(
+		{ lineNumber: 2, expected: "Boolean term", actual: "42" },
+		() => {
+			let sql: string = 
+				"FROM s1\n" +
+				"WHERE TRUE AND 42;";
+			OneSql.toSemantic(sql);
+		},
+		Test.LogLevel.Info,
+		"Binary operation")
+		&& pass;
+
+	return pass;
+}
