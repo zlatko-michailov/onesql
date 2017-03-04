@@ -61,7 +61,7 @@ export function whereBoolean(): boolean {
 					  "WHERE p1 OR NOT p2 AND NOT p3;\n" +
 
 					  "FROM _\n" +
-					  "WHERE (p1 || !p2) && (!p3 || p4);\n" +
+					  "WHERE ( (( ((p1)) || !p2 )) && (!p3 || p4) );\n" +
 
 					  "";
 

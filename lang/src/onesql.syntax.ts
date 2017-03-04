@@ -195,16 +195,8 @@ function parseTerm(input: ReadonlyArray<Lex.Token>, inputIndex: number, inputInd
 		return parseProperty(input, inputIndex, inputIndexLimit, resultType);
 	}
 	else if (input[inputIndex].tokenKind == Lex.TokenKind.OpeningParenthesis) {
-		inputIndex = moveInputIndex(input, inputIndex, inputIndexLimit, ")");
-		let state: SyntaxState = parseExpression(input, inputIndex, inputIndexLimit, resultType);
-
-		inputIndex = state.inputIndex;
-		if (input[inputIndex].tokenKind == Lex.TokenKind.ClosingParenthesis) {
-			inputIndex = state.inputIndex;
-			return { inputIndex: inputIndex, node: state.node };
-		}
-
-		throw { lineNumber: input[inputIndex].lineNumber, expected: ")", actual: input[inputIndex].lexeme };
+		let inputIndexLimitClosing = findMatchingToken(input, inputIndex, inputIndexLimit, Lex.TokenKind.OpeningParenthesis, Lex.TokenKind.ClosingParenthesis, ")");
+		return parseExpression(input, inputIndex + 1, inputIndexLimitClosing, resultType);
 	}
 
 	throw { lineNumber: input[inputIndex].lineNumber, expected: stringifyValueType(resultType) + " term", actual: input[inputIndex].lexeme };
@@ -247,6 +239,24 @@ function parseGroupByClause(input: ReadonlyArray<Lex.Token>, inputIndex: number)
 
 function parseOrderByClause(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
 	return { inputIndex: inputIndex, node: undefined };
+}
+
+function findMatchingToken(input: ReadonlyArray<Lex.Token>, inputIndex: number, inputIndexLimit: number, openingTokenKind: Lex.TokenKind, closingTokenKind: Lex.TokenKind, expected: string): number {
+	let nestedLevel: number = 1;
+
+	for (;;) {
+		inputIndex = moveInputIndex(input, inputIndex, inputIndexLimit, expected);
+		switch (input[inputIndex].tokenKind) {
+			case openingTokenKind:
+				++nestedLevel;
+				break;
+			case closingTokenKind:
+				if (--nestedLevel == 0) {
+					return inputIndex + 1;
+				}
+				break;
+		}
+	}
 }
 
 function moveInputIndex(input: ReadonlyArray<Lex.Token>, inputIndex: number, inputIndexLimit: number, expected: string): number {
