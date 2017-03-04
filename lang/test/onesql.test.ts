@@ -19,8 +19,9 @@ function run(): boolean {
     passed = execute("SyntaxTest.empty", SyntaxTest.empty) && passed;
     passed = execute("SyntaxTest.use", SyntaxTest.use) && passed;
     passed = execute("SyntaxTest.from", SyntaxTest.from) && passed;
-    passed = execute("SyntaxTest.whereBoolean", SyntaxTest.whereBoolean) && passed;
     passed = execute("SyntaxTest.whereTypeMismatch", SyntaxTest.whereTypeMismatch) && passed;
+    passed = execute("SyntaxTest.whereBasic", SyntaxTest.whereBasic) && passed;
+    passed = execute("SyntaxTest.whereParentheses", SyntaxTest.whereParentheses) && passed;
 
     log(LogLevel.Important);
     log(LogLevel.Important, "==============");

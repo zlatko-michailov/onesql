@@ -153,19 +153,17 @@ function parseWhereClause(input: ReadonlyArray<Lex.Token>, inputIndex: number): 
 	inputIndex = moveInputIndex(input, inputIndex, undefined, "condition");
 	let state: SyntaxState = parseExpression(input, inputIndex, undefined, Semantic.ValueType.Boolean);
 	whereClause.condition = state.node as Semantic.Expression;
-	inputIndex = state.inputIndex;
 
-	return { inputIndex: inputIndex, node: whereClause };
+	return { inputIndex: state.inputIndex, node: whereClause };
 }
 
 function parseExpression(input: ReadonlyArray<Lex.Token>, inputIndex: number, inputIndexLimit: number, resultType: Semantic.ValueType): SyntaxState {
 	// Term
 	let state: SyntaxState = parseTerm(input, inputIndex, inputIndexLimit, resultType);
 	let expression: Semantic.Expression = state.node as Semantic.Term;
-	inputIndex = state.inputIndex;
 
 	// Binary operations
-	inputIndex = moveInputIndex(input, inputIndex, inputIndexLimit, ";");
+	inputIndex = moveInputIndex(input, state.inputIndex, inputIndexLimit, ";");
 	while (input[inputIndex].tokenKind == Lex.TokenKind.BinaryOperation) {
 		// Binary operation
 		let binaryOperation: BinaryOperation = new BinaryOperation(input[inputIndex], resultType);
@@ -177,8 +175,7 @@ function parseExpression(input: ReadonlyArray<Lex.Token>, inputIndex: number, in
 		binaryOperation.argument1 = state.node as Semantic.Term;
 		expression = binaryOperation;
 
-		inputIndex = state.inputIndex;
-		inputIndex = moveInputIndex(input, inputIndex, inputIndexLimit, ";");
+		inputIndex = moveInputIndex(input, state.inputIndex, inputIndexLimit, ";");
 	}
 
 	return { inputIndex: inputIndex, node: expression };
@@ -196,6 +193,7 @@ function parseTerm(input: ReadonlyArray<Lex.Token>, inputIndex: number, inputInd
 	}
 	else if (input[inputIndex].tokenKind == Lex.TokenKind.OpeningParenthesis) {
 		let inputIndexLimitClosing = findMatchingToken(input, inputIndex, inputIndexLimit, Lex.TokenKind.OpeningParenthesis, Lex.TokenKind.ClosingParenthesis, ")");
+
 		return parseExpression(input, inputIndex + 1, inputIndexLimitClosing, resultType);
 	}
 
@@ -210,9 +208,8 @@ function parseUnaryOperation(input: ReadonlyArray<Lex.Token>, inputIndex: number
 	inputIndex = moveInputIndex(input, inputIndex, inputIndexLimit, stringifyValueType(resultType) + " term");
 	let state: SyntaxState = parseTerm(input, inputIndex, inputIndexLimit, resultType);
 	unaryOperation.argument = state.node as Semantic.Term;
-	inputIndex = state.inputIndex;
 
-	return { inputIndex: inputIndex, node: unaryOperation };
+	return { inputIndex: state.inputIndex, node: unaryOperation };
 }
 
 function parseLiteral(input: ReadonlyArray<Lex.Token>, inputIndex: number, inputIndexLimit: number, resultType: Semantic.ValueType): SyntaxState {

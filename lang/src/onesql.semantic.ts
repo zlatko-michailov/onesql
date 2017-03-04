@@ -111,7 +111,6 @@ export const enum TermKind {
 	Literal = 2,
 	Property = 3,
 	FunctionCall = 4,
-	Expression = 5,
 }
 
 export interface UnaryOperationTerm extends Term {
@@ -129,10 +128,6 @@ export interface PropertyTerm extends Term {
 export interface FunctionCallTerm extends Term {
 	readonly functionSymbol: FunctionSymbol;
 	readonly arguments: ReadonlyArray<Expression>;
-}
-
-export interface ExpressionTerm extends Term {
-	readonly expression: Expression;
 }
 
 export const enum UnaryOperationSymbol {

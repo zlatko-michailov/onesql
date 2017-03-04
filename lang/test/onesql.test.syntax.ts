@@ -44,7 +44,49 @@ export function from(): boolean {
 	return Test.areEqual(expectedBatch, actualBatch, Test.LogLevel.Info, "batch");
 }
 
-export function whereBoolean(): boolean {
+export function whereTypeMismatch(): boolean {
+	let pass: boolean = true;
+	
+	pass = Test.throws(
+		{ lineNumber: 2, expected: "Boolean term", actual: "42" },
+		() => {
+			let sql: string = 
+				"FROM s1\n" +
+				"WHERE 42;";
+			OneSql.toSemantic(sql);
+		},
+		Test.LogLevel.Info,
+		"Literal")
+		&& pass;
+
+	pass = Test.throws(
+		{ lineNumber: 2, expected: "Boolean term", actual: "42" },
+		() => {
+			let sql: string = 
+				"FROM s1\n" +
+				"WHERE NOT 42;";
+			OneSql.toSemantic(sql);
+		},
+		Test.LogLevel.Info,
+		"Unary operation")
+		&& pass;
+
+	pass = Test.throws(
+		{ lineNumber: 2, expected: "Boolean term", actual: "42" },
+		() => {
+			let sql: string = 
+				"FROM s1\n" +
+				"WHERE TRUE AND 42;";
+			OneSql.toSemantic(sql);
+		},
+		Test.LogLevel.Info,
+		"Binary operation")
+		&& pass;
+
+	return pass;
+}
+
+export function whereBasic(): boolean {
 	let sql: string = "FROM _1\n" +
 					  "WHERE TRUE;\n\n" +
 
@@ -60,11 +102,7 @@ export function whereBoolean(): boolean {
 					  "FROM _\n" +
 					  "WHERE p1 OR NOT p2 AND NOT p3;\n" +
 
-					  "FROM _\n" +
-					  "WHERE ( (( ((p1)) || !p2 )) && (!p3 || p4) );\n" +
-
 					  "";
-
 
 	let expectedBatch: Object = {
 		statements: [
@@ -229,6 +267,20 @@ export function whereBoolean(): boolean {
 			}]
 		},
 
+	]};
+
+	let actualBatch: Semantic.Batch = OneSql.toSemantic(sql);
+	return Test.areEqual(expectedBatch, actualBatch, Test.LogLevel.Info, "batch");
+}
+
+export function whereParentheses(): boolean {
+	let sql: string = "FROM _\n" +
+					  "WHERE ( (( ((p1)) || !p2 )) && (!p3 || p4) );\n" +
+
+					  "";
+
+	let expectedBatch: Object = {
+		statements: [
 		{
 			statementKind: Semantic.StatementKind.Query,
 			sourceName: "_",
@@ -295,44 +347,3 @@ export function whereBoolean(): boolean {
 	return Test.areEqual(expectedBatch, actualBatch, Test.LogLevel.Info, "batch");
 }
 
-export function whereTypeMismatch(): boolean {
-	let pass: boolean = true;
-	
-	pass = Test.throws(
-		{ lineNumber: 2, expected: "Boolean term", actual: "42" },
-		() => {
-			let sql: string = 
-				"FROM s1\n" +
-				"WHERE 42;";
-			OneSql.toSemantic(sql);
-		},
-		Test.LogLevel.Info,
-		"Literal")
-		&& pass;
-
-	pass = Test.throws(
-		{ lineNumber: 2, expected: "Boolean term", actual: "42" },
-		() => {
-			let sql: string = 
-				"FROM s1\n" +
-				"WHERE NOT 42;";
-			OneSql.toSemantic(sql);
-		},
-		Test.LogLevel.Info,
-		"Unary operation")
-		&& pass;
-
-	pass = Test.throws(
-		{ lineNumber: 2, expected: "Boolean term", actual: "42" },
-		() => {
-			let sql: string = 
-				"FROM s1\n" +
-				"WHERE TRUE AND 42;";
-			OneSql.toSemantic(sql);
-		},
-		Test.LogLevel.Info,
-		"Binary operation")
-		&& pass;
-
-	return pass;
-}
