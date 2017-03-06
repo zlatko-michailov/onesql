@@ -160,8 +160,12 @@ function parseWhereClause(input: ReadonlyArray<Lex.Token>, inputIndex: number): 
 function parseExpression(input: ReadonlyArray<Lex.Token>, inputIndex: number, inputIndexLimit: number, resultType: Semantic.ValueType): SyntaxState {
 	// Term
 	let state: SyntaxState = parseTerm(input, inputIndex, inputIndexLimit, resultType);
-	let expression: Semantic.Expression = state.node as Semantic.Term;
+	let expression: Semantic.Expression = state.node as Semantic.Expression;
 
+	// Binary operation
+	return parseBinaryOperation(input, state.inputIndex, inputIndexLimit, resultType, OperationPriority.None, expression);
+
+	/*
 	// Binary operations
 	inputIndex = moveInputIndex(input, state.inputIndex, inputIndexLimit, ";");
 	while (input[inputIndex].tokenKind == Lex.TokenKind.BinaryOperation) {
@@ -172,9 +176,39 @@ function parseExpression(input: ReadonlyArray<Lex.Token>, inputIndex: number, in
 		// Term
 		inputIndex = moveInputIndex(input, inputIndex, inputIndexLimit, stringifyValueType(resultType) + " term");
 		state = parseTerm(input, inputIndex, inputIndexLimit, resultType);
-		binaryOperation.argument1 = state.node as Semantic.Term;
+		binaryOperation.argument1 = state.node as Semantic.Expression;
+
+		expression = binaryOperation;
+		inputIndex = moveInputIndex(input, state.inputIndex, inputIndexLimit, ";");
+	}
+
+	return { inputIndex: inputIndex, node: expression };
+	*/
+}
+
+function parseBinaryOperation(input: ReadonlyArray<Lex.Token>, inputIndex: number, inputIndexLimit: number, resultType: Semantic.ValueType,
+							currentPriority: OperationPriority, argument0: Semantic.Expression): SyntaxState {
+	let expression: Semantic.Expression = argument0;
+
+	// Binary operations
+	let signature: OperationSignature = peekNextBinaryOperationSignature(input, inputIndex, inputIndexLimit, resultType);
+	inputIndex = moveInputIndex(input, inputIndex, inputIndexLimit, ";");
+	while (signature !== undefined) {
+		// Binary operation
+		let binaryOperation: BinaryOperation = new BinaryOperation(input[inputIndex], resultType);
+		binaryOperation.argument0 = expression;
+
+		// Term
+		inputIndex = moveInputIndex(input, inputIndex, inputIndexLimit, stringifyValueType(resultType) + " term");
+		let state: SyntaxState = parseTerm(input, inputIndex, inputIndexLimit, resultType);
+
+		// Look ahead
+		//// TODO: 
+		
+		binaryOperation.argument1 = state.node as Semantic.Expression;
 		expression = binaryOperation;
 
+		signature = peekNextBinaryOperationSignature(input, state.inputIndex, inputIndexLimit, resultType);
 		inputIndex = moveInputIndex(input, state.inputIndex, inputIndexLimit, ";");
 	}
 
@@ -238,6 +272,36 @@ function parseOrderByClause(input: ReadonlyArray<Lex.Token>, inputIndex: number)
 	return { inputIndex: inputIndex, node: undefined };
 }
 
+// -----------------------------------------------------------------------------
+// Utilities
+
+function peekNextBinaryOperationSignature(input: ReadonlyArray<Lex.Token>, inputIndex: number, inputIndexLimit: number, resultType: Semantic.ValueType): OperationSignature {
+	let nextToken: Lex.Token = peekNextToken(input, inputIndex, inputIndexLimit);
+	if (nextToken !== undefined && nextToken.tokenKind == Lex.TokenKind.BinaryOperation) {
+		return getOperationSignature(binaryOperationSignatures, nextToken, resultType);
+	}
+
+	return undefined;
+}
+
+function moveInputIndex(input: ReadonlyArray<Lex.Token>, inputIndex: number, inputIndexLimit: number, expected: string): number {
+	inputIndexLimit = inputIndexLimit ? inputIndexLimit : input.length;
+	if (++inputIndex >= inputIndexLimit) {
+		throw { lineNumber: input[inputIndexLimit - 1].lineNumber, expected: expected, actual: inputIndexLimit < input.length ? input[inputIndexLimit] : "" };
+	}
+	
+	return inputIndex;
+}
+
+function peekNextToken(input: ReadonlyArray<Lex.Token>, inputIndex: number, inputIndexLimit: number): Lex.Token {
+	inputIndexLimit = inputIndexLimit ? inputIndexLimit : input.length;
+	if (++inputIndex < inputIndexLimit) {
+		return input[inputIndex];
+	}
+	
+	return undefined;
+}
+
 function findMatchingToken(input: ReadonlyArray<Lex.Token>, inputIndex: number, inputIndexLimit: number, openingTokenKind: Lex.TokenKind, closingTokenKind: Lex.TokenKind, expected: string): number {
 	let nestedLevel: number = 1;
 
@@ -256,13 +320,39 @@ function findMatchingToken(input: ReadonlyArray<Lex.Token>, inputIndex: number, 
 	}
 }
 
-function moveInputIndex(input: ReadonlyArray<Lex.Token>, inputIndex: number, inputIndexLimit: number, expected: string): number {
-	inputIndexLimit = inputIndexLimit ? inputIndexLimit : input.length;
-	if (++inputIndex >= inputIndexLimit) {
-		throw { lineNumber: input[inputIndexLimit - 1].lineNumber, expected: expected, actual: inputIndexLimit < input.length ? input[inputIndexLimit] : "" };
+function assertTypeMatch(resultTypeExpected: Semantic.ValueType, resultTypeActual: Semantic.ValueType, token: Lex.Token) {
+	if (!areTypesMatching(resultTypeExpected, resultTypeActual)) {
+		throw { 
+			lineNumber: token.lineNumber,
+			expected: stringifyValueType(resultTypeExpected) + " expression",
+			actual: stringifyValueType(resultTypeActual) + " expression '" + token.lexeme + "'"
+		};
 	}
-	
-	return inputIndex;
+}
+
+function areTypesMatching(resultType1: Semantic.ValueType, resultType2: Semantic.ValueType): boolean {
+	return resultType1 == Semantic.ValueType.Any
+		|| resultType2 == Semantic.ValueType.Any
+		|| resultType1 == resultType2;
+}
+
+function stringifyValueType(resultType: Semantic.ValueType): string {
+	switch (resultType) {
+		case Semantic.ValueType.Any:
+			return "Any";
+
+		case Semantic.ValueType.Boolean:
+			return "Boolean";
+
+		case Semantic.ValueType.Number:
+			return "Number";
+
+		case Semantic.ValueType.String:
+			return "String";
+
+		case Semantic.ValueType.DateTime:
+			return "DateTime";
+	}
 }
 
 // -----------------------------------------------------------------------------
@@ -394,44 +484,6 @@ class PropertyTerm extends Expression implements Semantic.PropertyTerm {
 }
 
 // -----------------------------------------------------------------------------
-// Utilities
-
-function assertTypeMatch(resultTypeExpected: Semantic.ValueType, resultTypeActual: Semantic.ValueType, token: Lex.Token) {
-	if (!areTypesMatching(resultTypeExpected, resultTypeActual)) {
-		throw { 
-			lineNumber: token.lineNumber,
-			expected: stringifyValueType(resultTypeExpected) + " expression",
-			actual: stringifyValueType(resultTypeActual) + " expression '" + token.lexeme + "'"
-		};
-	}
-}
-
-function areTypesMatching(resultType1: Semantic.ValueType, resultType2: Semantic.ValueType): boolean {
-	return resultType1 == Semantic.ValueType.Any
-		|| resultType2 == Semantic.ValueType.Any
-		|| resultType1 == resultType2;
-}
-
-function stringifyValueType(resultType: Semantic.ValueType): string {
-	switch (resultType) {
-		case Semantic.ValueType.Any:
-			return "Any";
-
-		case Semantic.ValueType.Boolean:
-			return "Boolean";
-
-		case Semantic.ValueType.Number:
-			return "Number";
-
-		case Semantic.ValueType.String:
-			return "String";
-
-		case Semantic.ValueType.DateTime:
-			return "DateTime";
-	}
-}
-
-// -----------------------------------------------------------------------------
 // Symbol tables.
 
 function getOperationSignature(signatures: ReadonlyArray<OperationSignature>, token: Lex.Token, resultType: Semantic.ValueType): OperationSignature {
@@ -458,6 +510,7 @@ function lookupOperationSignature(signatures: ReadonlyArray<OperationSignature>,
 }
 
 const enum OperationPriority {
+	None,
 	Logical,
 	Comparison,
 	String,

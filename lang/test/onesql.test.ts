@@ -36,18 +36,20 @@ function hacks() : void {
 }
 
 export function log(level: string, message?: string, ...args: any[]): void {
-    if (message) {
-        let levelMessage: string = level + message;
-        
-        if (args && args.length > 0) {
-            console.log(levelMessage, args);
+    if (config.logLevelLimit === undefined || level.length <= config.logLevelLimit.length) {
+        if (message) {
+            let levelMessage: string = level + message;
+            
+            if (args && args.length > 0) {
+                console.log(levelMessage, args);
+            }
+            else {
+                console.log(levelMessage);
+            }
         }
         else {
-            console.log(levelMessage);
+            console.log(level);
         }
-    }
-    else {
-        console.log(level);
     }
 }
 
@@ -136,5 +138,13 @@ function execute(testName: string, testMethod: () => boolean): boolean {
     
     return passed;
 }
+
+interface Config {
+    readonly logLevelLimit?: string;
+}
+
+const config: Config = {
+    logLevelLimit: LogLevel.Important,
+};
 
 run();
