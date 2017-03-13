@@ -22,6 +22,7 @@ function run(): boolean {
     passed = execute("SyntaxTest.whereTypeMismatch", SyntaxTest.whereTypeMismatch) && passed;
     passed = execute("SyntaxTest.whereBasic", SyntaxTest.whereBasic) && passed;
     passed = execute("SyntaxTest.whereParentheses", SyntaxTest.whereParentheses) && passed;
+    passed = execute("SyntaxTest.wherePriority", SyntaxTest.wherePriority) && passed;
 
     log(LogLevel.Important);
     log(LogLevel.Important, "==============");
@@ -144,6 +145,7 @@ interface Config {
 }
 
 const config: Config = {
+    // DEBUG: To see the full log, comment out the next line.
     logLevelLimit: LogLevel.Important,
 };
 
