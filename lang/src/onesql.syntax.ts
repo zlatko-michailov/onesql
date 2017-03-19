@@ -257,9 +257,9 @@ function parseFunctionCall(input: ReadonlyArray<Lex.Token>, inputIndex: number, 
 	}
 
 	// Arguments
+	inputIndex = moveInputIndex(input, inputIndex, ")");
 	for (let i: number = 0; i < signature.argumentTypes.length; i++) {
 		// Argument
-		inputIndex = moveInputIndex(input, inputIndex, "argument");
 		let state: SyntaxState = parseExpression(input, inputIndex);
 		inputIndex = state.inputIndex;
 		functionCall.arguments[i] = state.node as Semantic.Expression;
@@ -270,6 +270,8 @@ function parseFunctionCall(input: ReadonlyArray<Lex.Token>, inputIndex: number, 
 			if (input[inputIndex].tokenKind !== Lex.TokenKind.ItemSeparator) {
 				throw { lineNumber: input[inputIndex].lineNumber, expected: ",", actual: input[inputIndex].lexeme };
 			}
+
+			inputIndex = moveInputIndex(input, inputIndex, "argument");
 		}
 	}
 
@@ -450,7 +452,7 @@ class LiteralTerm extends Expression implements Semantic.LiteralTerm {
 				break;
 
 			case Lex.TokenKind.DateTimeLiteral:
-				this.literal = Date.parse(token.lexeme.substring(9, token.lexeme.length - 1));
+				this.literal = new Date(token.lexeme.substring(9, token.lexeme.length - 1));
 				this.resultType = Semantic.ValueType.DateTime;
 				break;
 		}

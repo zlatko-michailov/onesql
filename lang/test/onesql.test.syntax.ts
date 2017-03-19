@@ -530,8 +530,8 @@ export function whereFunctions(): boolean {
 	let sql: string = "FROM _\n" +
 					  "WHERE 'a' == substr('abc', 1 + 2, floor(4 - 3));\n" +
 
-//					  "FROM _\n" +
-//					  "WHERE DATETIME'2017-03-13T21:37:12.345' < now() - 100;\n" +
+					  "FROM _\n" +
+					  "WHERE DATETIME'2017-03-13T21:37:12.345' < now() - 100;\n" +
 
 						"";
 
@@ -606,6 +606,44 @@ export function whereFunctions(): boolean {
 								},
 							}]
 						}]
+					},
+				}
+			}]
+		},
+
+		{
+			statementKind: Semantic.StatementKind.Query,
+			sourceName: "_",
+			clauses: [
+			{
+				queryClauseKind: Semantic.QueryClauseKind.Where,
+				condition: {
+					resultType: Semantic.ValueType.Boolean,
+					expressionKind: Semantic.ExpressionKind.BinaryOperation,
+					binaryOperationSymbol: Semantic.BinaryOperationSymbol.Less,
+					argument0: {
+						resultType: Semantic.ValueType.DateTime,
+						expressionKind: Semantic.ExpressionKind.Term,
+						termKind: Semantic.TermKind.Literal,
+						literal: new Date('2017-03-13T21:37:12.345')
+					},
+					argument1: {
+						resultType: Semantic.ValueType.DateTime,
+						expressionKind: Semantic.ExpressionKind.BinaryOperation,
+						binaryOperationSymbol: Semantic.BinaryOperationSymbol.DateTimeSubtract,
+						argument0: {
+							resultType: Semantic.ValueType.DateTime,
+							expressionKind: Semantic.ExpressionKind.Term,
+							termKind: Semantic.TermKind.FunctionCall,
+							functionSymbol: Semantic.FunctionSymbol.Now,
+							arguments: []
+						},
+						argument1: {
+							resultType: Semantic.ValueType.Number,
+							expressionKind: Semantic.ExpressionKind.Term,
+							termKind: Semantic.TermKind.Literal,
+							literal: 100
+						},
 					},
 				}
 			}]
