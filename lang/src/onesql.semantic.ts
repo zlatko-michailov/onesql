@@ -125,6 +125,7 @@ export interface LiteralTerm extends Term {
 export interface PropertyTerm extends Term {
 	readonly propertyName: string;
 }
+
 export interface FunctionCallTerm extends Term {
 	readonly functionSymbol: FunctionSymbol;
 	readonly arguments: ReadonlyArray<Expression>;

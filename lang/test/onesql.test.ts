@@ -23,6 +23,7 @@ function run(): boolean {
     passed = execute("SyntaxTest.whereBasic", SyntaxTest.whereBasic) && passed;
     passed = execute("SyntaxTest.whereParentheses", SyntaxTest.whereParentheses) && passed;
     passed = execute("SyntaxTest.wherePriority", SyntaxTest.wherePriority) && passed;
+    passed = execute("SyntaxTest.whereFunctions", SyntaxTest.whereFunctions) && passed;
 
     log(LogLevel.Important);
     log(LogLevel.Important, "==============");

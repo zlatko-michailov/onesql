@@ -526,3 +526,93 @@ export function wherePriority(): boolean {
 	return Test.areEqual(expectedBatch, actualBatch, Test.LogLevel.Info, "batch");
 }
 
+export function whereFunctions(): boolean {
+	let sql: string = "FROM _\n" +
+					  "WHERE 'a' == substr('abc', 1 + 2, floor(4 - 3));\n" +
+
+//					  "FROM _\n" +
+//					  "WHERE DATETIME'2017-03-13T21:37:12.345' < now() - 100;\n" +
+
+						"";
+
+	let expectedBatch: Object = {
+		statements: [
+		{
+			statementKind: Semantic.StatementKind.Query,
+			sourceName: "_",
+			clauses: [
+			{
+				queryClauseKind: Semantic.QueryClauseKind.Where,
+				condition: {
+					resultType: Semantic.ValueType.Boolean,
+					expressionKind: Semantic.ExpressionKind.BinaryOperation,
+					binaryOperationSymbol: Semantic.BinaryOperationSymbol.Equal,
+					argument0: {
+						resultType: Semantic.ValueType.String,
+						expressionKind: Semantic.ExpressionKind.Term,
+						termKind: Semantic.TermKind.Literal,
+						literal: "a"
+					},
+					argument1: {
+						resultType: Semantic.ValueType.String,
+						expressionKind: Semantic.ExpressionKind.Term,
+						termKind: Semantic.TermKind.FunctionCall,
+						functionSymbol: Semantic.FunctionSymbol.Substr,
+						arguments: [
+						{
+							resultType: Semantic.ValueType.String,
+							expressionKind: Semantic.ExpressionKind.Term,
+							termKind: Semantic.TermKind.Literal,
+							literal: "abc"
+						},
+						{
+							resultType: Semantic.ValueType.Number,
+							expressionKind: Semantic.ExpressionKind.BinaryOperation,
+							binaryOperationSymbol: Semantic.BinaryOperationSymbol.Add,
+							argument0: {
+								resultType: Semantic.ValueType.Number,
+								expressionKind: Semantic.ExpressionKind.Term,
+								termKind: Semantic.TermKind.Literal,
+								literal: 1
+							},
+							argument1: {
+								resultType: Semantic.ValueType.Number,
+								expressionKind: Semantic.ExpressionKind.Term,
+								termKind: Semantic.TermKind.Literal,
+								literal: 2
+							},
+						},
+						{
+							resultType: Semantic.ValueType.Number,
+							expressionKind: Semantic.ExpressionKind.Term,
+							termKind: Semantic.TermKind.FunctionCall,
+							functionSymbol: Semantic.FunctionSymbol.Floor,
+							arguments: [
+							{
+								resultType: Semantic.ValueType.Number,
+								expressionKind: Semantic.ExpressionKind.BinaryOperation,
+								binaryOperationSymbol: Semantic.BinaryOperationSymbol.Subtract,
+								argument0: {
+									resultType: Semantic.ValueType.Number,
+									expressionKind: Semantic.ExpressionKind.Term,
+									termKind: Semantic.TermKind.Literal,
+									literal: 4
+								},
+								argument1: {
+									resultType: Semantic.ValueType.Number,
+									expressionKind: Semantic.ExpressionKind.Term,
+									termKind: Semantic.TermKind.Literal,
+									literal: 3
+								},
+							}]
+						}]
+					},
+				}
+			}]
+		},
+
+	]};
+
+	let actualBatch: Semantic.Batch = OneSql.toSemantic(sql);
+	return Test.areEqual(expectedBatch, actualBatch, Test.LogLevel.Info, "batch");
+}
