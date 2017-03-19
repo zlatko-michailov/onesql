@@ -28,7 +28,7 @@ function parseBatch(input: ReadonlyArray<Lex.Token>, inputIndex: number): Syntax
 	while (inputIndex < input.length) {
 		// ;
 		if (input[inputIndex].tokenKind == Lex.TokenKind.EndOfStatement) {
-			inputIndex = moveInputIndex(input, inputIndex, undefined, "statement");
+			inputIndex = moveInputIndex(input, inputIndex, "statement");
 			continue;
 		}
 
@@ -63,14 +63,14 @@ function parseUseStatement(input: ReadonlyArray<Lex.Token>, inputIndex: number):
 	}
 	
 	// databaseName
-	inputIndex = moveInputIndex(input, inputIndex, undefined, "identifier");
+	inputIndex = moveInputIndex(input, inputIndex, "identifier");
 	if (input[inputIndex].tokenKind != Lex.TokenKind.Identifier) {
 		throw { lineNumber: input[inputIndex].lineNumber, expected: "identifier", actual: input[inputIndex].lexeme };
 	}
 	useStatement.databaseName = input[inputIndex].lexeme;
 
 	// ;
-	inputIndex = moveInputIndex(input, inputIndex, undefined, ";");
+	inputIndex = moveInputIndex(input, inputIndex, ";");
 	if (input[inputIndex].tokenKind != Lex.TokenKind.EndOfStatement) {
 		throw { lineNumber: input[inputIndex].lineNumber, expected: ";", actual: input[inputIndex].lexeme };
 	}
@@ -88,12 +88,12 @@ function parseQueryStatement(input: ReadonlyArray<Lex.Token>, inputIndex: number
 	}
 	
 	// sourceName
-	inputIndex = moveInputIndex(input, inputIndex, undefined, "identifier");
+	inputIndex = moveInputIndex(input, inputIndex, "identifier");
 	if (input[inputIndex].tokenKind != Lex.TokenKind.Identifier) {
 		throw { lineNumber: input[inputIndex].lineNumber, expected: "identifier", actual: input[inputIndex].lexeme };
 	}
 	queryStatement.sourceName = input[inputIndex].lexeme;
-	inputIndex = moveInputIndex(input, inputIndex, undefined, ";");
+	inputIndex = moveInputIndex(input, inputIndex, ";");
 
 	// Clauses
 	while (inputIndex < input.length) {
@@ -140,24 +140,24 @@ function parseWhereClause(input: ReadonlyArray<Lex.Token>, inputIndex: number): 
 	let whereClause: WhereClause = new WhereClause();
 
 	// Condition
-	inputIndex = moveInputIndex(input, inputIndex, undefined, "condition");
-	let state: SyntaxState = parseExpression(input, inputIndex, undefined);
+	inputIndex = moveInputIndex(input, inputIndex, "condition");
+	let state: SyntaxState = parseExpression(input, inputIndex);
 	whereClause.condition = state.node as Semantic.Expression;
 	assertTypeMatch(Semantic.ValueType.Boolean, whereClause.condition.resultType, input[state.inputIndex]);
 
 	return { inputIndex: state.inputIndex, node: whereClause };
 }
 
-function parseExpression(input: ReadonlyArray<Lex.Token>, inputIndex: number, inputIndexLimit: number): SyntaxState {
+function parseExpression(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
 	// Term
-	let state: SyntaxState = parseTerm(input, inputIndex, inputIndexLimit);
+	let state: SyntaxState = parseTerm(input, inputIndex);
 	let expression: Semantic.Expression = state.node as Semantic.Expression;
 
 	// Binary operation
-	return parseBinaryOperation(input, state.inputIndex, inputIndexLimit, OperationPriority.None, expression);
+	return parseBinaryOperation(input, state.inputIndex, OperationPriority.None, expression);
 }
 
-function parseBinaryOperation(input: ReadonlyArray<Lex.Token>, inputIndex: number, inputIndexLimit: number,	minPriority: OperationPriority, argument0: Semantic.Expression): SyntaxState {
+function parseBinaryOperation(input: ReadonlyArray<Lex.Token>, inputIndex: number, minPriority: OperationPriority, argument0: Semantic.Expression): SyntaxState {
 	let expression: Semantic.Expression = argument0;
 
 	// Binary operations
@@ -169,14 +169,14 @@ function parseBinaryOperation(input: ReadonlyArray<Lex.Token>, inputIndex: numbe
 		assertTypeMatch(signature.argumentTypes[0], binaryOperation.argument0.resultType, input[inputIndex]);
 
 		// Term
-		inputIndex = moveInputIndex(input, inputIndex, inputIndexLimit, "Expression term");
-		let state: SyntaxState = parseTerm(input, inputIndex, inputIndexLimit);
+		inputIndex = moveInputIndex(input, inputIndex, "Expression term");
+		let state: SyntaxState = parseTerm(input, inputIndex);
 
 		// Peek at the next binary operation.
 		let signatureNext: OperationSignature = peekOperationSignature(binaryOperationSignatures, input[state.inputIndex], (state.node as Semantic.Expression).resultType);
 		if (signatureNext !== undefined && signatureNext.priority > signature.priority) {
 			// The next operation is of higher priority.
-			let stateNext: SyntaxState = parseBinaryOperation(input, state.inputIndex, inputIndexLimit, signature.priority, state.node as Semantic.Expression);
+			let stateNext: SyntaxState = parseBinaryOperation(input, state.inputIndex, signature.priority, state.node as Semantic.Expression);
 			binaryOperation.argument1 = stateNext.node as Semantic.Expression;
 			inputIndex = stateNext.inputIndex;
 		}
@@ -195,37 +195,37 @@ function parseBinaryOperation(input: ReadonlyArray<Lex.Token>, inputIndex: numbe
 	return { inputIndex: inputIndex, node: expression };
 }
 
-function parseTerm(input: ReadonlyArray<Lex.Token>, inputIndex: number, inputIndexLimit: number): SyntaxState {
+function parseTerm(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
 	let state: SyntaxState = undefined;
 
 	if (input[inputIndex].tokenKind == Lex.TokenKind.UnaryOperation) {
-		return parseUnaryOperation(input, inputIndex, inputIndexLimit);
+		return parseUnaryOperation(input, inputIndex);
 	}
 	else if (input[inputIndex].tokenKind == Lex.TokenKind.BooleanLiteral
 			|| input[inputIndex].tokenKind == Lex.TokenKind.NumberLiteral
 			|| input[inputIndex].tokenKind == Lex.TokenKind.StringLiteral
 			|| input[inputIndex].tokenKind == Lex.TokenKind.DateTimeLiteral) {
-		return parseLiteral(input, inputIndex, inputIndexLimit);
+		return parseLiteral(input, inputIndex);
 	}
 	else if (input[inputIndex].tokenKind == Lex.TokenKind.Identifier) {
 		let signature: OperationSignature = peekOperationSignature(functionSignatures, input[inputIndex], Semantic.ValueType.Any);
 		if (signature !== undefined) {
-			return parseFunctionCall(input, inputIndex, inputIndexLimit, signature);
+			return parseFunctionCall(input, inputIndex, signature);
 		}
 		else {
-			return parseProperty(input, inputIndex, inputIndexLimit);
+			return parseProperty(input, inputIndex);
 		}
 	}
 	else if (input[inputIndex].tokenKind == Lex.TokenKind.OpeningParenthesis) {
-		inputIndex = moveInputIndex(input, inputIndex, inputIndexLimit, ")");
-		let state: SyntaxState = parseExpression(input, inputIndex, inputIndexLimit);
+		inputIndex = moveInputIndex(input, inputIndex, ")");
+		let state: SyntaxState = parseExpression(input, inputIndex);
 		inputIndex = state.inputIndex;
 
 		// )
 		if (input[inputIndex].tokenKind !== Lex.TokenKind.ClosingParenthesis) {
 			throw { lineNumber: input[inputIndex].lineNumber, expected: ")", actual: input[inputIndex].lexeme };
 		}
-		inputIndex = moveInputIndex(input, inputIndex, inputIndexLimit, ";");
+		inputIndex = moveInputIndex(input, inputIndex, ";");
 
 		return { inputIndex: inputIndex, node: state.node as Semantic.Expression };
 	}
@@ -233,25 +233,25 @@ function parseTerm(input: ReadonlyArray<Lex.Token>, inputIndex: number, inputInd
 	throw { lineNumber: input[inputIndex].lineNumber, expected: "Expression term", actual: input[inputIndex].lexeme };
 }
 
-function parseUnaryOperation(input: ReadonlyArray<Lex.Token>, inputIndex: number, inputIndexLimit: number): SyntaxState {
+function parseUnaryOperation(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
 	// Unary operation
 	let signature: OperationSignature = getOperationSignature(unaryOperationSignatures, input[inputIndex], Semantic.ValueType.Any);
 	let unaryOperation: UnaryOperationTerm = new UnaryOperationTerm(signature);
 
 	// Term
-	inputIndex = moveInputIndex(input, inputIndex, inputIndexLimit, "Expression term");
-	let state: SyntaxState = parseTerm(input, inputIndex, inputIndexLimit);
+	inputIndex = moveInputIndex(input, inputIndex, "Expression term");
+	let state: SyntaxState = parseTerm(input, inputIndex);
 	unaryOperation.argument = state.node as Semantic.Term;
 	assertTypeMatch(signature.argumentTypes[0], unaryOperation.argument.resultType, input[state.inputIndex]);
 
 	return { inputIndex: state.inputIndex, node: unaryOperation };
 }
 
-function parseFunctionCall(input: ReadonlyArray<Lex.Token>, inputIndex: number, inputIndexLimit: number, signature: OperationSignature): SyntaxState {
+function parseFunctionCall(input: ReadonlyArray<Lex.Token>, inputIndex: number, signature: OperationSignature): SyntaxState {
 	let functionCall: FunctionCallTerm = new FunctionCallTerm(signature);
 	
 	// (
-	inputIndex = moveInputIndex(input, inputIndex, inputIndexLimit, "(");
+	inputIndex = moveInputIndex(input, inputIndex, "(");
 	if (input[inputIndex].tokenKind !== Lex.TokenKind.OpeningParenthesis) {
 		throw { lineNumber: input[inputIndex].lineNumber, expected: "(", actual: input[inputIndex].lexeme };
 	}
@@ -259,8 +259,8 @@ function parseFunctionCall(input: ReadonlyArray<Lex.Token>, inputIndex: number, 
 	// Arguments
 	for (let i: number = 0; i < signature.argumentTypes.length; i++) {
 		// Argument
-		inputIndex = moveInputIndex(input, inputIndex, inputIndexLimit, "argument");
-		let state: SyntaxState = parseExpression(input, inputIndex, inputIndexLimit);
+		inputIndex = moveInputIndex(input, inputIndex, "argument");
+		let state: SyntaxState = parseExpression(input, inputIndex);
 		inputIndex = state.inputIndex;
 		functionCall.arguments[i] = state.node as Semantic.Expression;
 		assertTypeMatch(signature.argumentTypes[i], functionCall.arguments[i].resultType, input[inputIndex])
@@ -277,23 +277,23 @@ function parseFunctionCall(input: ReadonlyArray<Lex.Token>, inputIndex: number, 
 	if (input[inputIndex].tokenKind !== Lex.TokenKind.ClosingParenthesis) {
 		throw { lineNumber: input[inputIndex].lineNumber, expected: ")", actual: input[inputIndex].lexeme };
 	}
-	inputIndex = moveInputIndex(input, inputIndex, inputIndexLimit, ")");
+	inputIndex = moveInputIndex(input, inputIndex, ")");
 
 	return { inputIndex: inputIndex, node: functionCall };
 }
 
-function parseLiteral(input: ReadonlyArray<Lex.Token>, inputIndex: number, inputIndexLimit: number): SyntaxState {
+function parseLiteral(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
 	// Literal
 	let literal: LiteralTerm = new LiteralTerm(input[inputIndex]);
-	inputIndex = moveInputIndex(input, inputIndex, inputIndexLimit, ";");
+	inputIndex = moveInputIndex(input, inputIndex, ";");
 
 	return { inputIndex: inputIndex, node: literal };
 }
 
-function parseProperty(input: ReadonlyArray<Lex.Token>, inputIndex: number, inputIndexLimit: number): SyntaxState {
+function parseProperty(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
 	// Property
 	let property: PropertyTerm = new PropertyTerm(input[inputIndex]);
-	inputIndex = moveInputIndex(input, inputIndex, inputIndexLimit, ";");
+	inputIndex = moveInputIndex(input, inputIndex, ";");
 
 	return { inputIndex: inputIndex, node: property };
 }
@@ -313,10 +313,9 @@ function parseOrderByClause(input: ReadonlyArray<Lex.Token>, inputIndex: number)
 // -----------------------------------------------------------------------------
 // Utilities
 
-function moveInputIndex(input: ReadonlyArray<Lex.Token>, inputIndex: number, inputIndexLimit: number, expected: string): number {
-	inputIndexLimit = inputIndexLimit ? inputIndexLimit : input.length;
-	if (++inputIndex > inputIndexLimit) {
-		throw { lineNumber: input[inputIndexLimit - 1].lineNumber, expected: expected, actual: inputIndexLimit < input.length ? input[inputIndexLimit] : "" };
+function moveInputIndex(input: ReadonlyArray<Lex.Token>, inputIndex: number, expected: string): number {
+	if (++inputIndex > input.length) {
+		throw { lineNumber: input[input.length - 1].lineNumber, expected: expected, actual: input[input.length - 1] };
 	}
 	
 	return inputIndex;
