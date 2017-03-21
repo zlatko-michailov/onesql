@@ -10,6 +10,7 @@ export function empty(): boolean {
 					  "\t\t// ignore\n" +
 					  ";";
 	let expectedBatch: Object = {
+		nodeKind: Semantic.NodeKind.Batch,
 		statements: []
 	};
 
@@ -20,7 +21,9 @@ export function empty(): boolean {
 export function use(): boolean {
 	let sql: string = "USE _123abc;";
 	let expectedBatch: Object = {
+		nodeKind: Semantic.NodeKind.Batch,
 		statements: [{
+			nodeKind: Semantic.NodeKind.Statement,
 			statementKind: Semantic.StatementKind.Use,
 			databaseName: "_123abc"
 		}]
@@ -33,7 +36,9 @@ export function use(): boolean {
 export function from(): boolean {
 	let sql: string = "FROM a_b_c_;";
 	let expectedBatch: Object = {
+		nodeKind: Semantic.NodeKind.Batch,
 		statements: [{
+			nodeKind: Semantic.NodeKind.Statement,
 			statementKind: Semantic.StatementKind.Query,
 			sourceName: "a_b_c_",
 			clauses: []
@@ -105,14 +110,18 @@ export function whereBasic(): boolean {
 					  "";
 
 	let expectedBatch: Object = {
+		nodeKind: Semantic.NodeKind.Batch,
 		statements: [
 		{
+			nodeKind: Semantic.NodeKind.Statement,
 			statementKind: Semantic.StatementKind.Query,
 			sourceName: "_1",
 			clauses: [
 			{
+				nodeKind: Semantic.NodeKind.QueryClause,
 				queryClauseKind: Semantic.QueryClauseKind.Where,
 				condition: {
+					nodeKind: Semantic.NodeKind.Expression,
 					resultType: Semantic.ValueType.Boolean,
 					expressionKind: Semantic.ExpressionKind.Term,
 					termKind: Semantic.TermKind.Literal,
@@ -122,17 +131,21 @@ export function whereBasic(): boolean {
 		},
 
 		{
+			nodeKind: Semantic.NodeKind.Statement,
 			statementKind: Semantic.StatementKind.Query,
 			sourceName: "a_",
 			clauses: [
 			{
+				nodeKind: Semantic.NodeKind.QueryClause,
 				queryClauseKind: Semantic.QueryClauseKind.Where,
 				condition: {
+					nodeKind: Semantic.NodeKind.Expression,
 					resultType: Semantic.ValueType.Boolean,
 					expressionKind: Semantic.ExpressionKind.Term,
 					termKind: Semantic.TermKind.UnaryOperation,
 					unaryOperationSymbol: Semantic.UnaryOperationSymbol.LogicalNot,
 					argument: {
+						nodeKind: Semantic.NodeKind.Expression,
 						resultType: Semantic.ValueType.Any,
 						expressionKind: Semantic.ExpressionKind.Term,
 						termKind: Semantic.TermKind.Property,
@@ -143,22 +156,27 @@ export function whereBasic(): boolean {
 		},
 
 		{
+			nodeKind: Semantic.NodeKind.Statement,
 			statementKind: Semantic.StatementKind.Query,
 			sourceName: "a",
 			clauses: [
 			{
+				nodeKind: Semantic.NodeKind.QueryClause,
 				queryClauseKind: Semantic.QueryClauseKind.Where,
 				condition: {
+					nodeKind: Semantic.NodeKind.Expression,
 					resultType: Semantic.ValueType.Boolean,
 					expressionKind: Semantic.ExpressionKind.Term,
 					termKind: Semantic.TermKind.UnaryOperation,
 					unaryOperationSymbol: Semantic.UnaryOperationSymbol.LogicalNot,
 					argument: {
+						nodeKind: Semantic.NodeKind.Expression,
 						resultType: Semantic.ValueType.Boolean,
 						expressionKind: Semantic.ExpressionKind.Term,
 						termKind: Semantic.TermKind.UnaryOperation,
 						unaryOperationSymbol: Semantic.UnaryOperationSymbol.LogicalNot,
 						argument: {
+							nodeKind: Semantic.NodeKind.Expression,
 							resultType: Semantic.ValueType.Boolean,
 							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.Literal,
@@ -170,31 +188,38 @@ export function whereBasic(): boolean {
 		},
 
 		{
+			nodeKind: Semantic.NodeKind.Statement,
 			statementKind: Semantic.StatementKind.Query,
 			sourceName: "_",
 			clauses: [
 			{
+				nodeKind: Semantic.NodeKind.QueryClause,
 				queryClauseKind: Semantic.QueryClauseKind.Where,
 				condition: {
+					nodeKind: Semantic.NodeKind.Expression,
 					resultType: Semantic.ValueType.Boolean,
 					expressionKind: Semantic.ExpressionKind.BinaryOperation,
 					binaryOperationSymbol: Semantic.BinaryOperationSymbol.LogicalOr,
 					argument0: {
+						nodeKind: Semantic.NodeKind.Expression,
 						resultType: Semantic.ValueType.Boolean,
 						expressionKind: Semantic.ExpressionKind.BinaryOperation,
 						binaryOperationSymbol: Semantic.BinaryOperationSymbol.LogicalAnd,
 						argument0: {
+							nodeKind: Semantic.NodeKind.Expression,
 							resultType: Semantic.ValueType.Any,
 							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.Property,
 							propertyName: "p1"
 						},
 						argument1: {
+							nodeKind: Semantic.NodeKind.Expression,
 							resultType: Semantic.ValueType.Boolean,
 							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.UnaryOperation,
 							unaryOperationSymbol: Semantic.UnaryOperationSymbol.LogicalNot,
 							argument: {
+								nodeKind: Semantic.NodeKind.Expression,
 								resultType: Semantic.ValueType.Any,
 								expressionKind: Semantic.ExpressionKind.Term,
 								termKind: Semantic.TermKind.Property,
@@ -203,11 +228,13 @@ export function whereBasic(): boolean {
 						}
 					},
 					argument1: {
+						nodeKind: Semantic.NodeKind.Expression,
 						resultType: Semantic.ValueType.Boolean,
 						expressionKind: Semantic.ExpressionKind.Term,
 						termKind: Semantic.TermKind.UnaryOperation,
 						unaryOperationSymbol: Semantic.UnaryOperationSymbol.LogicalNot,
 						argument: {
+							nodeKind: Semantic.NodeKind.Expression,
 							resultType: Semantic.ValueType.Any,
 							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.Property,
@@ -219,31 +246,38 @@ export function whereBasic(): boolean {
 		},
 
 		{
+			nodeKind: Semantic.NodeKind.Statement,
 			statementKind: Semantic.StatementKind.Query,
 			sourceName: "_",
 			clauses: [
 			{
+				nodeKind: Semantic.NodeKind.QueryClause,
 				queryClauseKind: Semantic.QueryClauseKind.Where,
 				condition: {
+					nodeKind: Semantic.NodeKind.Expression,
 					resultType: Semantic.ValueType.Boolean,
 					expressionKind: Semantic.ExpressionKind.BinaryOperation,
 					binaryOperationSymbol: Semantic.BinaryOperationSymbol.LogicalAnd,
 					argument0: {
+						nodeKind: Semantic.NodeKind.Expression,
 						resultType: Semantic.ValueType.Boolean,
 						expressionKind: Semantic.ExpressionKind.BinaryOperation,
 						binaryOperationSymbol: Semantic.BinaryOperationSymbol.LogicalOr,
 						argument0: {
+							nodeKind: Semantic.NodeKind.Expression,
 							resultType: Semantic.ValueType.Any,
 							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.Property,
 							propertyName: "p1"
 						},
 						argument1: {
+							nodeKind: Semantic.NodeKind.Expression,
 							resultType: Semantic.ValueType.Boolean,
 							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.UnaryOperation,
 							unaryOperationSymbol: Semantic.UnaryOperationSymbol.LogicalNot,
 							argument: {
+								nodeKind: Semantic.NodeKind.Expression,
 								resultType: Semantic.ValueType.Any,
 								expressionKind: Semantic.ExpressionKind.Term,
 								termKind: Semantic.TermKind.Property,
@@ -252,11 +286,13 @@ export function whereBasic(): boolean {
 						}
 					},
 					argument1: {
+						nodeKind: Semantic.NodeKind.Expression,
 						resultType: Semantic.ValueType.Boolean,
 						expressionKind: Semantic.ExpressionKind.Term,
 						termKind: Semantic.TermKind.UnaryOperation,
 						unaryOperationSymbol: Semantic.UnaryOperationSymbol.LogicalNot,
 						argument: {
+							nodeKind: Semantic.NodeKind.Expression,
 							resultType: Semantic.ValueType.Any,
 							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.Property,
@@ -280,33 +316,41 @@ export function whereParentheses(): boolean {
 					  "";
 
 	let expectedBatch: Object = {
+		nodeKind: Semantic.NodeKind.Batch,
 		statements: [
 		{
+			nodeKind: Semantic.NodeKind.Statement,
 			statementKind: Semantic.StatementKind.Query,
 			sourceName: "_",
 			clauses: [
 			{
+				nodeKind: Semantic.NodeKind.QueryClause,
 				queryClauseKind: Semantic.QueryClauseKind.Where,
 				condition: {
+					nodeKind: Semantic.NodeKind.Expression,
 					resultType: Semantic.ValueType.Boolean,
 					expressionKind: Semantic.ExpressionKind.BinaryOperation,
 					binaryOperationSymbol: Semantic.BinaryOperationSymbol.LogicalAnd,
 					argument0: {
+						nodeKind: Semantic.NodeKind.Expression,
 						resultType: Semantic.ValueType.Boolean,
 						expressionKind: Semantic.ExpressionKind.BinaryOperation,
 						binaryOperationSymbol: Semantic.BinaryOperationSymbol.LogicalOr,
 						argument0: {
+							nodeKind: Semantic.NodeKind.Expression,
 							resultType: Semantic.ValueType.Any,
 							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.Property,
 							propertyName: "p1"
 						},
 						argument1: {
+							nodeKind: Semantic.NodeKind.Expression,
 							resultType: Semantic.ValueType.Boolean,
 							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.UnaryOperation,
 							unaryOperationSymbol: Semantic.UnaryOperationSymbol.LogicalNot,
 							argument: {
+								nodeKind: Semantic.NodeKind.Expression,
 								resultType: Semantic.ValueType.Any,
 								expressionKind: Semantic.ExpressionKind.Term,
 								termKind: Semantic.TermKind.Property,
@@ -315,15 +359,18 @@ export function whereParentheses(): boolean {
 						}
 					},
 					argument1: {
+						nodeKind: Semantic.NodeKind.Expression,
 						resultType: Semantic.ValueType.Boolean,
 						expressionKind: Semantic.ExpressionKind.BinaryOperation,
 						binaryOperationSymbol: Semantic.BinaryOperationSymbol.LogicalOr,
 						argument0: {
+							nodeKind: Semantic.NodeKind.Expression,
 							resultType: Semantic.ValueType.Boolean,
 							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.UnaryOperation,
 							unaryOperationSymbol: Semantic.UnaryOperationSymbol.LogicalNot,
 							argument: {
+								nodeKind: Semantic.NodeKind.Expression,
 								resultType: Semantic.ValueType.Any,
 								expressionKind: Semantic.ExpressionKind.Term,
 								termKind: Semantic.TermKind.Property,
@@ -331,6 +378,7 @@ export function whereParentheses(): boolean {
 							}
 						},
 						argument1: {
+							nodeKind: Semantic.NodeKind.Expression,
 							resultType: Semantic.ValueType.Any,
 							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.Property,
@@ -357,28 +405,35 @@ export function wherePriority(): boolean {
 					  "";
 
 	let expectedBatch: Object = {
+		nodeKind: Semantic.NodeKind.Batch,
 		statements: [
 		{
+			nodeKind: Semantic.NodeKind.Statement,
 			statementKind: Semantic.StatementKind.Query,
 			sourceName: "_",
 			clauses: [
 			{
+				nodeKind: Semantic.NodeKind.QueryClause,
 				queryClauseKind: Semantic.QueryClauseKind.Where,
 				condition: {
+					nodeKind: Semantic.NodeKind.Expression,
 					resultType: Semantic.ValueType.Boolean,
 					expressionKind: Semantic.ExpressionKind.BinaryOperation,
 					binaryOperationSymbol: Semantic.BinaryOperationSymbol.LogicalAnd,
 					argument0: {
+						nodeKind: Semantic.NodeKind.Expression,
 						resultType: Semantic.ValueType.Boolean,
 						expressionKind: Semantic.ExpressionKind.BinaryOperation,
 						binaryOperationSymbol: Semantic.BinaryOperationSymbol.Equal,
 						argument0: {
+							nodeKind: Semantic.NodeKind.Expression,
 							resultType: Semantic.ValueType.Any,
 							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.Property,
 							propertyName: "p1"
 						},
 						argument1: {
+							nodeKind: Semantic.NodeKind.Expression,
 							resultType: Semantic.ValueType.Number,
 							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.Literal,
@@ -386,16 +441,19 @@ export function wherePriority(): boolean {
 						}
 					},
 					argument1: {
+						nodeKind: Semantic.NodeKind.Expression,
 						resultType: Semantic.ValueType.Boolean,
 						expressionKind: Semantic.ExpressionKind.BinaryOperation,
 						binaryOperationSymbol: Semantic.BinaryOperationSymbol.Equal,
 						argument0: {
+							nodeKind: Semantic.NodeKind.Expression,
 							resultType: Semantic.ValueType.Any,
 							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.Property,
 							propertyName: "p2"
 						},
 						argument1: {
+							nodeKind: Semantic.NodeKind.Expression,
 							resultType: Semantic.ValueType.Number,
 							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.Literal,
@@ -407,30 +465,37 @@ export function wherePriority(): boolean {
 		},
 
 		{
+			nodeKind: Semantic.NodeKind.Statement,
 			statementKind: Semantic.StatementKind.Query,
 			sourceName: "_",
 			clauses: [
 			{
+				nodeKind: Semantic.NodeKind.QueryClause,
 				queryClauseKind: Semantic.QueryClauseKind.Where,
 				condition: {
+					nodeKind: Semantic.NodeKind.Expression,
 					resultType: Semantic.ValueType.Boolean,
 					expressionKind: Semantic.ExpressionKind.BinaryOperation,
 					binaryOperationSymbol: Semantic.BinaryOperationSymbol.LogicalAnd,
 					argument0: {
+						nodeKind: Semantic.NodeKind.Expression,
 						resultType: Semantic.ValueType.Boolean,
 						expressionKind: Semantic.ExpressionKind.BinaryOperation,
 						binaryOperationSymbol: Semantic.BinaryOperationSymbol.Greater,
 						argument0: {
+							nodeKind: Semantic.NodeKind.Expression,
 							resultType: Semantic.ValueType.Number,
 							expressionKind: Semantic.ExpressionKind.BinaryOperation,
 							binaryOperationSymbol: Semantic.BinaryOperationSymbol.Subtract,
 							argument0: {
+								nodeKind: Semantic.NodeKind.Expression,
 								resultType: Semantic.ValueType.Any,
 								expressionKind: Semantic.ExpressionKind.Term,
 								termKind: Semantic.TermKind.Property,
 								propertyName: "p1"
 							},
 							argument1: {
+								nodeKind: Semantic.NodeKind.Expression,
 								resultType: Semantic.ValueType.Number,
 								expressionKind: Semantic.ExpressionKind.Term,
 								termKind: Semantic.TermKind.Literal,
@@ -438,16 +503,19 @@ export function wherePriority(): boolean {
 							}
 						},
 						argument1: {
+							nodeKind: Semantic.NodeKind.Expression,
 							resultType: Semantic.ValueType.Number,
 							expressionKind: Semantic.ExpressionKind.BinaryOperation,
 							binaryOperationSymbol: Semantic.BinaryOperationSymbol.Subtract,
 							argument0: {
+								nodeKind: Semantic.NodeKind.Expression,
 								resultType: Semantic.ValueType.Any,
 								expressionKind: Semantic.ExpressionKind.Term,
 								termKind: Semantic.TermKind.Property,
 								propertyName: "p2"
 							},
 							argument1: {
+								nodeKind: Semantic.NodeKind.Expression,
 								resultType: Semantic.ValueType.Number,
 								expressionKind: Semantic.ExpressionKind.Term,
 								termKind: Semantic.TermKind.Literal,
@@ -456,30 +524,36 @@ export function wherePriority(): boolean {
 						}
 					},
 					argument1: {
+						nodeKind: Semantic.NodeKind.Expression,
 						resultType: Semantic.ValueType.Boolean,
 						expressionKind: Semantic.ExpressionKind.BinaryOperation,
 						binaryOperationSymbol: Semantic.BinaryOperationSymbol.Less,
 						argument0: {
+							nodeKind: Semantic.NodeKind.Expression,
 							resultType: Semantic.ValueType.Number,
 							expressionKind: Semantic.ExpressionKind.BinaryOperation,
 							binaryOperationSymbol: Semantic.BinaryOperationSymbol.Subtract,
 							argument0: {
+								nodeKind: Semantic.NodeKind.Expression,
 								resultType: Semantic.ValueType.Any,
 								expressionKind: Semantic.ExpressionKind.Term,
 								termKind: Semantic.TermKind.Property,
 								propertyName: "p3"
 							},
 							argument1: {
+								nodeKind: Semantic.NodeKind.Expression,
 								resultType: Semantic.ValueType.Number,
 								expressionKind: Semantic.ExpressionKind.BinaryOperation,
 								binaryOperationSymbol: Semantic.BinaryOperationSymbol.Multiply,
 								argument0: {
+									nodeKind: Semantic.NodeKind.Expression,
 									resultType: Semantic.ValueType.Any,
 									expressionKind: Semantic.ExpressionKind.Term,
 									termKind: Semantic.TermKind.Property,
 									propertyName: "p4"
 								},
 								argument1: {
+									nodeKind: Semantic.NodeKind.Expression,
 									resultType: Semantic.ValueType.Any,
 									expressionKind: Semantic.ExpressionKind.Term,
 									termKind: Semantic.TermKind.Property,
@@ -488,26 +562,31 @@ export function wherePriority(): boolean {
 							}
 						},
 						argument1: {
+							nodeKind: Semantic.NodeKind.Expression,
 							resultType: Semantic.ValueType.Number,
 							expressionKind: Semantic.ExpressionKind.BinaryOperation,
 							binaryOperationSymbol: Semantic.BinaryOperationSymbol.Add,
 							argument0: {
+								nodeKind: Semantic.NodeKind.Expression,
 								resultType: Semantic.ValueType.Any,
 								expressionKind: Semantic.ExpressionKind.Term,
 								termKind: Semantic.TermKind.Property,
 								propertyName: "p6"
 							},
 							argument1: {
+								nodeKind: Semantic.NodeKind.Expression,
 								resultType: Semantic.ValueType.Number,
 								expressionKind: Semantic.ExpressionKind.BinaryOperation,
 								binaryOperationSymbol: Semantic.BinaryOperationSymbol.Divide,
 								argument0: {
+									nodeKind: Semantic.NodeKind.Expression,
 									resultType: Semantic.ValueType.Any,
 									expressionKind: Semantic.ExpressionKind.Term,
 									termKind: Semantic.TermKind.Property,
 									propertyName: "p7"
 								},
 								argument1: {
+									nodeKind: Semantic.NodeKind.Expression,
 									resultType: Semantic.ValueType.Any,
 									expressionKind: Semantic.ExpressionKind.Term,
 									termKind: Semantic.TermKind.Property,
@@ -536,46 +615,56 @@ export function whereFunctions(): boolean {
 						"";
 
 	let expectedBatch: Object = {
+		nodeKind: Semantic.NodeKind.Batch,
 		statements: [
 		{
+			nodeKind: Semantic.NodeKind.Statement,
 			statementKind: Semantic.StatementKind.Query,
 			sourceName: "_",
 			clauses: [
 			{
+				nodeKind: Semantic.NodeKind.QueryClause,
 				queryClauseKind: Semantic.QueryClauseKind.Where,
 				condition: {
+					nodeKind: Semantic.NodeKind.Expression,
 					resultType: Semantic.ValueType.Boolean,
 					expressionKind: Semantic.ExpressionKind.BinaryOperation,
 					binaryOperationSymbol: Semantic.BinaryOperationSymbol.Equal,
 					argument0: {
+						nodeKind: Semantic.NodeKind.Expression,
 						resultType: Semantic.ValueType.String,
 						expressionKind: Semantic.ExpressionKind.Term,
 						termKind: Semantic.TermKind.Literal,
 						literal: "a"
 					},
 					argument1: {
+						nodeKind: Semantic.NodeKind.Expression,
 						resultType: Semantic.ValueType.String,
 						expressionKind: Semantic.ExpressionKind.Term,
 						termKind: Semantic.TermKind.FunctionCall,
 						functionSymbol: Semantic.FunctionSymbol.Substr,
 						arguments: [
 						{
+							nodeKind: Semantic.NodeKind.Expression,
 							resultType: Semantic.ValueType.String,
 							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.Literal,
 							literal: "abc"
 						},
 						{
+							nodeKind: Semantic.NodeKind.Expression,
 							resultType: Semantic.ValueType.Number,
 							expressionKind: Semantic.ExpressionKind.BinaryOperation,
 							binaryOperationSymbol: Semantic.BinaryOperationSymbol.Add,
 							argument0: {
+								nodeKind: Semantic.NodeKind.Expression,
 								resultType: Semantic.ValueType.Number,
 								expressionKind: Semantic.ExpressionKind.Term,
 								termKind: Semantic.TermKind.Literal,
 								literal: 1
 							},
 							argument1: {
+								nodeKind: Semantic.NodeKind.Expression,
 								resultType: Semantic.ValueType.Number,
 								expressionKind: Semantic.ExpressionKind.Term,
 								termKind: Semantic.TermKind.Literal,
@@ -583,22 +672,26 @@ export function whereFunctions(): boolean {
 							},
 						},
 						{
+							nodeKind: Semantic.NodeKind.Expression,
 							resultType: Semantic.ValueType.Number,
 							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.FunctionCall,
 							functionSymbol: Semantic.FunctionSymbol.Floor,
 							arguments: [
 							{
+								nodeKind: Semantic.NodeKind.Expression,
 								resultType: Semantic.ValueType.Number,
 								expressionKind: Semantic.ExpressionKind.BinaryOperation,
 								binaryOperationSymbol: Semantic.BinaryOperationSymbol.Subtract,
 								argument0: {
+									nodeKind: Semantic.NodeKind.Expression,
 									resultType: Semantic.ValueType.Number,
 									expressionKind: Semantic.ExpressionKind.Term,
 									termKind: Semantic.TermKind.Literal,
 									literal: 4
 								},
 								argument1: {
+									nodeKind: Semantic.NodeKind.Expression,
 									resultType: Semantic.ValueType.Number,
 									expressionKind: Semantic.ExpressionKind.Term,
 									termKind: Semantic.TermKind.Literal,
@@ -612,26 +705,32 @@ export function whereFunctions(): boolean {
 		},
 
 		{
+			nodeKind: Semantic.NodeKind.Statement,
 			statementKind: Semantic.StatementKind.Query,
 			sourceName: "_",
 			clauses: [
 			{
+				nodeKind: Semantic.NodeKind.QueryClause,
 				queryClauseKind: Semantic.QueryClauseKind.Where,
 				condition: {
+					nodeKind: Semantic.NodeKind.Expression,
 					resultType: Semantic.ValueType.Boolean,
 					expressionKind: Semantic.ExpressionKind.BinaryOperation,
 					binaryOperationSymbol: Semantic.BinaryOperationSymbol.Less,
 					argument0: {
+						nodeKind: Semantic.NodeKind.Expression,
 						resultType: Semantic.ValueType.DateTime,
 						expressionKind: Semantic.ExpressionKind.Term,
 						termKind: Semantic.TermKind.Literal,
 						literal: new Date('2017-03-13T21:37:12.345')
 					},
 					argument1: {
+						nodeKind: Semantic.NodeKind.Expression,
 						resultType: Semantic.ValueType.DateTime,
 						expressionKind: Semantic.ExpressionKind.BinaryOperation,
 						binaryOperationSymbol: Semantic.BinaryOperationSymbol.DateTimeSubtract,
 						argument0: {
+							nodeKind: Semantic.NodeKind.Expression,
 							resultType: Semantic.ValueType.DateTime,
 							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.FunctionCall,
@@ -639,6 +738,7 @@ export function whereFunctions(): boolean {
 							arguments: []
 						},
 						argument1: {
+							nodeKind: Semantic.NodeKind.Expression,
 							resultType: Semantic.ValueType.Number,
 							expressionKind: Semantic.ExpressionKind.Term,
 							termKind: Semantic.TermKind.Literal,

@@ -1,9 +1,18 @@
+export interface Visitor {
+	visit(node: Node) : any;
+}
+
 export interface Node {
+	readonly nodeKind: NodeKind;
+
 	accept(visitor: Visitor) : any;
 }
 
-export interface Visitor {
-	visit(node: Node) : any;
+export const enum NodeKind {
+	Batch = 1,
+	Statement = 2,
+	QueryClause = 3,
+	Expression = 4,
 }
 
 export interface Batch extends Node {

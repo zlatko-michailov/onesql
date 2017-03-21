@@ -22,7 +22,7 @@ export function parse(input: ReadonlyArray<Lex.Token>): Semantic.Batch {
 }
 
 function parseBatch(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
-	let batch: Batch = { statements: [] } as Batch;
+	let batch: Batch = new Batch();
 
 	// Parse statements.
 	while (inputIndex < input.length) {
@@ -362,12 +362,15 @@ function stringifyValueType(resultType: Semantic.ValueType): string {
 // Semantic contract implementations.
 
 class Node implements Semantic.Node {
+	nodeKind: Semantic.NodeKind;
+
 	accept(visitor: Semantic.Visitor) : any {
 	}
 }
 
 class Batch extends Node implements Semantic.Batch {
-	statements: Array<Semantic.Statement>;
+	nodeKind: Semantic.NodeKind = Semantic.NodeKind.Batch;
+	statements: Array<Semantic.Statement> = [];
 
 	accept(visitor: Semantic.Visitor): Array<any> {
 		let result: Array<any> = [];
@@ -383,22 +386,26 @@ class Batch extends Node implements Semantic.Batch {
 }
 
 class UseStatement extends Node implements Semantic.UseStatement {
+	nodeKind: Semantic.NodeKind = Semantic.NodeKind.Statement;
 	statementKind: Semantic.StatementKind = Semantic.StatementKind.Use;
 	databaseName: string;
 }
 
 class QueryStatement extends Node implements Semantic.QueryStatement {
+	nodeKind: Semantic.NodeKind = Semantic.NodeKind.Statement;
 	statementKind: Semantic.StatementKind = Semantic.StatementKind.Query;
 	sourceName: string;
 	clauses: Array<Semantic.QueryClause> = [];
 }
 
 class WhereClause extends Node implements Semantic.WhereClause {
+	nodeKind: Semantic.NodeKind = Semantic.NodeKind.QueryClause;
 	queryClauseKind: Semantic.QueryClauseKind = Semantic.QueryClauseKind.Where;
 	condition: Semantic.Expression;
 }
 
 class Expression extends Node implements Semantic.Expression {
+	nodeKind: Semantic.NodeKind = Semantic.NodeKind.Expression;
 	resultType: Semantic.ValueType;
 	expressionKind: Semantic.ExpressionKind;
 }
