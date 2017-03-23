@@ -1,11 +1,5 @@
-export interface Visitor {
-	visit(node: Node) : any;
-}
-
 export interface Node {
 	readonly nodeKind: NodeKind;
-
-	accept(visitor: Visitor) : any;
 }
 
 export const enum NodeKind {
