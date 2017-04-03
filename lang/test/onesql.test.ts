@@ -1,11 +1,10 @@
 import * as LexTest from "./onesql.test.lex";
 import * as SyntaxTest from "./onesql.test.syntax";
+import * as MongoTest from "./onesql.test.gen.mongo";
 
 function run(): boolean {
     let passed: boolean = true;
     
-    hacks();
-
     passed = execute("LexTest.blankSpace", LexTest.blankSpace) && passed;
     passed = execute("LexTest.comments", LexTest.comments) && passed;
     passed = execute("LexTest.literals", LexTest.literals) && passed;
@@ -25,11 +24,15 @@ function run(): boolean {
     passed = execute("SyntaxTest.wherePriority", SyntaxTest.wherePriority) && passed;
     passed = execute("SyntaxTest.whereFunctions", SyntaxTest.whereFunctions) && passed;
 
+    passed = execute("MongoTest.whereBasicMongo", MongoTest.whereBasicMongo) && passed;
+
     log(LogLevel.Important);
     log(LogLevel.Important, "==============");
     log(LogLevel.Important, passed ? "    PASSED" : "+++ FAILED +++" );
     log(LogLevel.Important, "==============");
     
+    hacks();
+
     return passed;
 }
 
@@ -147,7 +150,7 @@ interface Config {
 
 const config: Config = {
     // DEBUG: To see the full log, comment out the next line.
-    logLevelLimit: LogLevel.Important,
+    ////logLevelLimit: LogLevel.Important,
 };
 
 run();
