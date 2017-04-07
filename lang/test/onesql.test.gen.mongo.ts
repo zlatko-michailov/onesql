@@ -8,54 +8,67 @@ export function whereBasicMongo(): boolean {
 
 					  "USE bar;\n\n" +
 
-					  "USE test;\n\n" +
+					  "USE onesqlTest;\n\n" +
 
-					  "FROM Demography\n" +
+					  "FROM demography\n" +
 					  "WHERE TRUE;\n\n" +
 
-					  "FROM Demography\n" +
+					  "FROM demography\n" +
 					  "WHERE NOT!TRUE;\n" +
 
-					  "FROM Demography\n" +
-					  "WHERE State == 'CA' AND NOT City = 'San Francisco';\n" +
+					  "FROM demography\n" +
+					  "WHERE state == 'CA' AND NOT (city = 'San Francisco');\n" +
 
-					  "FROM Demography\n" +
-					  "WHERE City == 'Houston' OR NOT Popukation > 1000000 AND NOT Area > 600;\n" +
+					  "FROM demography\n" +
+					  "WHERE city == 'Houston' OR NOT (population > 1000000) AND NOT (area > 600);\n" +
 
 					  "";
 
 	let expectedBatch: Object = {
 		statements: [
 		{
-			databaseName: "test",
-			collectionName: "Demography",
+			databaseName: "onesqlTest",
+			collectionName: "demography",
 			aggregationStages: [
 			{
-				$match: true,
+				$match: { $literal: true },
 			}
 		]},
 
 		{
-			collectionName: "Demography",
+			collectionName: "demography",
 			aggregationStages: [
 			{
-				$match: true,
+				$match: {
+					$not: [{ $not: [{ $literal: true }] }]
+				},
 			}
 		]},
 
 		{
-			collectionName: "Demography",
+			collectionName: "demography",
 			aggregationStages: [
 			{
-				$match: true,
+				$match: { 
+					$and: [
+						{ $eq: [ "$state", { $literal: "CA" } ] },
+						{ $not: [{ $eq: [ "$city", { $literal: "San Francisco" } ] }] },
+				]},
 			}
 		]},
 
 		{
-			collectionName: "Demography",
+			collectionName: "demography",
 			aggregationStages: [
 			{
-				$match: true,
+				$match: { 
+					$and: [{
+						$or: [
+							{ $eq: [ "$city", { $literal: "Houston" } ] },
+							{ $not: [{ $gt: [ "$population", { $literal: 1000000 } ] }] },
+						]},
+						{ $not: [{ $gt: [ "$area", { $literal: 600 } ] }] },
+				]},
 			}
 		]},
 

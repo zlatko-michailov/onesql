@@ -85,18 +85,103 @@ function genMongoAggregationStage(semanticClause: Semantic.QueryClause): Object 
 
 	switch (semanticClause.queryClauseKind) {
 		case Semantic.QueryClauseKind.Where:
-			return { $match: true }; // TODO: expression
+			let whereClause: Semantic.WhereClause = semanticClause as Semantic.WhereClause;
+			let mongoCondition: any = genMongoExpression(whereClause.condition);
+			return { $match: mongoCondition };
 
 		default:
 			throw "//TODO:";
 	}
 }
 
+function genMongoExpression(semanticExpression: Semantic.Expression): any {
+	switch (semanticExpression.expressionKind) {
+		case Semantic.ExpressionKind.BinaryOperation:
+			return genMongoBinaryOperation(semanticExpression as Semantic.BinaryOperation);
+
+		case Semantic.ExpressionKind.Term:
+			return genMongoTerm(semanticExpression as Semantic.Term);
+
+		default:
+			throw "//TODO:";
+	}
+}
+
+function genMongoBinaryOperation(semanticBinaryOperation: Semantic.BinaryOperation): any {
+	assertExpressionKind(semanticBinaryOperation, Semantic.ExpressionKind.BinaryOperation);
+
+	let mongoBinaryOperationSymbol: string = getOperationMapping(binaryOperationMappings, semanticBinaryOperation.binaryOperationSymbol);
+	let mongoArgument0: any = genMongoExpression(semanticBinaryOperation.argument0);
+	let mongoArgument1: any = genMongoExpression(semanticBinaryOperation.argument1);
+
+	let mongoBinaryOperation: any = { };
+	mongoBinaryOperation[mongoBinaryOperationSymbol] = [ mongoArgument0, mongoArgument1 ];
+	return mongoBinaryOperation;
+}
+
+function genMongoTerm(semanticTerm: Semantic.Term): any {
+	assertExpressionKind(semanticTerm, Semantic.ExpressionKind.Term);
+
+	switch (semanticTerm.termKind) {
+		case Semantic.TermKind.UnaryOperation:
+			return genMongoUnaryOperation(semanticTerm as Semantic.UnaryOperationTerm);
+
+		case Semantic.TermKind.Literal:
+			return genMongoLiteral(semanticTerm as Semantic.LiteralTerm);
+
+		case Semantic.TermKind.Property:
+			return genMongoProperty(semanticTerm as Semantic.PropertyTerm);
+
+		case Semantic.TermKind.FunctionCall:
+			return true; //TODO:
+
+		default:
+			throw "//TODO:";
+	}
+}
+
+function genMongoUnaryOperation(semanticUnaryOperation: Semantic.UnaryOperationTerm): any {
+	assertTermKind(semanticUnaryOperation, Semantic.TermKind.UnaryOperation);
+
+	let mongoUnaryOperationSymbol: string = getOperationMapping(unaryOperationMappings, semanticUnaryOperation.unaryOperationSymbol);
+	let mongoArgument: any = genMongoExpression(semanticUnaryOperation.argument);
+
+	let mongoUnaryOperation: any = { };
+	mongoUnaryOperation[mongoUnaryOperationSymbol] = [ mongoArgument ];
+	return mongoUnaryOperation;
+}
+
+function genMongoLiteral(semanticLiteral: Semantic.LiteralTerm): any {
+	assertTermKind(semanticLiteral, Semantic.TermKind.Literal);
+
+	let mongoLiteral: any = { $literal: semanticLiteral.literal };
+	return mongoLiteral;
+}
+
+function genMongoProperty(semanticProperty: Semantic.PropertyTerm): any {
+	assertTermKind(semanticProperty, Semantic.TermKind.Property);
+
+	let mongoProperty: string = "$" + semanticProperty.propertyName;
+	return mongoProperty;
+}
+
 // -----------------------------------------------------------------------------
 // Utilities
 
 function assertNodeKind(node: Semantic.Node, nodeKind: Semantic.NodeKind): void {
-	if (node.nodeKind != nodeKind) {
+	if (node.nodeKind !== nodeKind) {
+		throw "// TODO:";
+	}
+}
+
+function assertExpressionKind(expression: Semantic.Expression, expressionKind: Semantic.ExpressionKind): void {
+	if (expression.expressionKind !== expressionKind) {
+		throw "// TODO:";
+	}
+}
+
+function assertTermKind(term: Semantic.Term, termKind: Semantic.TermKind): void {
+	if (term.termKind !== termKind) {
 		throw "// TODO:";
 	}
 }
@@ -114,3 +199,67 @@ class MongoStatement implements Statement {
 	aggregationStages: Array<Object>;
 }
 
+// -----------------------------------------------------------------------------
+// Symbol tables.
+
+interface OperationMapping<SemanticSymbol> {
+	readonly semanticSymbol: SemanticSymbol;
+	readonly mongoSymbol: string;
+}
+
+function lookupOperationMapping<SemanticSymbol>(mappings: ReadonlyArray<OperationMapping<SemanticSymbol>>, semanticSymbol: SemanticSymbol): string {
+	for (let i: number = 0; i < mappings.length; i++) {
+		if (mappings[i].semanticSymbol === semanticSymbol) {
+			return mappings[i].mongoSymbol;
+		}
+	}
+
+	return undefined;
+}
+
+function getOperationMapping<SemanticSymbol>(mappings: ReadonlyArray<OperationMapping<SemanticSymbol>>, semanticSymbol: SemanticSymbol): string {
+	let mongoSmbol: string = lookupOperationMapping(mappings, semanticSymbol);
+	if (mongoSmbol !== undefined) {
+		return mongoSmbol;
+	}
+
+	throw "// TODO:";
+}
+
+const unaryOperationMappings: ReadonlyArray<OperationMapping<Semantic.UnaryOperationSymbol>> = [
+	{ semanticSymbol: Semantic.UnaryOperationSymbol.LogicalNot, mongoSymbol: "$not" },
+
+	// Bitwise operations are not supported by Mongo.
+	
+	// Negation and noop operations are not supported by Mongo.
+];
+
+const binaryOperationMappings: ReadonlyArray<OperationMapping<Semantic.BinaryOperationSymbol>> = [
+	{ semanticSymbol: Semantic.BinaryOperationSymbol.LogicalOr, mongoSymbol: "$or" },
+	{ semanticSymbol: Semantic.BinaryOperationSymbol.LogicalAnd, mongoSymbol: "$and" },
+
+	{ semanticSymbol: Semantic.BinaryOperationSymbol.Equal, mongoSymbol: "$eq" },
+	{ semanticSymbol: Semantic.BinaryOperationSymbol.NotEqual, mongoSymbol: "$ne" },
+	{ semanticSymbol: Semantic.BinaryOperationSymbol.Less, mongoSymbol: "$lt" },
+	{ semanticSymbol: Semantic.BinaryOperationSymbol.LessOrEqual, mongoSymbol: "$lte" },
+	{ semanticSymbol: Semantic.BinaryOperationSymbol.Greater, mongoSymbol: "$gt" },
+	{ semanticSymbol: Semantic.BinaryOperationSymbol.GreaterOrEqual, mongoSymbol: "$gte" },
+
+	// Bitwise operations are not supported by Mongo.
+
+	{ semanticSymbol: Semantic.BinaryOperationSymbol.Add, mongoSymbol: "$add" },
+	{ semanticSymbol: Semantic.BinaryOperationSymbol.Subtract, mongoSymbol: "$subtract" },
+	{ semanticSymbol: Semantic.BinaryOperationSymbol.Multiply, mongoSymbol: "$multiply" },
+	{ semanticSymbol: Semantic.BinaryOperationSymbol.Divide, mongoSymbol: "$divide" },
+	{ semanticSymbol: Semantic.BinaryOperationSymbol.Modulo, mongoSymbol: "$mod" },
+
+	{ semanticSymbol: Semantic.BinaryOperationSymbol.Concat, mongoSymbol: "$concat" },
+	
+	{ semanticSymbol: Semantic.BinaryOperationSymbol.DateTimeAdd, mongoSymbol: "$add" },
+	{ semanticSymbol: Semantic.BinaryOperationSymbol.DateTimeSubtract, mongoSymbol: "$subtract" },
+	{ semanticSymbol: Semantic.BinaryOperationSymbol.DateTimeDiff, mongoSymbol: "$subtract" },
+];
+
+const functionMappings: ReadonlyArray<OperationMapping<Semantic.FunctionSymbol>> = [
+	// TODO:
+];
