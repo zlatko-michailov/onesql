@@ -1,15 +1,15 @@
 
 // Drop any leftovers
 {
-	let oldDB = db.getMongo().getDB('onesqlTest');
-	oldDB.dropDatabase();
+	let _db = db.getMongo().getDB('onesqlTest');
+	_db.dropDatabase();
 }
 
 // Recreate the db
 {
-	let newDB = db.getMongo().getDB('onesqlTest');
-	newDB.createCollection("demography");
-	newDB.demography.insertMany([
+	let _db = db.getMongo().getDB('onesqlTest');
+	_db.createCollection("demography");
+	_db.demography.insertMany([
 		{ city: "New York",      state: "NY", population: 8555405, area: 302.6 },
 		{ city: "Los Angeles",   state: "CA", population: 3971883, area: 467.8 },
 		{ city: "Chicago",       state: "IL", population: 2720546, area: 227.6 },

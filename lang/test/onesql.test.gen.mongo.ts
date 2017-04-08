@@ -89,6 +89,27 @@ export function whereBasicMongo(): boolean {
 
 	]};
 
+	let expectedJavascript: string = "\n" +
+	"{\n" +
+		"    let _db = db;\n" +
+		"\n" +
+		"    _db = db.getMongo().getDB('onesqlTest');\n" +
+		"    _db.demography.aggregate(" + JSON.stringify((expectedBatch as Mongo.Batch).statements[0].aggregationStages) + ");\n" +
+		"\n" +
+		"    _db.demography.aggregate(" + JSON.stringify((expectedBatch as Mongo.Batch).statements[1].aggregationStages) + ");\n" +
+		"\n" +
+		"    _db.demography.aggregate(" + JSON.stringify((expectedBatch as Mongo.Batch).statements[2].aggregationStages) + ");\n" +
+		"\n" +
+		"    _db.demography.aggregate(" + JSON.stringify((expectedBatch as Mongo.Batch).statements[3].aggregationStages) + ");\n" +
+		"\n" +
+		"    _db.demography.aggregate(" + JSON.stringify((expectedBatch as Mongo.Batch).statements[4].aggregationStages) + ");\n" +
+	"}\n";
+
 	let actualBatch: Mongo.Batch = OneSql.toMongo(sql);
-	return Test.areEqual(expectedBatch, actualBatch, Test.LogLevel.Info, "batch");
+	let actualJavascript: string = Mongo.genJavascriptBatch(actualBatch);
+
+	let pass: boolean = true;
+	pass = Test.areEqual(expectedBatch, actualBatch, Test.LogLevel.Info, "mongo batch") && pass;
+	pass = Test.areEqual(expectedJavascript, actualJavascript, Test.LogLevel.Info, "mongo javascript") && pass;
+	return pass;
 }

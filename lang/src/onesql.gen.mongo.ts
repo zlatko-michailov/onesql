@@ -17,11 +17,6 @@ export function genJavascript(semanticBatch: Semantic.Batch): string {
 	return javascriptBatch;
 }
 
-export function genJavascriptBatch(mongoBatch: Batch): string {
-	// TODO:
-	return "// TODO:";
-}
-
 export function genMongoBatch(semanticBatch: Semantic.Batch): Batch {
 	assertNodeKind(semanticBatch, Semantic.NodeKind.Batch);
 
@@ -178,6 +173,39 @@ function genMongoFunctionCall(semanticFunctionCall: Semantic.FunctionCallTerm): 
 	let mongoFunctionCall: any = { };
 	mongoFunctionCall[mongoFunctionSymbol] = mongoArguments.length === 1 ? mongoArguments[0] : (mongoArguments.length === 0 ? null : mongoArguments);
 	return mongoFunctionCall;
+}
+
+// -----------------------------------------------------------------------------
+// Javascript
+
+export function genJavascriptBatch(mongoBatch: Batch): string {
+	let script: string = "";
+
+	script += "\n{\n";
+	script += "    let _db = db;\n";
+
+	for (let i: number = 0; i < mongoBatch.statements.length; i++) {
+		let mongoStatement: Statement = mongoBatch.statements[i];
+		script += "\n";
+
+		if (mongoStatement.databaseName !== undefined) {
+			script += "    _db = db.getMongo().getDB('" + mongoStatement.databaseName + "');\n";
+		}
+
+		if (mongoStatement.collectionName !== undefined) {
+			script += "    _db." + mongoStatement.collectionName;
+
+			if (mongoStatement.aggregationStages !== undefined) {
+				script += ".aggregate(" + JSON.stringify(mongoStatement.aggregationStages) + ");\n";
+			}
+			else {
+				script += ".find();\n";
+			}
+		}
+	}
+
+	script += "}\n";
+	return script;
 }
 
 // -----------------------------------------------------------------------------
