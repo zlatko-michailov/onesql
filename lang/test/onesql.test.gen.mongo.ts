@@ -22,6 +22,9 @@ export function whereBasicMongo(): boolean {
 					  "FROM demography\n" +
 					  "WHERE city == 'Houston' OR NOT (population > 1000000) AND NOT (area > 600);\n" +
 
+					  "FROM demography\n" +
+					  "WHERE 'an' == substr(city, 1, floor(5 - 3));\n" +
+
 					  "";
 
 	let expectedBatch: Object = {
@@ -68,6 +71,18 @@ export function whereBasicMongo(): boolean {
 							{ $not: [{ $gt: [ "$population", { $literal: 1000000 } ] }] },
 						]},
 						{ $not: [{ $gt: [ "$area", { $literal: 600 } ] }] },
+				]},
+			}
+		]},
+
+		{
+			collectionName: "demography",
+			aggregationStages: [
+			{
+				$match: { 
+					$eq: [
+						{ $literal: "an" },
+						{ $substrCP: [ "$city", { $literal: 1 }, { $floor: { $subtract: [ { $literal: 5 }, { $literal: 3 } ] } } ] },
 				]},
 			}
 		]},

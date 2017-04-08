@@ -133,7 +133,7 @@ function genMongoTerm(semanticTerm: Semantic.Term): any {
 			return genMongoProperty(semanticTerm as Semantic.PropertyTerm);
 
 		case Semantic.TermKind.FunctionCall:
-			return true; //TODO:
+			return genMongoFunctionCall(semanticTerm as Semantic.FunctionCallTerm);
 
 		default:
 			throw "//TODO:";
@@ -163,6 +163,21 @@ function genMongoProperty(semanticProperty: Semantic.PropertyTerm): any {
 
 	let mongoProperty: string = "$" + semanticProperty.propertyName;
 	return mongoProperty;
+}
+
+function genMongoFunctionCall(semanticFunctionCall: Semantic.FunctionCallTerm): any {
+	assertTermKind(semanticFunctionCall, Semantic.TermKind.FunctionCall);
+
+	let mongoFunctionSymbol: string = getOperationMapping(functionMappings, semanticFunctionCall.functionSymbol);
+	let mongoArguments: Array<any> = [ ];
+	
+	for (let i: number = 0; i < semanticFunctionCall.arguments.length; i++) {
+		mongoArguments.push(genMongoExpression(semanticFunctionCall.arguments[i]));
+	}
+
+	let mongoFunctionCall: any = { };
+	mongoFunctionCall[mongoFunctionSymbol] = mongoArguments.length === 1 ? mongoArguments[0] : (mongoArguments.length === 0 ? null : mongoArguments);
+	return mongoFunctionCall;
 }
 
 // -----------------------------------------------------------------------------
@@ -231,7 +246,7 @@ const unaryOperationMappings: ReadonlyArray<OperationMapping<Semantic.UnaryOpera
 
 	// Bitwise operations are not supported by Mongo.
 	
-	// Negation and noop operations are not supported by Mongo.
+	// Negation and NoOp operations are not supported by Mongo.
 ];
 
 const binaryOperationMappings: ReadonlyArray<OperationMapping<Semantic.BinaryOperationSymbol>> = [
@@ -261,5 +276,38 @@ const binaryOperationMappings: ReadonlyArray<OperationMapping<Semantic.BinaryOpe
 ];
 
 const functionMappings: ReadonlyArray<OperationMapping<Semantic.FunctionSymbol>> = [
-	// TODO:
+	{ semanticSymbol: Semantic.FunctionSymbol.Abs, mongoSymbol: "$abs" },
+	{ semanticSymbol: Semantic.FunctionSymbol.Ceil, mongoSymbol: "$ceil" },
+	{ semanticSymbol: Semantic.FunctionSymbol.Exp, mongoSymbol: "$exp" },
+	{ semanticSymbol: Semantic.FunctionSymbol.Floor, mongoSymbol: "$floor" },
+	{ semanticSymbol: Semantic.FunctionSymbol.Lg, mongoSymbol: "$log10" },
+	{ semanticSymbol: Semantic.FunctionSymbol.Ln, mongoSymbol: "$ln" },
+	{ semanticSymbol: Semantic.FunctionSymbol.Log, mongoSymbol: "$log" },
+	{ semanticSymbol: Semantic.FunctionSymbol.Power, mongoSymbol: "$pow" },
+
+	{ semanticSymbol: Semantic.FunctionSymbol.IndexOf, mongoSymbol: "$indexOfCP" },
+	{ semanticSymbol: Semantic.FunctionSymbol.Length, mongoSymbol: "$strLenCP" },
+
+	{ semanticSymbol: Semantic.FunctionSymbol.Day, mongoSymbol: "$dayOfMonth" },
+	{ semanticSymbol: Semantic.FunctionSymbol.Hours, mongoSymbol: "$hours" },
+	{ semanticSymbol: Semantic.FunctionSymbol.Milliseconds, mongoSymbol: "$millisecond" },
+	{ semanticSymbol: Semantic.FunctionSymbol.Minutes, mongoSymbol: "$minute" },
+	{ semanticSymbol: Semantic.FunctionSymbol.Month, mongoSymbol: "$month" },
+	{ semanticSymbol: Semantic.FunctionSymbol.Seconds, mongoSymbol: "$second" },
+	{ semanticSymbol: Semantic.FunctionSymbol.Year, mongoSymbol: "$year" },
+
+	{ semanticSymbol: Semantic.FunctionSymbol.Substr, mongoSymbol: "$substrCP" },
+	{ semanticSymbol: Semantic.FunctionSymbol.ToLower, mongoSymbol: "$toLower" },
+	// ToString function is not supported by Mongo.
+	{ semanticSymbol: Semantic.FunctionSymbol.ToUpper, mongoSymbol: "$toUpper" },
+
+	{ semanticSymbol: Semantic.FunctionSymbol.Avg, mongoSymbol: "$avg" },
+	// Count function is not supported by Mongo.
+	{ semanticSymbol: Semantic.FunctionSymbol.First, mongoSymbol: "$first" },
+	{ semanticSymbol: Semantic.FunctionSymbol.Last, mongoSymbol: "$last" },
+	{ semanticSymbol: Semantic.FunctionSymbol.Max, mongoSymbol: "$max" },
+	{ semanticSymbol: Semantic.FunctionSymbol.Min, mongoSymbol: "$min" },
+	{ semanticSymbol: Semantic.FunctionSymbol.Sum, mongoSymbol: "$sum" },
+
+	// Date and Now functions are not supported by Mongo.
 ];
