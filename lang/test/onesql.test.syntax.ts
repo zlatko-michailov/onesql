@@ -53,7 +53,7 @@ export function whereTypeMismatch(): boolean {
 	let pass: boolean = true;
 	
 	pass = Test.throws(
-		{ lineNumber: 2, expected: "Boolean expression", actual: "Number expression" },
+		{ errorKind: Semantic.ErrorKind.SyntaxError, lineNumber: 2, expected: "Boolean expression", actual: "Number expression" },
 		() => {
 			let sql: string = 
 				"FROM s1\n" +
@@ -65,7 +65,7 @@ export function whereTypeMismatch(): boolean {
 		&& pass;
 
 	pass = Test.throws(
-		{ lineNumber: 2, expected: "Boolean expression", actual: "Number expression" },
+		{ errorKind: Semantic.ErrorKind.SyntaxError, lineNumber: 2, expected: "Boolean expression", actual: "Number expression" },
 		() => {
 			let sql: string = 
 				"FROM s1\n" +
@@ -77,7 +77,7 @@ export function whereTypeMismatch(): boolean {
 		&& pass;
 
 	pass = Test.throws(
-		{ lineNumber: 2, expected: "Boolean expression", actual: "Number expression" },
+		{ errorKind: Semantic.ErrorKind.SyntaxError, lineNumber: 2, expected: "Boolean expression", actual: "Number expression" },
 		() => {
 			let sql: string = 
 				"FROM s1\n" +

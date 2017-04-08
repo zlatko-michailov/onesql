@@ -1,12 +1,6 @@
 import * as Lex from "./onesql.lex";
 import * as Semantic from "./onesql.semantic";
 
-interface SyntaxError {
-	readonly lineNumber: number;
-	readonly expected: string;
-	readonly actual: string;
-}
-
 interface SyntaxState {
 	inputIndex: number;
 	node: Semantic.Node;
@@ -50,7 +44,7 @@ function parseStatement(input: ReadonlyArray<Lex.Token>, inputIndex: number): Sy
 		return parseQueryStatement(input, inputIndex); 
 	}
 	
-	throw { lineNumber: input[inputIndex].lineNumber, expected: "statement", actual: input[inputIndex].lexeme } as SyntaxError;
+	throw new SyntaxError(input[inputIndex].lineNumber, "statement", input[inputIndex].lexeme);
 }
 
 function parseUseStatement(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
@@ -59,20 +53,20 @@ function parseUseStatement(input: ReadonlyArray<Lex.Token>, inputIndex: number):
 	// USE
 	if (input[inputIndex].tokenKind != Lex.TokenKind.Keyword
 		|| input[inputIndex].lexeme.toUpperCase() != "USE") {
-		throw { lineNumber: input[inputIndex].lineNumber, expected: "USE", actual: input[inputIndex].lexeme } as SyntaxError;
+		throw new SyntaxError(input[inputIndex].lineNumber, "USE", input[inputIndex].lexeme);
 	}
 	
 	// databaseName
 	inputIndex = moveInputIndex(input, inputIndex, "identifier");
 	if (input[inputIndex].tokenKind != Lex.TokenKind.Identifier) {
-		throw { lineNumber: input[inputIndex].lineNumber, expected: "identifier", actual: input[inputIndex].lexeme } as SyntaxError;
+		throw new SyntaxError(input[inputIndex].lineNumber, "identifier", input[inputIndex].lexeme);
 	}
 	useStatement.databaseName = input[inputIndex].lexeme;
 
 	// ;
 	inputIndex = moveInputIndex(input, inputIndex, ";");
 	if (input[inputIndex].tokenKind != Lex.TokenKind.EndOfStatement) {
-		throw { lineNumber: input[inputIndex].lineNumber, expected: ";", actual: input[inputIndex].lexeme } as SyntaxError;
+		throw new SyntaxError(input[inputIndex].lineNumber, ";", input[inputIndex].lexeme);
 	}
 
 	return { inputIndex: inputIndex, node: useStatement };
@@ -84,13 +78,13 @@ function parseQueryStatement(input: ReadonlyArray<Lex.Token>, inputIndex: number
 	// FROM
 	if (input[inputIndex].tokenKind != Lex.TokenKind.Keyword
 		|| input[inputIndex].lexeme.toUpperCase() != "FROM") {
-		throw { lineNumber: input[inputIndex].lineNumber, expected: "FROM", actual: input[inputIndex].lexeme } as SyntaxError;
+		throw new SyntaxError(input[inputIndex].lineNumber, "FROM", input[inputIndex].lexeme);
 	}
 	
 	// sourceName
 	inputIndex = moveInputIndex(input, inputIndex, "identifier");
 	if (input[inputIndex].tokenKind != Lex.TokenKind.Identifier) {
-		throw { lineNumber: input[inputIndex].lineNumber, expected: "identifier", actual: input[inputIndex].lexeme } as SyntaxError;
+		throw new SyntaxError(input[inputIndex].lineNumber, "identifier", input[inputIndex].lexeme);
 	}
 	queryStatement.sourceName = input[inputIndex].lexeme;
 	inputIndex = moveInputIndex(input, inputIndex, ";");
@@ -112,7 +106,7 @@ function parseQueryStatement(input: ReadonlyArray<Lex.Token>, inputIndex: number
 		&& input[inputIndex].tokenKind == Lex.TokenKind.EndOfStatement) {
 		return { inputIndex: inputIndex, node: queryStatement };
 	}
-	throw { lineNumber: input[input.length - 1].lineNumber, expected: ";", actual: "" } as SyntaxError;
+	throw new SyntaxError(input[input.length - 1].lineNumber, ";", "");
 }
 
 function parseQueryClause(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
@@ -133,7 +127,7 @@ function parseQueryClause(input: ReadonlyArray<Lex.Token>, inputIndex: number): 
 		return parseOrderByClause(input, inputIndex); 
 	}
 	
-	throw { lineNumber: input[inputIndex].lineNumber, expected: "WHERE, SELECT, GROUP, or ORDER", actual: input[inputIndex].lexeme } as SyntaxError;
+	throw new SyntaxError(input[inputIndex].lineNumber, "WHERE, SELECT, GROUP, or ORDER", input[inputIndex].lexeme);
 }
 
 function parseWhereClause(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
@@ -223,14 +217,14 @@ function parseTerm(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxS
 
 		// )
 		if (input[inputIndex].tokenKind !== Lex.TokenKind.ClosingParenthesis) {
-			throw { lineNumber: input[inputIndex].lineNumber, expected: ")", actual: input[inputIndex].lexeme } as SyntaxError;
+			throw new SyntaxError(input[inputIndex].lineNumber, ")", input[inputIndex].lexeme);
 		}
 		inputIndex = moveInputIndex(input, inputIndex, ";");
 
 		return { inputIndex: inputIndex, node: state.node as Semantic.Expression };
 	}
 
-	throw { lineNumber: input[inputIndex].lineNumber, expected: "Expression term", actual: input[inputIndex].lexeme } as SyntaxError;
+	throw new SyntaxError(input[inputIndex].lineNumber, "Expression term", input[inputIndex].lexeme);
 }
 
 function parseUnaryOperation(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
@@ -253,7 +247,7 @@ function parseFunctionCall(input: ReadonlyArray<Lex.Token>, inputIndex: number, 
 	// (
 	inputIndex = moveInputIndex(input, inputIndex, "(");
 	if (input[inputIndex].tokenKind !== Lex.TokenKind.OpeningParenthesis) {
-		throw { lineNumber: input[inputIndex].lineNumber, expected: "(", actual: input[inputIndex].lexeme } as SyntaxError;
+		throw new SyntaxError(input[inputIndex].lineNumber, "(", input[inputIndex].lexeme);
 	}
 
 	// Arguments
@@ -268,7 +262,7 @@ function parseFunctionCall(input: ReadonlyArray<Lex.Token>, inputIndex: number, 
 		// ,
 		if (i < signature.argumentTypes.length - 1) {
 			if (input[inputIndex].tokenKind !== Lex.TokenKind.ItemSeparator) {
-				throw { lineNumber: input[inputIndex].lineNumber, expected: ",", actual: input[inputIndex].lexeme } as SyntaxError;
+				throw new SyntaxError(input[inputIndex].lineNumber, ",", input[inputIndex].lexeme);
 			}
 
 			inputIndex = moveInputIndex(input, inputIndex, "argument");
@@ -277,7 +271,7 @@ function parseFunctionCall(input: ReadonlyArray<Lex.Token>, inputIndex: number, 
 
 	// )
 	if (input[inputIndex].tokenKind !== Lex.TokenKind.ClosingParenthesis) {
-		throw { lineNumber: input[inputIndex].lineNumber, expected: ")", actual: input[inputIndex].lexeme } as SyntaxError;
+		throw new SyntaxError(input[inputIndex].lineNumber, ")", input[inputIndex].lexeme);
 	}
 	inputIndex = moveInputIndex(input, inputIndex, ")");
 
@@ -317,7 +311,7 @@ function parseOrderByClause(input: ReadonlyArray<Lex.Token>, inputIndex: number)
 
 function moveInputIndex(input: ReadonlyArray<Lex.Token>, inputIndex: number, expected: string): number {
 	if (++inputIndex > input.length) {
-		throw { lineNumber: input[input.length - 1].lineNumber, expected: expected, actual: input[input.length - 1].lexeme } as SyntaxError;
+		throw new SyntaxError(input[input.length - 1].lineNumber, expected, input[input.length - 1].lexeme);
 	}
 	
 	return inputIndex;
@@ -325,11 +319,7 @@ function moveInputIndex(input: ReadonlyArray<Lex.Token>, inputIndex: number, exp
 
 function assertTypeMatch(resultTypeExpected: Semantic.ValueType, resultTypeActual: Semantic.ValueType, token: Lex.Token) {
 	if (!areTypesMatching(resultTypeExpected, resultTypeActual)) {
-		throw { 
-			lineNumber: token.lineNumber,
-			expected: stringifyValueType(resultTypeExpected) + " expression",
-			actual: stringifyValueType(resultTypeActual) + " expression"
-		} as SyntaxError;
+		throw new SyntaxError(token.lineNumber, stringifyValueType(resultTypeExpected) + " expression", stringifyValueType(resultTypeActual) + " expression");
 	}
 }
 
@@ -355,6 +345,19 @@ function stringifyValueType(resultType: Semantic.ValueType): string {
 
 		case Semantic.ValueType.DateTime:
 			return "DateTime";
+	}
+}
+
+class SyntaxError implements Semantic.SyntaxError {
+	errorKind: Semantic.ErrorKind = Semantic.ErrorKind.SyntaxError;
+	lineNumber: number;
+	expected: string;
+	actual: string;
+
+	constructor(lineNumber: number, expected: string, actual: string) {
+		this.lineNumber = lineNumber;
+		this.expected = expected;
+		this.actual = actual;
 	}
 }
 
@@ -492,7 +495,7 @@ function getOperationSignature(signatures: ReadonlyArray<OperationSignature>, to
 		return signature;
 	}
 
-	throw { lineNumber: token.lineNumber, expected: stringifyValueType(argument0Type) + " operation", actual: token.lexeme } as SyntaxError;
+	throw new SyntaxError(token.lineNumber, stringifyValueType(argument0Type) + " operation", token.lexeme);
 }
 
 function peekOperationSignature(signatures: ReadonlyArray<OperationSignature>, token: Lex.Token, argument0Type: Semantic.ValueType): OperationSignature {

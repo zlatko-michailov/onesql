@@ -71,7 +71,7 @@ function genMongoStatement(semanticStatement: Semantic.Statement): MongoStatemen
 			return { collectionName: queryStatement.sourceName, aggregationStages: aggregationStages } as MongoStatement;
 
 		default:
-			throw "//TODO:";
+			throw new GenError("StatementKind", "1..2", semanticStatement.statementKind.toString());
 	}
 }
 
@@ -85,7 +85,7 @@ function genMongoAggregationStage(semanticClause: Semantic.QueryClause): Object 
 			return { $match: mongoCondition };
 
 		default:
-			throw "//TODO:";
+			throw new GenError("QueryClauseKind", "1", semanticClause.queryClauseKind.toString());
 	}
 }
 
@@ -98,7 +98,7 @@ function genMongoExpression(semanticExpression: Semantic.Expression): any {
 			return genMongoTerm(semanticExpression as Semantic.Term);
 
 		default:
-			throw "//TODO:";
+			throw new GenError("ExpressionKind", "1..2", semanticExpression.expressionKind);
 	}
 }
 
@@ -131,7 +131,7 @@ function genMongoTerm(semanticTerm: Semantic.Term): any {
 			return genMongoFunctionCall(semanticTerm as Semantic.FunctionCallTerm);
 
 		default:
-			throw "//TODO:";
+			throw new GenError("TermKind", "1..4", semanticTerm.termKind);
 	}
 }
 
@@ -213,19 +213,19 @@ export function genJavascriptBatch(mongoBatch: Batch): string {
 
 function assertNodeKind(node: Semantic.Node, nodeKind: Semantic.NodeKind): void {
 	if (node.nodeKind !== nodeKind) {
-		throw "// TODO:";
+		throw new GenError("NodeKind", nodeKind.toString(), node.nodeKind.toString());
 	}
 }
 
 function assertExpressionKind(expression: Semantic.Expression, expressionKind: Semantic.ExpressionKind): void {
 	if (expression.expressionKind !== expressionKind) {
-		throw "// TODO:";
+		throw new GenError("ExpressionKind", expressionKind.toString(), expression.expressionKind.toString());
 	}
 }
 
 function assertTermKind(term: Semantic.Term, termKind: Semantic.TermKind): void {
 	if (term.termKind !== termKind) {
-		throw "// TODO:";
+		throw new GenError("TermKind", termKind.toString(), term.termKind.toString());
 	}
 }
 
@@ -240,6 +240,19 @@ class MongoStatement implements Statement {
 	databaseName: string;
 	collectionName: string;
 	aggregationStages: Array<Object>;
+}
+
+class GenError implements Semantic.GenError {
+	errorKind: Semantic.ErrorKind = Semantic.ErrorKind.GenError;
+	subjectKind: string;
+	expected: string;
+	actual: string;
+
+	constructor(subjectKind: string, expected: string, actual: string) {
+		this.subjectKind = subjectKind;
+		this.expected = expected;
+		this.actual = actual;
+	}
 }
 
 // -----------------------------------------------------------------------------
@@ -266,7 +279,7 @@ function getOperationMapping<SemanticSymbol>(mappings: ReadonlyArray<OperationMa
 		return mongoSmbol;
 	}
 
-	throw "// TODO:";
+	throw new GenError("Operation", semanticSymbol.toString(), undefined);
 }
 
 const unaryOperationMappings: ReadonlyArray<OperationMapping<Semantic.UnaryOperationSymbol>> = [

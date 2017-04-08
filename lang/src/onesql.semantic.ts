@@ -208,3 +208,28 @@ export const enum FunctionSymbol {
 	Now = 29,
 	Today = 30,
 }
+
+export interface Error {
+	readonly errorKind: ErrorKind;
+}
+
+export interface SyntaxError extends Error {
+	readonly lineNumber: number;
+	readonly expected: string;
+	readonly actual: string;
+}
+
+export interface GenError extends Error {
+	readonly subjectKind: string;
+	readonly expected: string;
+	readonly actual: string;
+}
+
+export const enum ErrorKind {
+	SyntaxError = 1,
+	GenError = 2,
+}
+
+
+
+

@@ -24,7 +24,7 @@ function run(): boolean {
     passed = execute("SyntaxTest.wherePriority", SyntaxTest.wherePriority) && passed;
     passed = execute("SyntaxTest.whereFunctions", SyntaxTest.whereFunctions) && passed;
 
-    passed = execute("MongoTest.whereBasicMongo", MongoTest.whereBasicMongo) && passed;
+    passed = execute("MongoTest.whereMongo", MongoTest.whereMongo) && passed;
 
     log(LogLevel.Important);
     log(LogLevel.Important, "==============");
@@ -150,7 +150,7 @@ interface Config {
 
 const config: Config = {
     // DEBUG: To see the full log, comment out the next line.
-    ////logLevelLimit: LogLevel.Important,
+    logLevelLimit: LogLevel.Important,
 };
 
 run();

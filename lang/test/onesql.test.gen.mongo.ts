@@ -3,7 +3,7 @@ import * as Semantic from "../src/onesql.semantic";
 import * as Test from "./onesql.test";
 import * as Mongo from "../src/onesql.gen.mongo";
 
-export function whereBasicMongo(): boolean {
+export function whereMongo(): boolean {
 	let sql: string = "USE foo;\n\n" +
 
 					  "USE bar;\n\n" +
