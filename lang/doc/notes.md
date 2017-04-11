@@ -1,9 +1,13 @@
-# 1. README
-1. Remove BNFs. Simplify the syntax definitions.
-1. Operation precedence.
-1. Functions.
+# BUGS
+1. How do we distinguish between DateTimeSubtract and DateTimeDiff?
 
-# 2. Query stages
+# 1. README
+1. commit
+
+# 2. Existing functionality
+1. DateTime functions - make all names singular. Fix the README.
+
+# 3. Query stages
 1. ORDER BY (SKIP TAKE)
 1. SELECT
 1. GROUP BY

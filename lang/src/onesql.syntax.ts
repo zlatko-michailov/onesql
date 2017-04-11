@@ -761,7 +761,7 @@ const functionSignatures: ReadonlyArray<OperationSignature> = [
 	{
 		names: ["LOG"],
 		symbol: Semantic.FunctionSymbol.Log,
-		argumentTypes: [ Semantic.ValueType.Number ],
+		argumentTypes: [ Semantic.ValueType.Number, Semantic.ValueType.Number ],
 		resultType: Semantic.ValueType.Number
 	},
 	{
