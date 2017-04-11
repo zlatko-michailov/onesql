@@ -712,7 +712,7 @@ const binaryOperationSignatures: ReadonlyArray<OperationSignature> = [
 		resultType: Semantic.ValueType.DateTime
 	},
 	{
-		names: ["-"],
+		names: ["/"],
 		symbol: Semantic.BinaryOperationSymbol.DateTimeDiff,
 		priority: OperationPriority.DateTime,
 		argumentTypes: [ Semantic.ValueType.DateTime, Semantic.ValueType.DateTime ],

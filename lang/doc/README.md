@@ -662,7 +662,7 @@ datetime-diff-expression ::=
     | datetime-term [ diff-datetime-operation datetime-expression ]
 
 diff-datetime-operation ::=
-    | -
+    | /
 
 datetime-expression ::=
     | datetime-term [ binary-datetime-operation arithmetic-expression ]
