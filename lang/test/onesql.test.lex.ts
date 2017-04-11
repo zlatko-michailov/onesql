@@ -208,7 +208,7 @@ export function identifiers(): boolean {
 export function functions(): boolean {
 	let input: string = "aBs ceIl eXp flOOr lG Ln LOG PowER " +
 						"inDExoF lENgth " +
-						"dAY hoUrS miLLisECOnds MinUtes mONTh Seconds yEar " +
+						"dAY hoUr miLLisECOnd MinUte mONTh Second yEar " +
 						"sUBstr tOloWEr tostRIng toupPer " +
 						"aVg cOUnt fiRsT lAsT MAX mIn suM " +
 						"noW toDay";
@@ -237,15 +237,15 @@ export function functions(): boolean {
 
 		{ tokenKind: Lex.TokenKind.Identifier, lexeme: "dAY", lineNumber: 1},
 		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},
-		{ tokenKind: Lex.TokenKind.Identifier, lexeme: "hoUrS", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.Identifier, lexeme: "hoUr", lineNumber: 1},
 		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},
-		{ tokenKind: Lex.TokenKind.Identifier, lexeme: "miLLisECOnds", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.Identifier, lexeme: "miLLisECOnd", lineNumber: 1},
 		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},
-		{ tokenKind: Lex.TokenKind.Identifier, lexeme: "MinUtes", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.Identifier, lexeme: "MinUte", lineNumber: 1},
 		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},
 		{ tokenKind: Lex.TokenKind.Identifier, lexeme: "mONTh", lineNumber: 1},
 		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},
-		{ tokenKind: Lex.TokenKind.Identifier, lexeme: "Seconds", lineNumber: 1},
+		{ tokenKind: Lex.TokenKind.Identifier, lexeme: "Second", lineNumber: 1},
 		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},
 		{ tokenKind: Lex.TokenKind.Identifier, lexeme: "yEar", lineNumber: 1},
 		{ tokenKind: Lex.TokenKind.BlankSpace, lexeme: " ", lineNumber: 1},

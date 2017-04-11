@@ -791,20 +791,20 @@ const functionSignatures: ReadonlyArray<OperationSignature> = [
 		resultType: Semantic.ValueType.Number
 	},
 	{
-		names: ["HOURS"],
-		symbol: Semantic.FunctionSymbol.Hours,
+		names: ["HOUR"],
+		symbol: Semantic.FunctionSymbol.Hour,
 		argumentTypes: [ Semantic.ValueType.DateTime ],
 		resultType: Semantic.ValueType.Number
 	},
 	{
-		names: ["MILLISECONDS"],
-		symbol: Semantic.FunctionSymbol.Milliseconds,
+		names: ["MILLISECOND"],
+		symbol: Semantic.FunctionSymbol.Millisecond,
 		argumentTypes: [ Semantic.ValueType.DateTime ],
 		resultType: Semantic.ValueType.Number
 	},
 	{
-		names: ["MINUTES"],
-		symbol: Semantic.FunctionSymbol.Minutes,
+		names: ["MINUTE"],
+		symbol: Semantic.FunctionSymbol.Minute,
 		argumentTypes: [ Semantic.ValueType.DateTime ],
 		resultType: Semantic.ValueType.Number
 	},
@@ -815,8 +815,8 @@ const functionSignatures: ReadonlyArray<OperationSignature> = [
 		resultType: Semantic.ValueType.Number
 	},
 	{
-		names: ["SECONDS"],
-		symbol: Semantic.FunctionSymbol.Seconds,
+		names: ["SECOND"],
+		symbol: Semantic.FunctionSymbol.Second,
 		argumentTypes: [ Semantic.ValueType.DateTime ],
 		resultType: Semantic.ValueType.Number
 	},

@@ -330,11 +330,11 @@ const functionMappings: ReadonlyArray<OperationMapping<Semantic.FunctionSymbol>>
 	{ semanticSymbol: Semantic.FunctionSymbol.Length, mongoSymbol: "$strLenCP" },
 
 	{ semanticSymbol: Semantic.FunctionSymbol.Day, mongoSymbol: "$dayOfMonth" },
-	{ semanticSymbol: Semantic.FunctionSymbol.Hours, mongoSymbol: "$hours" },
-	{ semanticSymbol: Semantic.FunctionSymbol.Milliseconds, mongoSymbol: "$millisecond" },
-	{ semanticSymbol: Semantic.FunctionSymbol.Minutes, mongoSymbol: "$minute" },
+	{ semanticSymbol: Semantic.FunctionSymbol.Hour, mongoSymbol: "$hour" },
+	{ semanticSymbol: Semantic.FunctionSymbol.Millisecond, mongoSymbol: "$millisecond" },
+	{ semanticSymbol: Semantic.FunctionSymbol.Minute, mongoSymbol: "$minute" },
 	{ semanticSymbol: Semantic.FunctionSymbol.Month, mongoSymbol: "$month" },
-	{ semanticSymbol: Semantic.FunctionSymbol.Seconds, mongoSymbol: "$second" },
+	{ semanticSymbol: Semantic.FunctionSymbol.Second, mongoSymbol: "$second" },
 	{ semanticSymbol: Semantic.FunctionSymbol.Year, mongoSymbol: "$year" },
 
 	{ semanticSymbol: Semantic.FunctionSymbol.Substr, mongoSymbol: "$substrCP" },

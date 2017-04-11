@@ -377,11 +377,11 @@ __Note:__ Not all functions may be supported by a given database system.
 | `Length` (10)           | `LENGTH`       | str: `string`                                   | `number`     |
 |                         |                |                                                 |              |
 | `Day` (11)              | `DAY`          | dt: `datetime`                                  | `number`     |
-| `Hours` (12)            | `HOURS`        | dt: `datetime`                                  | `number`     |
-| `Milliseconds` (13)     | `MILLISECONDS` | dt: `datetime`                                  | `number`     |
-| `Minutes` (14)          | `MINUTES`      | dt: `datetime`                                  | `number`     |
+| `Hour` (12)             | `HOUR`         | dt: `datetime`                                  | `number`     |
+| `Millisecond` (13)      | `MILLISECOND`  | dt: `datetime`                                  | `number`     |
+| `Minute` (14)           | `MINUTE`       | dt: `datetime`                                  | `number`     |
 | `Month` (15)            | `MONTH`        | dt: `datetime`                                  | `number`     |
-| `Seconds` (16)          | `SECONDS`      | dt: `datetime`                                  | `number`     |
+| `Second` (16)           | `SECOND`       | dt: `datetime`                                  | `number`     |
 | `Year` (17)             | `YEAR`         | dt: `datetime`                                  | `number`     |
 |                         |                |                                                 |              |
 | `Substr` (18)           | `SUBSTR`       | str: `string`, start: `number`, count: `number` | `string`     |
@@ -628,10 +628,10 @@ arithmetic-function ::=
     | YEAR
     | MONTH
     | DAY
-    | HOURS
-    | MINUTES
-    | SECONDS
-    | MILLISECONDS
+    | HOUR
+    | MINUTE
+    | SECOND
+    | MILLISECOND
 
 string-expression ::=
     | string-term [ binary-string-operation string-expression ]

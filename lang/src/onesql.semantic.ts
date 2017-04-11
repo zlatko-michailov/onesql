@@ -185,11 +185,11 @@ export const enum FunctionSymbol {
 	Length = 10,
 
 	Day = 11,
-	Hours = 12,
-	Milliseconds = 13,
-	Minutes = 14,
+	Hour = 12,
+	Millisecond = 13,
+	Minute = 14,
 	Month = 15,
-	Seconds = 16,
+	Second = 16,
 	Year = 17,
 
 	Substr = 18,
