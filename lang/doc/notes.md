@@ -3,6 +3,6 @@
 # UI
 
 # Query stages
-1. ORDER BY (SKIP TAKE)
+1. ORDER BY (SKIP LIMIT)
 1. SELECT
 1. GROUP BY

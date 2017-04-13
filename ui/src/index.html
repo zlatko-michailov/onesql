@@ -2,18 +2,18 @@
 
 <html>
   <head>
-    <title>MongoSQL Interactive</title>
+    <title>ONESQL Interactive</title>
     <meta charset="utf-8"/>
     
-    <link rel="stylesheet" href="dep/codemirror-5.22.0/lib/codemirror.css" />
-    <script src="dep/codemirror-5.22.0/lib/codemirror.js"></script>
+    <link rel="stylesheet" href="../dep/codemirror-5.22.0/lib/codemirror.css" />
+    <script src="../dep/codemirror-5.22.0/lib/codemirror.js"></script>
 
-    <script src="dep/codemirror-5.22.0/mode/javascript/javascript.js"></script>
-    <script src="dep/codemirror-5.22.0/mode/sql/sql.js"></script>
+    <script src="../dep/codemirror-5.22.0/mode/javascript/javascript.js"></script>
+    <script src="../dep/codemirror-5.22.0/mode/sql/sql.js"></script>
 
-    <link rel="stylesheet" href="dep/codemirror-5.22.0/addon/hint/show-hint.css"></script>
-    <script src="dep/codemirror-5.22.0/addon/hint/show-hint.js"></script>
-    <script src="dep/codemirror-5.22.0/addon/hint/sql-hint.js"></script>
+    <link rel="stylesheet" href="../dep/codemirror-5.22.0/addon/hint/show-hint.css"></script>
+    <script src="../dep/codemirror-5.22.0/addon/hint/show-hint.js"></script>
+    <script src="../dep/codemirror-5.22.0/addon/hint/sql-hint.js"></script>
 
     <style>
       .CodeMirror {
@@ -28,7 +28,21 @@
 
       th {
         text-align: left;
+        font-size: medium;
+        font-weight: normal;
         padding-left: 30px;
+        text-decoration: none;
+      }
+
+      .button {
+        background-color: white;
+        border-color: dimgray;
+        border-width: 1px;
+        border-style: solid;
+        padding: 2px 5px 2px 5px;
+        color: black; 
+        font-size: small;
+        font-weight: normal;
         text-decoration: none;
       }
 
@@ -37,19 +51,43 @@
         font-size: small;
       }
     </style>
+
+    <script>
+      function buttonMouseOver(btn) {
+        btn.style.borderWidth = "2px";
+        btn.style.padding = "2px 4px 2px 4px";
+        btn.style.color = "blue";
+        btn.style.borderColor = "black";
+      }
+
+      function buttonMouseOut(btn) {
+        btn.removeAttribute("style");
+      }
+    </script>
   </head>
 
   <body>
     <table width="100%">
       <tr>
-        <th width="60%">MongoSQL</th>
-        <th width="40%">MongoDB Aggregation Stages</th>
+        <th width="34%">
+          <table width="100%">
+            <tr>
+              <td>ONESQL</td>
+              <td style="text-align: right">
+                <a class="button" href="" onmouseover="buttonMouseOver(this)" onmouseout="buttonMouseOut(this)">Run</a>
+                <a class="button" href="" onmouseover="buttonMouseOver(this)" onmouseout="buttonMouseOut(this)">Help</a>
+              </td>
+            </tr>
+          </table>
+        </th>
+        <th width="33%">Semantic Tree (JSON)</th>
+        <th width="33%">MongoDB (JavaScript)</th>
       </tr>
 
       <tr>
         <td>
-    <form>
-      <textarea id="sqlMarker" name="sqlMarker">-- SQL Mode for CodeMirror
+          <form>
+            <textarea id="sqlMarker" name="sqlMarker">-- SQL Mode for CodeMirror
 SELECT SQL_NO_CACHE DISTINCT
 		@var1 AS `val1`, @'val2', @global.'sql_mode',
 		1.1 AS `float_val`, .14 AS `another_float`, 0.09e3 AS `int_with_esp`,
@@ -66,7 +104,14 @@ SELECT SQL_NO_CACHE DISTINCT
     </form>
         </td>
         <td>
-          <textarea id="jsonMarker" name="jsonMarker">{
+          <textarea id="jsonMarker1" name="jsonMarker1">{
+  foo: 42,
+  bar: "abc",
+  moo: [ 1, 2, 3]
+}</textarea>
+        </td>
+        <td>
+          <textarea id="jsonMarker2" name="jsonMarker2">{
   foo: 42,
   bar: "abc",
   moo: [ 1, 2, 3]
@@ -95,7 +140,17 @@ window.onload = function() {
     }}
   });
 
-  CodeMirror.fromTextArea(document.getElementById('jsonMarker'), {
+  CodeMirror.fromTextArea(document.getElementById('jsonMarker1'), {
+    mode: 'application/json',
+    indentWithTabs: false,
+    smartIndent: true,
+    lineNumbers: true,
+    matchBrackets : true,
+    autofocus: true,
+    readOnly: "nocursor"
+  });
+
+  CodeMirror.fromTextArea(document.getElementById('jsonMarker2'), {
     mode: 'application/json',
     indentWithTabs: false,
     smartIndent: true,
@@ -106,13 +161,16 @@ window.onload = function() {
   });
 
   var sqlEditor = document.getElementById('sqlMarker').nextSibling;
-  var jsonEditor = document.getElementById('jsonMarker').nextSibling
+  var jsonEditor1 = document.getElementById('jsonMarker1').nextSibling
+  var jsonEditor2 = document.getElementById('jsonMarker2').nextSibling
 
   var height = (window.innerHeight - 120) + "px";
   sqlEditor.style.height = height;
-  jsonEditor.style.height = height;
+  jsonEditor1.style.height = height;
+  jsonEditor2.style.height = height;
 
-  jsonEditor.style.backgroundColor = "#f4f4f4";
+  jsonEditor1.style.backgroundColor = "#f4f4f4";
+  jsonEditor2.style.backgroundColor = "#f4f4f4";
 };
     </script>
   </body>
