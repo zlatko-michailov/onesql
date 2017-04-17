@@ -196,7 +196,7 @@ export function genJavascriptBatch(mongoBatch: Batch): string {
 			script += "    _db." + mongoStatement.collectionName;
 
 			if (mongoStatement.aggregationStages !== undefined) {
-				script += ".aggregate(" + JSON.stringify(mongoStatement.aggregationStages) + ");\n";
+				script += ".aggregate(" + JSON.stringify(mongoStatement.aggregationStages, undefined, 2) + ");\n";
 			}
 			else {
 				script += ".find();\n";

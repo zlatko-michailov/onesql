@@ -94,15 +94,15 @@ export function whereMongo(): boolean {
 		"    let _db = db;\n" +
 		"\n" +
 		"    _db = db.getMongo().getDB('onesqlTest');\n" +
-		"    _db.demography.aggregate(" + JSON.stringify((expectedBatch as Mongo.Batch).statements[0].aggregationStages) + ");\n" +
+		"    _db.demography.aggregate(" + JSON.stringify((expectedBatch as Mongo.Batch).statements[0].aggregationStages, undefined, 2) + ");\n" +
 		"\n" +
-		"    _db.demography.aggregate(" + JSON.stringify((expectedBatch as Mongo.Batch).statements[1].aggregationStages) + ");\n" +
+		"    _db.demography.aggregate(" + JSON.stringify((expectedBatch as Mongo.Batch).statements[1].aggregationStages, undefined, 2) + ");\n" +
 		"\n" +
-		"    _db.demography.aggregate(" + JSON.stringify((expectedBatch as Mongo.Batch).statements[2].aggregationStages) + ");\n" +
+		"    _db.demography.aggregate(" + JSON.stringify((expectedBatch as Mongo.Batch).statements[2].aggregationStages, undefined, 2) + ");\n" +
 		"\n" +
-		"    _db.demography.aggregate(" + JSON.stringify((expectedBatch as Mongo.Batch).statements[3].aggregationStages) + ");\n" +
+		"    _db.demography.aggregate(" + JSON.stringify((expectedBatch as Mongo.Batch).statements[3].aggregationStages, undefined, 2) + ");\n" +
 		"\n" +
-		"    _db.demography.aggregate(" + JSON.stringify((expectedBatch as Mongo.Batch).statements[4].aggregationStages) + ");\n" +
+		"    _db.demography.aggregate(" + JSON.stringify((expectedBatch as Mongo.Batch).statements[4].aggregationStages, undefined, 2) + ");\n" +
 	"}\n";
 
 	let actualBatch: Mongo.Batch = OneSql.toMongo(sql);
