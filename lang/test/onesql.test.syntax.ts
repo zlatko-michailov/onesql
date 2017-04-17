@@ -14,7 +14,7 @@ export function empty(): boolean {
 		statements: []
 	};
 
-	let actualBatch: Semantic.Batch = OneSql.toSemantic(sql);
+	let actualBatch: Semantic.Batch = OneSql.sqlToSemantic(sql);
 	return Test.areEqual(expectedBatch, actualBatch, Test.LogLevel.Info, "batch");
 }
 
@@ -29,7 +29,7 @@ export function use(): boolean {
 		}]
 	};
 
-	let actualBatch: Semantic.Batch = OneSql.toSemantic(sql);
+	let actualBatch: Semantic.Batch = OneSql.sqlToSemantic(sql);
 	return Test.areEqual(expectedBatch, actualBatch, Test.LogLevel.Info, "batch");
 }
 
@@ -45,7 +45,7 @@ export function from(): boolean {
 		}]
 	};
 
-	let actualBatch: Semantic.Batch = OneSql.toSemantic(sql);
+	let actualBatch: Semantic.Batch = OneSql.sqlToSemantic(sql);
 	return Test.areEqual(expectedBatch, actualBatch, Test.LogLevel.Info, "batch");
 }
 
@@ -58,7 +58,7 @@ export function whereTypeMismatch(): boolean {
 			let sql: string = 
 				"FROM s1\n" +
 				"WHERE 42;";
-			OneSql.toSemantic(sql);
+			OneSql.sqlToSemantic(sql);
 		},
 		Test.LogLevel.Info,
 		"Literal")
@@ -70,7 +70,7 @@ export function whereTypeMismatch(): boolean {
 			let sql: string = 
 				"FROM s1\n" +
 				"WHERE NOT 42;";
-			OneSql.toSemantic(sql);
+			OneSql.sqlToSemantic(sql);
 		},
 		Test.LogLevel.Info,
 		"Unary operation")
@@ -82,7 +82,7 @@ export function whereTypeMismatch(): boolean {
 			let sql: string = 
 				"FROM s1\n" +
 				"WHERE TRUE AND 42;";
-			OneSql.toSemantic(sql);
+			OneSql.sqlToSemantic(sql);
 		},
 		Test.LogLevel.Info,
 		"Binary operation")
@@ -305,7 +305,7 @@ export function whereBasic(): boolean {
 
 	]};
 
-	let actualBatch: Semantic.Batch = OneSql.toSemantic(sql);
+	let actualBatch: Semantic.Batch = OneSql.sqlToSemantic(sql);
 	return Test.areEqual(expectedBatch, actualBatch, Test.LogLevel.Info, "batch");
 }
 
@@ -391,7 +391,7 @@ export function whereParentheses(): boolean {
 
 	]};
 
-	let actualBatch: Semantic.Batch = OneSql.toSemantic(sql);
+	let actualBatch: Semantic.Batch = OneSql.sqlToSemantic(sql);
 	return Test.areEqual(expectedBatch, actualBatch, Test.LogLevel.Info, "batch");
 }
 
@@ -601,7 +601,7 @@ export function wherePriority(): boolean {
 
 	]};
 
-	let actualBatch: Semantic.Batch = OneSql.toSemantic(sql);
+	let actualBatch: Semantic.Batch = OneSql.sqlToSemantic(sql);
 	return Test.areEqual(expectedBatch, actualBatch, Test.LogLevel.Info, "batch");
 }
 
@@ -751,6 +751,6 @@ export function whereFunctions(): boolean {
 
 	]};
 
-	let actualBatch: Semantic.Batch = OneSql.toSemantic(sql);
+	let actualBatch: Semantic.Batch = OneSql.sqlToSemantic(sql);
 	return Test.areEqual(expectedBatch, actualBatch, Test.LogLevel.Info, "batch");
 }

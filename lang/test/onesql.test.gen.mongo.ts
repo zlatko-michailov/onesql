@@ -105,7 +105,7 @@ export function whereMongo(): boolean {
 		"    _db.demography.aggregate(" + JSON.stringify((expectedBatch as Mongo.Batch).statements[4].aggregationStages, undefined, 2) + ");\n" +
 	"}\n";
 
-	let actualBatch: Mongo.Batch = OneSql.toMongo(sql);
+	let actualBatch: Mongo.Batch = OneSql.sqlToMongo(sql);
 	let actualJavascript: string = Mongo.genJavascriptBatch(actualBatch);
 
 	let pass: boolean = true;
