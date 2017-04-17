@@ -5,15 +5,17 @@
     <title>ONESQL Interactive</title>
     <meta charset="utf-8"/>
     
-    <link rel="stylesheet" href="../dep/codemirror-5.22.0/lib/codemirror.css" />
-    <script src="../dep/codemirror-5.22.0/lib/codemirror.js"></script>
+    <link rel="stylesheet" href="ui/lib/codemirror-5.22.0/lib/codemirror.css" />
+    <script src="ui/lib/codemirror-5.22.0/lib/codemirror.js"></script>
 
-    <script src="../dep/codemirror-5.22.0/mode/javascript/javascript.js"></script>
-    <script src="../dep/codemirror-5.22.0/mode/sql/sql.js"></script>
+    <script src="ui/lib/codemirror-5.22.0/mode/javascript/javascript.js"></script>
+    <script src="ui/lib/codemirror-5.22.0/mode/sql/sql.js"></script>
 
-    <link rel="stylesheet" href="../dep/codemirror-5.22.0/addon/hint/show-hint.css"></script>
-    <script src="../dep/codemirror-5.22.0/addon/hint/show-hint.js"></script>
-    <script src="../dep/codemirror-5.22.0/addon/hint/sql-hint.js"></script>
+    <link rel="stylesheet" href="ui/lib/codemirror-5.22.0/addon/hint/show-hint.css"></script>
+    <script src="ui/lib/codemirror-5.22.0/addon/hint/show-hint.js"></script>
+    <script src="ui/lib/codemirror-5.22.0/addon/hint/sql-hint.js"></script>
+
+    <script src="ui/onesql.ui.out.js"></script>
 
     <style>
       .CodeMirror {
@@ -74,48 +76,48 @@
             <tr>
               <td>ONESQL</td>
               <td style="text-align: right">
-                <a class="button" href="" onmouseover="buttonMouseOver(this)" onmouseout="buttonMouseOut(this)">Run</a>
+                <a class="button" href="javascript:ui.translate()" onmouseover="buttonMouseOver(this)" onmouseout="buttonMouseOut(this)">Run</a>
                 <a class="button" href="" onmouseover="buttonMouseOver(this)" onmouseout="buttonMouseOut(this)">Help</a>
               </td>
             </tr>
           </table>
         </th>
-        <th width="33%">Semantic Tree (JSON)</th>
-        <th width="33%">MongoDB (JavaScript)</th>
+        <th width="33%">
+          <table width="100%">
+            <tr>
+              <td>Semantic Tree (JSON)</td>
+              <td style="text-align: right">
+                <a class="button" href="javascript:" onmouseover="buttonMouseOver(this)" onmouseout="buttonMouseOut(this)">Copy</a>
+              </td>
+            </tr>
+          </table>
+        </th>
+        <th width="33%">
+          <table width="100%">
+            <tr>
+              <td>MongoDB (JavaScript)</td>
+              <td style="text-align: right">
+                <a class="button" href="javascript:" onmouseover="buttonMouseOver(this)" onmouseout="buttonMouseOut(this)">Copy</a>
+              </td>
+            </tr>
+          </table>
+        </th>
       </tr>
 
       <tr>
         <td>
           <form>
-            <textarea id="sqlMarker" name="sqlMarker">-- SQL Mode for CodeMirror
-SELECT SQL_NO_CACHE DISTINCT
-		@var1 AS `val1`, @'val2', @global.'sql_mode',
-		1.1 AS `float_val`, .14 AS `another_float`, 0.09e3 AS `int_with_esp`,
-		0xFA5 AS `hex`, x'fa5' AS `hex2`, 0b101 AS `bin`, b'101' AS `bin2`,
-		DATE '1994-01-01' AS `sql_date`, { T "1994-01-01" } AS `odbc_date`,
-		'my string', _utf8'your string', N'her string',
-        TRUE, FALSE, UNKNOWN
-	FROM DUAL
-	-- space needed after '--'
-	# 1 line comment
-	/* multiline
-	comment! */
-	LIMIT 1 OFFSET 0;</textarea>
+            <textarea id="sqlMarker" name="sqlMarker">USE onesqlTest;
+
+FROM demography
+WHERE SUBSTR(city, 0, 1) == 'S';</textarea>
     </form>
         </td>
         <td>
-          <textarea id="jsonMarker1" name="jsonMarker1">{
-  foo: 42,
-  bar: "abc",
-  moo: [ 1, 2, 3]
-}</textarea>
+          <textarea id="jsonMarker1" name="jsonMarker1"></textarea>
         </td>
         <td>
-          <textarea id="jsonMarker2" name="jsonMarker2">{
-  foo: 42,
-  bar: "abc",
-  moo: [ 1, 2, 3]
-}</textarea>
+          <textarea id="jsonMarker2" name="jsonMarker2"></textarea>
         </td>
       </tr>
     </table>
@@ -126,11 +128,12 @@ SELECT SQL_NO_CACHE DISTINCT
 
     <script>
 window.onload = function() {
-  CodeMirror.fromTextArea(document.getElementById('sqlMarker'), {
+  window.ui.sqlEditor = CodeMirror.fromTextArea(document.getElementById('sqlMarker'), {
     mode: 'text/x-sql',
     indentWithTabs: false,
     smartIndent: true,
     lineNumbers: true,
+    lineWrapping: true,
     matchBrackets : true,
     autofocus: true,
     extraKeys: {"Ctrl-Space": "autocomplete"},
@@ -140,21 +143,23 @@ window.onload = function() {
     }}
   });
 
-  CodeMirror.fromTextArea(document.getElementById('jsonMarker1'), {
+  window.ui.json1Editor = CodeMirror.fromTextArea(document.getElementById('jsonMarker1'), {
     mode: 'application/json',
     indentWithTabs: false,
     smartIndent: true,
     lineNumbers: true,
+    lineWrapping: true,
     matchBrackets : true,
     autofocus: true,
     readOnly: "nocursor"
   });
 
-  CodeMirror.fromTextArea(document.getElementById('jsonMarker2'), {
+  window.ui.json2Editor = CodeMirror.fromTextArea(document.getElementById('jsonMarker2'), {
     mode: 'application/json',
     indentWithTabs: false,
     smartIndent: true,
     lineNumbers: true,
+    lineWrapping: true,
     matchBrackets : true,
     autofocus: true,
     readOnly: "nocursor"
