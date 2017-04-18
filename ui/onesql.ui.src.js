@@ -17,8 +17,6 @@ window.onesqlui = {
 	},
 
 	translate: function(ev) {
-        ev.preventDefault();
-
 		var sql = onesqlui.sqlEditor.getValue();
 		try {
 			var semantic = onesql.sqlToSemantic(sql);
@@ -33,8 +31,6 @@ window.onesqlui = {
 	},
 
 	copy: function(ev) {
-		ev.preventDefault();
-
 		var editorName = ev.target.getAttribute("editor-name");
 		var editor = onesqlui[editorName];
 
@@ -56,7 +52,6 @@ window.onesqlui = {
 	},
 
 	help: function(ev) {
-        ev.preventDefault();
 		// TODO:
 	},
 
@@ -71,7 +66,22 @@ window.onesqlui = {
 		
 		button.addEventListener("mouseover", onesqlui.mouseover);
 		button.addEventListener("mouseout", onesqlui.mouseout);
-		button.addEventListener("click", click);
+		button.addEventListener("click", function(ev) {
+			ev.preventDefault();
+
+			ev.target.style.backgroundColor = "#d8d8d8";
+			ev.target.style.color = "red";
+
+			try {
+				click(ev);
+			}
+			finally {
+				setTimeout(function() {
+					ev.target.style.backgroundColor = "white";
+					ev.target.style.color = "blue";
+				}, 100);
+			}
+		});
 	},
 
 	mouseover: function(ev) {
