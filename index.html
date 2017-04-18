@@ -65,6 +65,28 @@
       function buttonMouseOut(btn) {
         btn.removeAttribute("style");
       }
+
+      function copyToClipboard(e) {
+        e.preventDefault();
+
+        var copyTargetName = e.target.getAttribute("copyTarget");
+        var copyTarget = window.ui[copyTargetName];
+
+        var temp = document.createElement("textarea");
+        temp.value = copyTarget.getValue();
+        temp.style.width = 1;
+        temp.style.height = 1;
+        temp.style.border = "none";
+        document.body.appendChild(temp);
+        temp.select();
+
+        try {
+          document.execCommand('copy');
+        }
+        finally {
+          document.body.removeChild(temp);
+        }
+      }
     </script>
   </head>
 
@@ -87,7 +109,7 @@
             <tr>
               <td>Semantic Tree (JSON)</td>
               <td style="text-align: right">
-                <a class="button" href="javascript:" onmouseover="buttonMouseOver(this)" onmouseout="buttonMouseOut(this)">Copy</a>
+                <a id="copySemantic" copyTarget="json1Editor" class="button" href="" onmouseover="buttonMouseOver(this)" onmouseout="buttonMouseOut(this)">Copy</a>
               </td>
             </tr>
           </table>
@@ -97,7 +119,7 @@
             <tr>
               <td>MongoDB (JavaScript)</td>
               <td style="text-align: right">
-                <a class="button" href="javascript:" onmouseover="buttonMouseOver(this)" onmouseout="buttonMouseOut(this)">Copy</a>
+                <a id="copyMongo" copyTarget="json2Editor" class="button" href="" onmouseover="buttonMouseOver(this)" onmouseout="buttonMouseOut(this)">Copy</a>
               </td>
             </tr>
           </table>
@@ -127,6 +149,9 @@ WHERE SUBSTR(city, 0, 1) == 'S';</textarea>
     <div class="copyright">Colorcoding powered by CodeMirror.</div>
 
     <script>
+      document.getElementById('copySemantic').addEventListener('click', copyToClipboard);
+      document.getElementById('copyMongo').addEventListener('click', copyToClipboard);
+
 window.onload = function() {
   window.ui.sqlEditor = CodeMirror.fromTextArea(document.getElementById('sqlMarker'), {
     mode: 'text/x-sql',
