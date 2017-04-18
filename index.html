@@ -53,41 +53,6 @@
         font-size: small;
       }
     </style>
-
-    <script>
-      function buttonMouseOver(btn) {
-        btn.style.borderWidth = "2px";
-        btn.style.padding = "2px 4px 2px 4px";
-        btn.style.color = "blue";
-        btn.style.borderColor = "black";
-      }
-
-      function buttonMouseOut(btn) {
-        btn.removeAttribute("style");
-      }
-
-      function copyToClipboard(e) {
-        e.preventDefault();
-
-        var copyTargetName = e.target.getAttribute("copyTarget");
-        var copyTarget = window.ui[copyTargetName];
-
-        var temp = document.createElement("textarea");
-        temp.value = copyTarget.getValue();
-        temp.style.width = 1;
-        temp.style.height = 1;
-        temp.style.border = "none";
-        document.body.appendChild(temp);
-        temp.select();
-
-        try {
-          document.execCommand('copy');
-        }
-        finally {
-          document.body.removeChild(temp);
-        }
-      }
-    </script>
   </head>
 
   <body>
@@ -98,8 +63,9 @@
             <tr>
               <td>ONESQL</td>
               <td style="text-align: right">
-                <a class="button" href="javascript:ui.translate()" onmouseover="buttonMouseOver(this)" onmouseout="buttonMouseOut(this)">Run</a>
-                <a class="button" href="" onmouseover="buttonMouseOver(this)" onmouseout="buttonMouseOut(this)">Help</a>
+                <a id="translate">Run</a>
+                <a id="copy-sql">Copy</a>
+                <a id="help">Help</a>
               </td>
             </tr>
           </table>
@@ -109,7 +75,7 @@
             <tr>
               <td>Semantic Tree (JSON)</td>
               <td style="text-align: right">
-                <a id="copySemantic" copyTarget="json1Editor" class="button" href="" onmouseover="buttonMouseOver(this)" onmouseout="buttonMouseOut(this)">Copy</a>
+                <a id="copy-semantic">Copy</a>
               </td>
             </tr>
           </table>
@@ -119,7 +85,7 @@
             <tr>
               <td>MongoDB (JavaScript)</td>
               <td style="text-align: right">
-                <a id="copyMongo" copyTarget="json2Editor" class="button" href="" onmouseover="buttonMouseOver(this)" onmouseout="buttonMouseOut(this)">Copy</a>
+                <a id="copy-mongo">Copy</a>
               </td>
             </tr>
           </table>
@@ -129,17 +95,17 @@
       <tr>
         <td>
           <form>
-            <textarea id="sqlMarker" name="sqlMarker">USE onesqlTest;
+            <textarea id="mark-sql" name="mark-sql">USE onesqlTest;
 
 FROM demography
 WHERE SUBSTR(city, 0, 1) == 'S';</textarea>
     </form>
         </td>
         <td>
-          <textarea id="jsonMarker1" name="jsonMarker1"></textarea>
+          <textarea id="mark-semantic" name="mark-semantic"></textarea>
         </td>
         <td>
-          <textarea id="jsonMarker2" name="jsonMarker2"></textarea>
+          <textarea id="mark-mongo" name="mark-mongo"></textarea>
         </td>
       </tr>
     </table>
@@ -147,62 +113,6 @@ WHERE SUBSTR(city, 0, 1) == 'S';</textarea>
     <br />
     <div class="copyright">Copyright (c) by Zlatko Michailov.</div>
     <div class="copyright">Colorcoding powered by CodeMirror.</div>
-
-    <script>
-      document.getElementById('copySemantic').addEventListener('click', copyToClipboard);
-      document.getElementById('copyMongo').addEventListener('click', copyToClipboard);
-
-window.onload = function() {
-  window.ui.sqlEditor = CodeMirror.fromTextArea(document.getElementById('sqlMarker'), {
-    mode: 'text/x-sql',
-    indentWithTabs: false,
-    smartIndent: true,
-    lineNumbers: true,
-    lineWrapping: true,
-    matchBrackets : true,
-    autofocus: true,
-    extraKeys: {"Ctrl-Space": "autocomplete"},
-    hintOptions: {tables: {
-      users: {name: null, score: null, birthDate: null},
-      countries: {name: null, population: null, size: null}
-    }}
-  });
-
-  window.ui.json1Editor = CodeMirror.fromTextArea(document.getElementById('jsonMarker1'), {
-    mode: 'application/json',
-    indentWithTabs: false,
-    smartIndent: true,
-    lineNumbers: true,
-    lineWrapping: true,
-    matchBrackets : true,
-    autofocus: true,
-    readOnly: "nocursor"
-  });
-
-  window.ui.json2Editor = CodeMirror.fromTextArea(document.getElementById('jsonMarker2'), {
-    mode: 'application/json',
-    indentWithTabs: false,
-    smartIndent: true,
-    lineNumbers: true,
-    lineWrapping: true,
-    matchBrackets : true,
-    autofocus: true,
-    readOnly: "nocursor"
-  });
-
-  var sqlEditor = document.getElementById('sqlMarker').nextSibling;
-  var jsonEditor1 = document.getElementById('jsonMarker1').nextSibling
-  var jsonEditor2 = document.getElementById('jsonMarker2').nextSibling
-
-  var height = (window.innerHeight - 120) + "px";
-  sqlEditor.style.height = height;
-  jsonEditor1.style.height = height;
-  jsonEditor2.style.height = height;
-
-  jsonEditor1.style.backgroundColor = "#f4f4f4";
-  jsonEditor2.style.backgroundColor = "#f4f4f4";
-};
-    </script>
   </body>
 </html>
 
