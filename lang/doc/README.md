@@ -18,6 +18,7 @@
     * [2.3. Built-In Functions and Operations](#23-built-in-functions-and-operations)
     * [2.4. Case-Sensitivity](#24-case-sensitivity)
     * [2.5. Parsing a Semantic Tree](#25-parsing-a-semantic-tree)
+* [3. Examples](#3-examples)
 * [A. Appendix](#a-appendix)
     * [A.1. Sample Data](#a1-sample-data)
     * [A.2. SQL Syntax BNF](#a2-sql-syntax-bnf)
@@ -455,6 +456,47 @@ That's why database contructs - database, source, and properties - should be spe
 All the semantic tree definitions are in module [../src/onesql.semantic.ts](../src/onesql.semantic.ts).
 
 For an example on how to traverse a semantic batch, see [../src/onesql.gen.mongo.ts](../src/onesql.gen.mongo.ts).
+
+
+## 3. Examples
+
+Switches to a database:
+
+```
+USE onesqlTest;
+```
+
+Retrieves all cities, unsorted:
+
+```
+FROM demography;
+```
+
+Retrieves all cities whose names start with the letter 'S', sorted by population:
+
+```
+FROM demography
+WHERE SUBSTR(city, 0, 1) = 'S'
+ORDER BY population DESC;
+```
+
+Retrieves all states sorted by population:
+
+```
+FROM demography
+GROUP BY state
+SELECT state, SUM(population) as population
+ORDER BY population DESC;
+```
+
+Retrieves the top 3 cities with the highest density:
+
+```
+FROM demography
+SELECT city, population / area AS density
+ORDER BY density DESC
+LIMIT 3;
+```
 
 
 ## A. Appendix
