@@ -485,7 +485,7 @@ Retrieves all states sorted by population:
 ```
 FROM demography
 GROUP BY state
-SELECT state, SUM(population) as population
+SELECT state, SUM(population) AS population
 ORDER BY population DESC;
 ```
 

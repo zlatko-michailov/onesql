@@ -96,8 +96,24 @@ window.onesqlui = {
 	},
 
 	createEditors: function() {
+		function set(str) {
+			var obj = {}, words = str.split(" ");
+			for (var i = 0; i < words.length; ++i) obj[words[i]] = true;
+			return obj;
+		}
+
+		CodeMirror.defineMIME("text/x-onesql", {
+			name:       "sql",
+			client:     { },
+			keywords:   set("and as asc by datetime delete desc from group insert into not or order select set use values where"),
+			builtin:    set("abs acos add_months ascii asin atan atan2 average bfile bfilename bigserial bit blob ceil character chartorowid chr clob concat convert cos cosh count dec decode deref dual dump dup_val_on_index empty error exp false float floor found glb greatest hextoraw initcap instr instrb int integer isopen last_day least length lengthb ln lower lpad ltrim lub make_ref max min mlslabel mod months_between natural naturaln nchar nclob new_time next_day nextval nls_charset_decl_len nls_charset_id nls_charset_name nls_initcap nls_lower nls_sort nls_upper nlssort no_data_found notfound null number numeric nvarchar2 nvl others power rawtohex real reftohex round rowcount rowidtochar rowtype rpad rtrim serial sign signtype sin sinh smallint soundex sqlcode sqlerrm sqrt stddev string substr substrb sum sysdate tan tanh to_char text to_date to_label to_multi_byte to_number to_single_byte translate true trunc uid unlogged upper user userenv varchar varchar2 variance varying vsize xml"),
+			operatorChars: /^[*+\-%<>!=~]/,
+			dateSQL:    { },
+			support:    set("commentSlashSlash")
+		});
+
 		onesqlui.sqlEditor = CodeMirror.fromTextArea(document.getElementById('mark-sql'), {
-			mode: 'text/x-sql',
+			mode: 'text/x-onesql',
 			indentWithTabs: false,
 			smartIndent: true,
 			lineNumbers: true,
