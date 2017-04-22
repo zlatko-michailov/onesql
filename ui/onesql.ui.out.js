@@ -1265,7 +1265,7 @@ window.onesqlui = {
 	},
 
 	help: function(ev) {
-		// TODO:
+		window.open("https://github.com/zlatko-michailov/onesql/tree/master/lang/doc", "_blank");
 	},
 
 	makeButton: function(id, click, editorName) {
