@@ -642,13 +642,16 @@ function parseProperty(input, inputIndex) {
     return { inputIndex: inputIndex, node: property };
 }
 function parseSelectClause(input, inputIndex) {
-    return { inputIndex: inputIndex, node: undefined };
+    // TODO: Implement
+    throw new SyntaxError(input[inputIndex].lineNumber, ";", input[inputIndex].lexeme);
 }
 function parseGroupByClause(input, inputIndex) {
-    return { inputIndex: inputIndex, node: undefined };
+    // TODO: Implement
+    throw new SyntaxError(input[inputIndex].lineNumber, ";", input[inputIndex].lexeme);
 }
 function parseOrderByClause(input, inputIndex) {
-    return { inputIndex: inputIndex, node: undefined };
+    // TODO: Implement
+    throw new SyntaxError(input[inputIndex].lineNumber, ";", input[inputIndex].lexeme);
 }
 // -----------------------------------------------------------------------------
 // Utilities

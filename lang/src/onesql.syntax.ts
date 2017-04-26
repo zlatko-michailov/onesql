@@ -295,15 +295,18 @@ function parseProperty(input: ReadonlyArray<Lex.Token>, inputIndex: number): Syn
 }
 
 function parseSelectClause(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
-	return { inputIndex: inputIndex, node: undefined };
+	// TODO: Implement
+	throw new SyntaxError(input[inputIndex].lineNumber, ";", input[inputIndex].lexeme);
 }
 
 function parseGroupByClause(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
-	return { inputIndex: inputIndex, node: undefined };
+	// TODO: Implement
+	throw new SyntaxError(input[inputIndex].lineNumber, ";", input[inputIndex].lexeme);
 }
 
 function parseOrderByClause(input: ReadonlyArray<Lex.Token>, inputIndex: number): SyntaxState {
-	return { inputIndex: inputIndex, node: undefined };
+	// TODO: Implement
+	throw new SyntaxError(input[inputIndex].lineNumber, ";", input[inputIndex].lexeme);
 }
 
 // -----------------------------------------------------------------------------
