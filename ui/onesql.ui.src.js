@@ -26,7 +26,8 @@ window.onesqlui = {
 			onesqlui.mongoEditor.setValue(mongoJavascript);
 		}
 		catch (ex) {
-			onesqlui.mongoEditor.setValue(JSON.stringify(ex, undefined, 2));
+			onesqlui.semanticEditor.setValue(JSON.stringify(ex, undefined, 2));
+			onesqlui.mongoEditor.setValue("");
 		}
 	},
 
